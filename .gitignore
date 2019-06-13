@@ -4,4 +4,7 @@
 !.gitignore
 !.gitconfig
 !.gitmodules
+!.zshrc
+!.aliases
 !.spacemacs
+

@@ -1,0 +1,7 @@
+alias e='emacsclient --no-wait'
+alias grep='rg'
+alias cat='bat'
+alias ls='exa'
+alias vim='nvim'
+alias man='tldr --theme=base16'
+
