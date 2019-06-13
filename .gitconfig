@@ -1,0 +1,9 @@
+[user]
+	name = Artur Różalski
+	email = rozart@gmail.com
+[color]
+	diff = auto
+	status = auto
+	ui = auto
+[core]
+	editor = nvim

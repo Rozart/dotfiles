@@ -1,0 +1,7 @@
+# Ignore all files and directories by default
+*
+# Except for these
+!.gitignore
+!.gitconfig
+!.gitmodules
+!.spacemacs
