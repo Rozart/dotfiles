@@ -1,6 +1,8 @@
 # Ignore all files and directories by default
-*
+/*
 # Except for these
+!.fonts/
+.fonts/.DS_Store
 !.gitignore
 !.gitconfig
 !.gitmodules
