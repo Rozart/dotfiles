@@ -30,7 +30,8 @@ values."
    dotspacemacs-configuration-layer-path '()
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(nginx
+   '(vimscript
+     nginx
      ;; ----------------------------------------------------------------
      ;; Programming languages layers
      ;; ----------------------------------------------------------------

@@ -13,3 +13,9 @@
 !.oh-my-zsh/
 !.emacs.d/
 
+# Include nvim config
+!.config/
+.config/*
+!.config/nvim/
+.config/nvim/*
+!.config/nvim/init.vim
