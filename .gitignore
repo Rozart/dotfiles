@@ -10,4 +10,6 @@
 !.aliases
 !.spacemacs
 !Brewfile
+!.oh-my-zsh/
+!.emacs.d/
 
