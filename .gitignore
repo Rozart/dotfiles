@@ -10,6 +10,10 @@
 !.aliases
 !.spacemacs
 !Brewfile
+!.macos
+
+
+# Submodules
 !.oh-my-zsh/
 !.emacs.d/
 
