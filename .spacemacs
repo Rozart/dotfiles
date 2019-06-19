@@ -79,6 +79,7 @@ values."
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      themes-megapack
+     theming
      helm
      treemacs
      multiple-cursors
@@ -101,7 +102,8 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(all-the-icons spaceline-all-the-icons)
+   dotspacemacs-additional-packages '(all-the-icons
+                                      spaceline-all-the-icons)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -214,7 +216,7 @@ values."
    ;; (default nil)
    dotspacemacs-visual-line-move-text nil
    ;; If non nil, inverse the meaning of `g' in `:substitute' Evil ex-command.
-   ;; (default nil) 
+   ;; (default nil)
    dotspacemacs-ex-substitute-global nil
    ;; Name of the default layout (default "Default")
    dotspacemacs-default-layout-name "Default"
@@ -265,7 +267,7 @@ values."
    dotspacemacs-loading-progress-bar t
    ;; If non nil the frame is fullscreen when Emacs starts up. (default nil)
    ;; (Emacs 24.4+ only)
-   dotspacemacs-fullscreen-at-startup nil 
+   dotspacemacs-fullscreen-at-startup nil
    ;; If non nil `spacemacs/toggle-fullscreen' will not use native fullscreen.
    ;; Use to disable fullscreen animations in OSX. (default nil)
    dotspacemacs-fullscreen-use-non-native nil
@@ -341,13 +343,15 @@ values."
    dotspacemacs-whitespace-cleanup nil
    ))
 
+
+
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
 This function defines the environment variables for your Emacs session. By
 default it calls `spacemacs/load-spacemacs-env' which loads the environment
 variables declared in `~/.spacemacs.env' or `~/.spacemacs.d/.spacemacs.env'.
 See the header of this file for more information."
-(spacemacs/load-spacemacs-env))
+  (spacemacs/load-spacemacs-env))
 
 (defun dotspacemacs/user-init ()
   "Initialization function for user code.
@@ -356,7 +360,62 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
+
+  (setq theming-modifications
+        '((gruvbox-dark-soft
+            (variable-pitch :family "ETBembo" :height 1.15)
+
+            (org-default :inherit fixed-pitch :family "Iosevka" :height 1.1 :weight bold :slant normal :line-spacing 0.1)
+
+            (header-line :inherit nil :background nil)
+
+            (org-document-title :inherit nil :family "ETBembo" :height 2.1 :weight bold :slant normal :underline nil :foreground "#ebdbb2" )
+
+            (org-level-1 :inherit variable-pitch :family "ETBembo" :height 1.4 :weight bold :slant normal :foreground "#ebdbb2" ) ;; bg-dark color
+            (org-level-2 :inherit variable-pitch :family "ETBembo" :height 1.3 :weight bold :slant normal :foreground "#ebdbb2")
+            (org-level-3 :inherit variable-pitch :family "ETBembo" :height 1.2 :weight bold :slant normal :foreground "#ebdbb2")
+            (org-level-4 :inherit variable-pitch :family "ETBembo" :height 1.1 :weight normal :slant normal :foreground "#ebdbb2")
+            (org-level-5 :inherit variable-pitch :family "ETBembo" :height 1.1 :weight bold :slant normal :foreground "#ebdbb2")
+            (org-level-6 :inherit variable-pitch :family "ETBembo" :height 1.1 :weight bold :slant normal :foreground "#ebdbb2")
+            (org-level-7 :inherit variable-pitch :family "ETBembo" :height 1.1 :weight bold :slant normal :foreground "#ebdbb2")
+            (org-level-8 :inherit variable-pitch :family "ETBembo" :height 1.1 :weight bold :slant normal :foreground "#ebdbb2")
+
+            (org-ellipsis :inherit variable-pitch :family "ETBembo" :height 1.0 :weight normal :slant normal )
+
+            (org-document-info :height 1.2 :slant italic)
+            (org-headline-done :strike-through t :family "ETBembo" :foreground "#626262")
+            (org-quote :inherit variable-pitch :family "ETBembo" :height 1.0)
+            (org-document-info-keyword :height 0.8 :foreground "#bbb") ;; grey
+            (org-link :inherit nil :family "Iosevka" :foreground "royal blue")
+            (org-special-keyword :family "Iosevka" :height 0.8)
+            (org-agenda-current-time nil)
+            (org-hide :foreground "#fbf8ef") ;; bg-white
+            (org-indent :inherit (org-hide fixed-pitch))
+            (org-time-grid nil)
+            (org-warning nil)
+            (org-done :foreground "#afaf00")
+            (org-date :family "Iosevka" :height 0.8)
+            (org-agenda-structure nil)
+            (org-agenda-date :inherit variable-pitch :heigh 1.1)
+            (org-agenda-date-today nil)
+            (org-agenda-date-weekend nil)
+            (org-scheduled nil)
+            (org-upcoming-deadline nil)
+            (org-scheduled-today nil)
+            (org-scheduled-previously nil)
+            (org-agenda-done :strike-through t :foreground "#878700") ;; doc
+            (org-ellipsis :underline nil :foreground "#525254") ;; comment
+            (org-tag :foreground "#7c6f64") ;; doc
+            (org-table :family "Iosevka" :height 0.9 :background "#282828" :foreground "#fe8019") ;; bg-white
+            (org-block :background "#3c3836" :height 0.9 :family "Iosevka")
+            (org-block-begin-line :background "#504945" :height 1.0 :family "Iosevka" :foreground "#7c6f64") ;; slate color
+            (org-block-end-line :background "#504945" :height 1.0 :family "Iosevka" :foreground "#7c6f64")
+            (org-code :family "Iosevka" :foreground "#d5c4a1" :height 0.85) ;; comment
+
+            )))
+
   )
+
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
@@ -365,15 +424,20 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-  (global-company-mode)
-  (mac-auto-operator-composition-mode)
-
-  (setq lsp-restart 'ignore)
-  (setq powerline-default-separator 'utf-8)
-  (setq powerline-text-scale-factor 1.1)
   ;; Configuration for org-brain when using the evil mode
   (with-eval-after-load 'evil
     (evil-initial-state 'org-brain-visualize-mode 'emacs)
+    )
+  (with-eval-after-load 'org
+    (setq org-src-fontify-natively t
+          org-src-tab-acts-natively t
+          org-fontify-whole-heading-line t
+          org-fontify-done-headline t
+          org-fontify-quote-and-verse-blocks t
+          org-pretty-entities t
+          org-hide-emphasis-markers t
+          org-bullets-bullet-list '(" ")
+          org-ellipsis " » ")
     )
   ;; Setting up the directory for org-brain wiki
   (with-eval-after-load 'org-brain
@@ -383,11 +447,18 @@ you should place your code here."
   (setq org-id-locations-file "~/Google Drive/org/.org-id-locations")
   ;; Setting up the directory for org
   (setq org-directory "~/Google Drive/org/")
+  (setq org-agenda-files '("~/Google Drive/org/personal-todos.org" "~/Google Drive/org/work-todos.org"))
   ;; Setting up the directory for org-journal
   (setq org-journal-dir "~/Google Drive/org/journal/")
   ;; Setting up the date format for org-journal
   (setq org-journal-file-format "%Y-%m-%d")
   (setq org-journal-date-format "%A, %Y-%m-%d")
+  (global-company-mode)
+  (mac-auto-operator-composition-mode)
+
+  (setq lsp-restart 'ignore)
+  (setq powerline-default-separator 'utf-8)
+  (setq powerline-text-scale-factor 1.1)
   )
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
@@ -399,13 +470,5 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (nginx-mode zenburn-theme zen-and-art-theme yasnippet-snippets yapfify yaml-mode xterm-color ws-butler writeroom-mode winum white-sand-theme which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unicode-fonts underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme treemacs-projectile treemacs-evil toxi-theme toc-org tide tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit symon symbol-overlay sunny-day-theme sublime-themes subatomic256-theme subatomic-theme string-inflection spotify spaceline-all-the-icons spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restclient-helm restart-emacs rebecca-theme rainbow-delimiters railscasts-theme pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme prettier-js popwin planet-theme pippel pipenv pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pdf-tools pcre2el password-generator paradox overseer osx-trash osx-dictionary osx-clipboard orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-journal org-download org-cliplink org-bullets org-brain open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-restclient ob-ipython ob-http noflet nodejs-repl noctilux-theme naquadah-theme nameless mvn mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme meghanada maven-test-mode material-theme markdown-toc majapahit-theme magit-svn magit-gitflow madhat2r-theme macrostep lush-theme lsp-ui lsp-treemacs lsp-python-ms lsp-java lorem-ipsum livid-mode live-py-mode link-hint light-soap-theme launchctl kotlin-mode kaolin-themes json-navigator js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme inkpot-theme indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-themes helm-swoop helm-spotify-plus helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-lsp helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode groovy-imports grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md gandalf-theme fuzzy forge font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-package flycheck-kotlin flx-ido flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery eziam-theme eyebrowse expand-region exotica-theme evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu espresso-theme eshell-z eshell-prompt-extras esh-help ensime engine-mode emojify emoji-cheat-sheet-plus emmet-mode elisp-slime-nav ein editorconfig dumb-jump dracula-theme dotenv-mode doom-themes doom-modeline dockerfile-mode docker django-theme diminish diff-hl devdocs darktooth-theme darkokai-theme darkmine-theme darkburn-theme dap-mode dakrone-theme cython-mode cyberpunk-theme csv-mode counsel-projectile company-web company-tern company-statistics company-restclient company-lsp company-emoji company-emacs-eclim company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clojure-snippets clean-aindent-mode cider-eval-sexp-fu cider cherry-blossom-theme centered-cursor-mode busybee-theme bubbleberry-theme browse-at-remote blacken birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme ace-link ace-jump-helm-line ac-ispell))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+)
 )
