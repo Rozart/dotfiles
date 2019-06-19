@@ -27,7 +27,7 @@ call plug#end()
 " Enable line numbers
 set number
 
-# Set colors and the theme
+" Set colors and the theme
 set termguicolors
 colorscheme gruvbox 
 
