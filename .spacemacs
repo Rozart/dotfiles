@@ -36,7 +36,8 @@ values."
      ;; Programming languages layers
      ;; ----------------------------------------------------------------
      emacs-lisp
-     lsp
+     (lsp :variables
+          lsp-restart 'ignore)
      (python :variables
              python-backend 'lsp
              python-formatter 'black
@@ -97,6 +98,7 @@ values."
             shell-default-height 30)
      spell-checking
      syntax-checking
+     pandoc
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -360,59 +362,62 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
+  (add-hook 'org-mode-hook 'variable-pitch-mode)
+  (add-hook 'org-mode-hook 'visual-line-mode)
+  (add-hook 'org-mode-hook 'org-indent-mode)
 
   (setq theming-modifications
         '((gruvbox-dark-soft
-            (variable-pitch :family "ETBembo" :height 1.15)
+           (variable-pitch :family "ETBembo" :height 1.3 :foreground "#ebdbb2")
+           (fixed-pitch :family "Iosevka" :height 1.1 :foreground "#ebdbb2")
 
-            (org-default :inherit fixed-pitch :family "Iosevka" :height 1.1 :weight bold :slant normal :line-spacing 0.1)
+           (org-default :inherit fixed-pitch :family "Iosevka" :weight bold :slant normal :line-spacing 0.1 :foreground "#d5c4a1")
 
-            (header-line :inherit nil :background nil)
+           (header-line :inherit nil :background nil)
 
-            (org-document-title :inherit nil :family "ETBembo" :height 2.1 :weight bold :slant normal :underline nil :foreground "#ebdbb2" )
+           (org-document-title :inherit nil :family "ETBembo" :height 2.2 :weight bold :slant normal :underline nil :foreground "#ebdbb2" )
 
-            (org-level-1 :inherit variable-pitch :family "ETBembo" :height 1.4 :weight bold :slant normal :foreground "#ebdbb2" ) ;; bg-dark color
-            (org-level-2 :inherit variable-pitch :family "ETBembo" :height 1.3 :weight bold :slant normal :foreground "#ebdbb2")
-            (org-level-3 :inherit variable-pitch :family "ETBembo" :height 1.2 :weight bold :slant normal :foreground "#ebdbb2")
-            (org-level-4 :inherit variable-pitch :family "ETBembo" :height 1.1 :weight normal :slant normal :foreground "#ebdbb2")
-            (org-level-5 :inherit variable-pitch :family "ETBembo" :height 1.1 :weight bold :slant normal :foreground "#ebdbb2")
-            (org-level-6 :inherit variable-pitch :family "ETBembo" :height 1.1 :weight bold :slant normal :foreground "#ebdbb2")
-            (org-level-7 :inherit variable-pitch :family "ETBembo" :height 1.1 :weight bold :slant normal :foreground "#ebdbb2")
-            (org-level-8 :inherit variable-pitch :family "ETBembo" :height 1.1 :weight bold :slant normal :foreground "#ebdbb2")
+           (org-level-1 :inherit variable-pitch :family "ETBembo" :height 1.4 :weight bold :slant normal :foreground "#f9f5d7" ) ;; bg-dark color
+           (org-level-2 :inherit variable-pitch :family "ETBembo" :height 1.3 :weight bold :slant italic :foreground "#f9f5d7")
+           (org-level-3 :inherit variable-pitch :family "ETBembo" :height 1.2 :weight normal :slant normal :foreground "#f9f5d7")
+           (org-level-4 :inherit variable-pitch :family "ETBembo" :height 1.15 :weight normal :slant italic :foreground "#f9f5d7")
+           (org-level-5 :inherit variable-pitch :family "ETBembo" :height 1.15 :weight normal :slant normal :foreground "#f9f5d7")
+           (org-level-6 :inherit variable-pitch :family "ETBembo" :height 1.1 :weight normal :slant italic :foreground "#f9f5d7")
+           (org-level-7 :inherit variable-pitch :family "ETBembo" :height 1.1 :weight normal :slant normal :foreground "#f9f5d7")
+           (org-level-8 :inherit variable-pitch :family "ETBembo" :height 1.1 :weight normal :slant normal :foreground "#f9f5d7")
 
-            (org-ellipsis :inherit variable-pitch :family "ETBembo" :height 1.0 :weight normal :slant normal )
+           (org-ellipsis :inherit variable-pitch :family "ETBembo" :height 1.0 :weight normal :slant normal :foreground "#d5c4a1")
 
-            (org-document-info :height 1.2 :slant italic)
-            (org-headline-done :strike-through t :family "ETBembo" :foreground "#626262")
-            (org-quote :inherit variable-pitch :family "ETBembo" :height 1.0)
-            (org-document-info-keyword :height 0.8 :foreground "#bbb") ;; grey
-            (org-link :inherit nil :family "Iosevka" :foreground "royal blue")
-            (org-special-keyword :family "Iosevka" :height 0.8)
-            (org-agenda-current-time nil)
-            (org-hide :foreground "#fbf8ef") ;; bg-white
-            (org-indent :inherit (org-hide fixed-pitch))
-            (org-time-grid nil)
-            (org-warning nil)
-            (org-done :foreground "#afaf00")
-            (org-date :family "Iosevka" :height 0.8)
-            (org-agenda-structure nil)
-            (org-agenda-date :inherit variable-pitch :heigh 1.1)
-            (org-agenda-date-today nil)
-            (org-agenda-date-weekend nil)
-            (org-scheduled nil)
-            (org-upcoming-deadline nil)
-            (org-scheduled-today nil)
-            (org-scheduled-previously nil)
-            (org-agenda-done :strike-through t :foreground "#878700") ;; doc
-            (org-ellipsis :underline nil :foreground "#525254") ;; comment
-            (org-tag :foreground "#7c6f64") ;; doc
-            (org-table :family "Iosevka" :height 0.9 :background "#282828" :foreground "#fe8019") ;; bg-white
-            (org-block :background "#3c3836" :height 0.9 :family "Iosevka")
-            (org-block-begin-line :background "#504945" :height 1.0 :family "Iosevka" :foreground "#7c6f64") ;; slate color
-            (org-block-end-line :background "#504945" :height 1.0 :family "Iosevka" :foreground "#7c6f64")
-            (org-code :family "Iosevka" :foreground "#d5c4a1" :height 0.85) ;; comment
+           (org-document-info :height 1.2 :slant italic)
+           (org-headline-done :strike-through t :family "ETBembo" :foreground "#626262")
+           (org-quote :inherit variable-pitch :family "ETBembo" :height 1.0 :slant italic)
+           (org-document-info-keyword :height 0.8 :foreground "#bbb") ;; grey
+           (org-link :inherit nil :family "Iosevka" :foreground "royal blue")
+           (org-special-keyword :family "Iosevka" :height 0.8)
+           (org-agenda-current-time nil)
+           (org-indent :inherit (org-hide fixed-pitch))
+           (org-time-grid nil)
+           (org-warning nil)
+           (org-done :foreground "#afaf00")
+           (org-date :family "Iosevka" :height 0.8)
+           (org-agenda-structure nil)
+           (org-agenda-date :inherit variable-pitch :heigh 1.1)
+           (org-agenda-date-today nil)
+           (org-agenda-date-weekend nil)
+           (org-scheduled nil)
+           (org-upcoming-deadline nil)
+           (org-scheduled-today nil)
+           (org-scheduled-previously nil)
+           (org-agenda-done :strike-through t :foreground "#878700") ;; doc
+           (org-ellipsis :underline nil :foreground "#525254") ;; comment
+           (org-tag :foreground "#7c6f64") ;; doc
+           (org-table :family "Iosevka" :height 0.9 :background "#282828" :foreground "#fe8019") ;; bg-white
+           (org-block :background "#3c3836" :height 0.9 :family "Iosevka")
+           (org-block-begin-line :background "#504945" :height 1.0 :family "Iosevka" :foreground "#7c6f64") ;; slate color
+           (org-block-end-line :background "#504945" :height 1.0 :family "Iosevka" :foreground "#7c6f64")
+           (org-code :family "Iosevka" :foreground "#d5c4a1" :height 0.85) ;; comment
 
-            )))
+           )))
 
   )
 
@@ -429,7 +434,8 @@ you should place your code here."
     (evil-initial-state 'org-brain-visualize-mode 'emacs)
     )
   (with-eval-after-load 'org
-    (setq org-src-fontify-natively t
+    (setq org-startup-indented t
+          org-src-fontify-natively t
           org-src-tab-acts-natively t
           org-fontify-whole-heading-line t
           org-fontify-done-headline t
@@ -437,12 +443,14 @@ you should place your code here."
           org-pretty-entities t
           org-hide-emphasis-markers t
           org-bullets-bullet-list '(" ")
-          org-ellipsis " » ")
+          org-ellipsis " » "
+          )
     )
   ;; Setting up the directory for org-brain wiki
   (with-eval-after-load 'org-brain
     (setq org-brain-path "~/Google Drive/org/brain/")
     )
+
   (setq org-id-track-globally t)
   (setq org-id-locations-file "~/Google Drive/org/.org-id-locations")
   ;; Setting up the directory for org
@@ -454,9 +462,10 @@ you should place your code here."
   (setq org-journal-file-format "%Y-%m-%d")
   (setq org-journal-date-format "%A, %Y-%m-%d")
   (global-company-mode)
-  (mac-auto-operator-composition-mode)
 
-  (setq lsp-restart 'ignore)
+  (when (boundp 'mac-auto-operator-composition-mode)
+    (mac-auto-operator-composition-mode))
+
   (setq powerline-default-separator 'utf-8)
   (setq powerline-text-scale-factor 1.1)
   )
@@ -465,10 +474,10 @@ you should place your code here."
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-)
-)
+  (custom-set-variables
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   )
+  )

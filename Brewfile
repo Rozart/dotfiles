@@ -21,6 +21,8 @@ brew "zip"
 brew "unrar"
 brew "wget"
 
+brew "pandoc"
+
 brew "neovim"
 
 # Terminal tools
