@@ -448,19 +448,20 @@ you should place your code here."
     )
   ;; Setting up the directory for org-brain wiki
   (with-eval-after-load 'org-brain
-    (setq org-brain-path "~/Google Drive/org/brain/")
+    (setq org-brain-path "~/Dropbox/org/brain/")
     )
 
-  (setq org-id-track-globally t)
-  (setq org-id-locations-file "~/Google Drive/org/.org-id-locations")
-  ;; Setting up the directory for org
-  (setq org-directory "~/Google Drive/org/")
-  (setq org-agenda-files '("~/Google Drive/org/personal-todos.org" "~/Google Drive/org/work-todos.org"))
-  ;; Setting up the directory for org-journal
-  (setq org-journal-dir "~/Google Drive/org/journal/")
-  ;; Setting up the date format for org-journal
-  (setq org-journal-file-format "%Y-%m-%d")
-  (setq org-journal-date-format "%A, %Y-%m-%d")
+  (setq org-id-track-globally t
+        org-id-locations-file "~/Dropbox/org/.org-id-locations"
+        ;; Setting up the directory for org
+        org-directory "~/Dropbox/org/"
+        org-agenda-files '("~/Dropbox/org/")
+        ;; Setting up the directory for org-journal
+        org-journal-dir "~/Dropbox/org/journal/"
+        ;; Setting up the date format for org-journal
+        org-journal-file-format "%Y-%m-%d"
+        org-journal-date-format "%A, %Y-%m-%d")
+
   (global-company-mode)
 
   (when (boundp 'mac-auto-operator-composition-mode)
