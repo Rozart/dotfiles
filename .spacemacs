@@ -177,14 +177,14 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(gruvbox-dark-soft)
+   dotspacemacs-themes '(gruvbox-dark-soft gruvbox-light-medium)
 
    dotspacemacs-mode-line-theme '(all-the-icons :separator arrow :separator-scale 1.8)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Iosevka" :size 13)
+   dotspacemacs-default-font '("Iosevka" :size 13 :weight normal)
 
    ;; The leader key
    dotspacemacs-leader-key "SPC"
@@ -318,7 +318,7 @@ values."
    ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
    ;; over any automatically added closing parenthesis, bracket, quote, etc…
    ;; This can be temporary disabled by pressing `C-q' before `)'. (default nil)
-   dotspacemacs-smart-closing-parenthesis nil
+   dotspacemacs-smart-closing-parenthesis t
    ;; Select a scope to highlight delimiters. Possible values are `any',
    ;; `current', `all' or `nil'. Default is `all' (highlight any scope and
    ;; emphasis the current one). (default 'all)
@@ -417,7 +417,61 @@ before packages are loaded. If you are unsure, you should try in setting them in
            (org-block-end-line :background "#504945" :height 1.0 :family "Iosevka" :foreground "#7c6f64")
            (org-code :family "Iosevka" :foreground "#d5c4a1" :height 0.85) ;; comment
 
-           )))
+           )
+
+          (gruvbox-light-medium
+           (variable-pitch :family "ETBembo" :height 1.3 :foreground "#7c6f64")
+           (fixed-pitch :family "Iosevka" :height 1.1 :foreground "#7c6f64")
+
+           (org-default :inherit fixed-pitch :family "Iosevka" :weight bold :slant normal :line-spacing 0.1 :foreground "#7c6f64")
+
+           (header-line :inherit nil :background nil)
+
+           (org-document-title :inherit nil :family "ETBembo" :height 2.2 :weight bold :slant normal :underline nil :foreground "#504945" )
+
+           (org-level-1 :inherit variable-pitch :family "ETBembo" :height 1.4 :weight bold :slant normal :foreground "#504945" ) ;; bg-dark color
+           (org-level-2 :inherit variable-pitch :family "ETBembo" :height 1.3 :weight bold :slant italic :foreground "#504945")
+           (org-level-3 :inherit variable-pitch :family "ETBembo" :height 1.2 :weight normal :slant normal :foreground "#504945")
+           (org-level-4 :inherit variable-pitch :family "ETBembo" :height 1.15 :weight normal :slant italic :foreground "#504945")
+           (org-level-5 :inherit variable-pitch :family "ETBembo" :height 1.15 :weight normal :slant normal :foreground "#504945")
+           (org-level-6 :inherit variable-pitch :family "ETBembo" :height 1.1 :weight normal :slant italic :foreground "#504945")
+           (org-level-7 :inherit variable-pitch :family "ETBembo" :height 1.1 :weight normal :slant normal :foreground "#504945")
+           (org-level-8 :inherit variable-pitch :family "ETBembo" :height 1.1 :weight normal :slant normal :foreground "#504945")
+
+           (org-ellipsis :inherit variable-pitch :family "ETBembo" :height 1.0 :weight normal :slant normal :foreground "#d5c4a1")
+
+           (org-document-info :height 1.2 :slant italic)
+           (org-headline-done :strike-through t :family "ETBembo" :foreground "#a89984")
+           (org-quote :inherit variable-pitch :family "ETBembo" :height 1.0 :slant italic)
+           (org-document-info-keyword :height 0.8 :foreground "#bbb") ;; grey
+           (org-link :inherit nil :family "Iosevka" :foreground "royal blue")
+           (org-special-keyword :family "Iosevka" :height 0.8)
+           (org-agenda-current-time nil)
+           (org-indent :inherit (org-hide fixed-pitch))
+           (org-time-grid nil)
+           (org-warning nil)
+           (org-done :foreground "#afaf00")
+           (org-date :family "Iosevka" :height 0.8)
+           (org-agenda-structure nil)
+           (org-agenda-date :inherit variable-pitch :heigh 1.1)
+           (org-agenda-date-today nil)
+           (org-agenda-date-weekend nil)
+           (org-scheduled nil)
+           (org-upcoming-deadline nil)
+           (org-scheduled-today nil)
+           (org-scheduled-previously nil)
+           (org-agenda-done :strike-through t :foreground "#a89984") ;; doc
+           (org-ellipsis :underline nil :foreground "#525254") ;; comment
+           (org-tag :foreground "#7c6f64") ;; doc
+           (org-table :family "Iosevka" :height 0.9 :background "#ebdbb2" :foreground "#7c6f64") ;; bg-white
+           (org-block :background "#3c3836" :height 0.9 :family "Iosevka")
+           (org-block-begin-line :background "#504945" :height 1.0 :family "Iosevka" :foreground "#7c6f64") ;; slate color
+           (org-block-end-line :background "#504945" :height 1.0 :family "Iosevka" :foreground "#7c6f64")
+           (org-code :family "Iosevka" :foreground "#282828" :height 0.85) ;; comment
+
+           )
+
+          ))
 
   )
 
