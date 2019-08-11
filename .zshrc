@@ -34,6 +34,9 @@ prompt pure
 
 export PATH=$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH
 export PATH=/usr/local/opt/openssl/bin:$PATH
+export PATH=/usr/local/opt/curl/bin:$PATH
+export PATH=/usr/local/opt/curl-openssl/bin:$PATH
+export CLOUDSDK_PYTHON=$(which python2)
 
 export EMACS="*term*"
 
@@ -45,6 +48,5 @@ export CPPFLAGS="${CPPFLAGS} -I/usr/local/opt/zlib/include"
 # For pkg-config to find zlib you may need to set:
 export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}/usr/local/opt/zlib/lib/pkgconfig
 
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR=~/.sdkman
-[[ -s ~/.sdkman/bin/sdkman-init.sh ]] && source ~/.sdkman/bin/sdkman-init.sh
+# Initialize pyenv
+eval "$(pyenv init -)"

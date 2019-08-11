@@ -30,7 +30,7 @@ brew "ripgrep"
 brew "jq"
 brew "fzf"
 brew "exa"
-brew "bat"
+brew "eat"
 
 # Python dependencies
 brew "pyenv"
@@ -54,3 +54,4 @@ cask "the-unarchiver"
 cask "postman"
 cask "discord"
 cask "slack"
+cask "dotnet-sdk"
