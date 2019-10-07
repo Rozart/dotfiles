@@ -13,6 +13,7 @@ export ZSH=~/.oh-my-zsh
 plugins=(
     git
     docker
+    ripgrep
     zsh-syntax-highlighting
     zsh-autosuggestions
     zsh-completions
@@ -36,6 +37,7 @@ export PATH=$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH
 export PATH=/usr/local/opt/openssl/bin:$PATH
 export PATH=/usr/local/opt/curl/bin:$PATH
 export PATH=/usr/local/opt/curl-openssl/bin:$PATH
+export PATH=$HOME/.jenv/bin/$PATH
 export CLOUDSDK_PYTHON=$(which python2)
 
 export EMACS="*term*"
@@ -50,3 +52,5 @@ export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}/usr/local/opt/zlib/lib/pkgconfig
 
 # Initialize pyenv
 eval "$(pyenv init -)"
+# Initialize jenv
+eval "$(jenv init -)"

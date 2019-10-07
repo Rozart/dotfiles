@@ -40,6 +40,7 @@ values."
           lsp-restart 'ignore)
      (java :variables
            java-backend 'lsp)
+     kotlin
      (python :variables
              python-backend 'lsp
              python-lsp-server 'mspyls
@@ -90,8 +91,7 @@ values."
                       auto-completion-return-key-behavior 'complete
                       auto-completion-enable-help-tooltip t
                       auto-completion-enable-sort-by-usage t
-                      auto-completion-idle-delay 0
-                      company-dabbrev-downcase 0)
+                      auto-completion-idle-delay 0)
      (org :variables
           org-enable-org-journal-support t)
      (ibuffer :variables
@@ -111,7 +111,9 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(all-the-icons
                                       spaceline-all-the-icons
-                                      company-lsp)
+                                      company-lsp
+                                      kubernetes
+                                      kubernetes-evil)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -191,9 +193,9 @@ values."
    ;; `recents' `bookmarks' `projects' `agenda' `todos'.
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
-   dotspacemacs-startup-lists '((recents . 5)
-                                (projects . 7))
-
+   dotspacemacs-startup-lists '((todos)
+                                (agenda)
+                                (recents . 5))
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
 
@@ -279,7 +281,7 @@ values."
    ;; (default 'cache)
    dotspacemacs-auto-save-file-location 'cache
    ;; Maximum number of rollback slots to keep in the cache. (default 5)
-   dotspacemacs-max-rollback-slots 10
+   dotspacemacs-max-rollback-slots 20
    ;; If non nil, `helm' will try to minimize the space it uses. (default nil)
    dotspacemacs-helm-resize nil
    ;; if non nil, the helm header is hidden when there is only one source.
@@ -376,7 +378,7 @@ values."
    ;;   :size-limit-kb 1000)
    ;; When used in a plist, `visual' takes precedence over `relative'.
    ;; (default nil)
-   dotspacemacs-line-numbers t
+   dotspacemacs-line-numbers 'visual
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
@@ -396,9 +398,6 @@ values."
 
    ;; If non-nil, start an Emacs server if one is not already running.
    dotspacemacs-enable-server t
-   ;; If non nil, advise quit functions to keep server open when quitting.
-   ;; (default nil)
-   dotspacemacs-enable-server nil
 
    ;; Set the emacs server socket location.
    ;; If nil, uses whatever the Emacs default is, otherwise a directory path
@@ -529,6 +528,11 @@ before packages are loaded. If you are unsure, you should try in setting them in
            (org-block-begin-line :background "#504945" :height 1.0 :family "Iosevka" :foreground "#7c6f64") ;; slate color
            (org-block-end-line :background "#504945" :height 1.0 :family "Iosevka" :foreground "#7c6f64")
            (org-code :family "Iosevka" :foreground "#d5c4a1" :height 0.85) ;; comment
+           (hl-todo-keyword-faces
+            (quote
+             (("TODO" . "#a89984")
+              ("INPROGRESS" . "#4f97d7")
+              ("DONE" . "#a89984"))))
            (font-lock-comment-face :slant italic)
            (font-lock-type-face :slant italic)
            (font-lock-keyword-face :slant italic)
@@ -587,6 +591,11 @@ before packages are loaded. If you are unsure, you should try in setting them in
            (org-block-begin-line :background "#504945" :height 1.0 :family "Iosevka" :foreground "#7c6f64") ;; slate color
            (org-block-end-line :background "#504945" :height 1.0 :family "Iosevka" :foreground "#7c6f64")
            (org-code :family "Iosevka" :foreground "#282828" :height 0.85) ;; comment
+           (hl-todo-keyword-faces
+            (quote
+             (("TODO" . "#a89984")
+              ("INPROGRESS" . "#4f97d7")
+              ("DONE" . "#a89984"))))
            (font-lock-comment-face :slant italic)
            (font-lock-type-face :slant italic)
            (font-lock-keyword-face :slant italic)
@@ -623,6 +632,7 @@ you should place your code here."
           org-bullets-bullet-list '(" ")
           org-ellipsis " » "
           )
+    (setq-default org-default-notes-file "~/Dropbox/org/work-todos.org")
     )
   ;; Setting up the directory for org-brain wiki
   (with-eval-after-load 'org-brain
@@ -639,8 +649,9 @@ you should place your code here."
         ;; Setting up the date format for org-journal
         org-journal-file-format "%Y-%m-%d"
         org-journal-date-format "%A, %Y-%m-%d")
-
+  (setq org-todo-keywords '((sequence "TODO" "INPROGRESS" "|" "DONE")))
   (global-company-mode)
+  (setq company-dabbrev-downcase nil)
   (setq projectile-git-submodule-command nil)
 
   (when (boundp 'mac-auto-operator-composition-mode)
@@ -662,57 +673,11 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(company-quickhelp zenburn-theme zen-and-art-theme yasnippet-snippets yapfify yaml-mode xterm-color ws-butler writeroom-mode winum white-sand-theme which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unicode-fonts underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme treemacs-projectile treemacs-evil toxi-theme toc-org tide tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit symon symbol-overlay sunny-day-theme sublime-themes subatomic256-theme subatomic-theme string-inflection spotify spaceline-all-the-icons spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restclient-helm restart-emacs rebecca-theme rainbow-delimiters railscasts-theme pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme prettier-js popwin planet-theme pippel pipenv pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pdf-tools pcre2el password-generator paradox pandoc-mode ox-pandoc overseer osx-trash osx-dictionary osx-clipboard orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-journal org-download org-cliplink org-bullets org-brain open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-restclient ob-ipython ob-http noflet nodejs-repl noctilux-theme nginx-mode naquadah-theme nameless mvn mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme meghanada maven-test-mode material-theme markdown-toc majapahit-theme magit-svn magit-gitflow madhat2r-theme macrostep lush-theme lsp-ui lsp-treemacs lsp-python-ms lsp-java lorem-ipsum livid-mode live-py-mode link-hint light-soap-theme launchctl kaolin-themes json-navigator js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme inkpot-theme indent-guide importmagic impatient-mode ibuffer-projectile hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-themes helm-swoop helm-spotify-plus helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-lsp helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode groovy-imports grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md gandalf-theme fuzzy forge font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-package flx-ido flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery eziam-theme eyebrowse expand-region exotica-theme evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu espresso-theme eshell-z eshell-prompt-extras esh-help ensime engine-mode emojify emoji-cheat-sheet-plus emmet-mode elisp-slime-nav ein editorconfig dumb-jump dracula-theme dotenv-mode doom-themes doom-modeline dockerfile-mode docker django-theme diminish diff-hl devdocs darktooth-theme darkokai-theme darkmine-theme darkburn-theme dap-mode dakrone-theme dactyl-mode cython-mode cyberpunk-theme csv-mode company-web company-tern company-statistics company-restclient company-lsp company-emoji company-emacs-eclim company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clojure-snippets clean-aindent-mode cider-eval-sexp-fu cider cherry-blossom-theme centered-cursor-mode busybee-theme bubbleberry-theme browse-at-remote blacken birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme ace-link ace-jump-helm-line ac-ispell)))
+ )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(fixed-pitch ((t (:family "Iosevka" :height 1.1 :foreground "#ebdbb2"))))
- '(font-lock-builtin-face ((t (:slant italic))))
- '(font-lock-comment-face ((t (:slant italic))))
- '(font-lock-constant-face ((t (:slant italic))))
- '(font-lock-keyword-face ((t (:slant italic))))
- '(font-lock-type-face ((t (:slant italic))))
- '(header-line ((t (:inherit nil :background nil))))
- '(org-agenda-current-time ((t (nil))))
- '(org-agenda-date ((t (:inherit variable-pitch :heigh 1.1))))
- '(org-agenda-date-today ((t (nil))))
- '(org-agenda-date-weekend ((t (nil))))
- '(org-agenda-done ((t (:strike-through t :foreground "#878700"))))
- '(org-agenda-structure ((t (nil))))
- '(org-block ((t (:background "#3c3836" :height 0.9 :family "Iosevka"))))
- '(org-block-begin-line ((t (:background "#504945" :height 1.0 :family "Iosevka" :foreground "#7c6f64"))))
- '(org-block-end-line ((t (:background "#504945" :height 1.0 :family "Iosevka" :foreground "#7c6f64"))))
- '(org-code ((t (:family "Iosevka" :foreground "#d5c4a1" :height 0.85))))
- '(org-date ((t (:family "Iosevka" :height 0.8))))
- '(org-default ((t (:inherit fixed-pitch :family "Iosevka" :weight bold :slant normal :line-spacing 0.1 :foreground "#d5c4a1"))))
- '(org-document-info ((t (:height 1.2 :slant italic))))
- '(org-document-info-keyword ((t (:height 0.8 :foreground "#bbb"))))
- '(org-document-title ((t (:inherit nil :family "ETBembo" :height 2.2 :weight bold :slant normal :underline nil :foreground "#ebdbb2"))))
- '(org-done ((t (:foreground "#afaf00"))))
- '(org-ellipsis ((t (:inherit variable-pitch :family "ETBembo" :height 1.0 :weight normal :slant normal :foreground "#d5c4a1"))))
- '(org-headline-done ((t (:strike-through t :family "ETBembo" :foreground "#626262"))))
- '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
- '(org-level-1 ((t (:inherit variable-pitch :family "ETBembo" :height 1.4 :weight bold :slant normal :foreground "#f9f5d7"))))
- '(org-level-2 ((t (:inherit variable-pitch :family "ETBembo" :height 1.3 :weight bold :slant italic :foreground "#f9f5d7"))))
- '(org-level-3 ((t (:inherit variable-pitch :family "ETBembo" :height 1.2 :weight normal :slant normal :foreground "#f9f5d7"))))
- '(org-level-4 ((t (:inherit variable-pitch :family "ETBembo" :height 1.15 :weight normal :slant italic :foreground "#f9f5d7"))))
- '(org-level-5 ((t (:inherit variable-pitch :family "ETBembo" :height 1.15 :weight normal :slant normal :foreground "#f9f5d7"))))
- '(org-level-6 ((t (:inherit variable-pitch :family "ETBembo" :height 1.1 :weight normal :slant italic :foreground "#f9f5d7"))))
- '(org-level-7 ((t (:inherit variable-pitch :family "ETBembo" :height 1.1 :weight normal :slant normal :foreground "#f9f5d7"))))
- '(org-level-8 ((t (:inherit variable-pitch :family "ETBembo" :height 1.1 :weight normal :slant normal :foreground "#f9f5d7"))))
- '(org-link ((t (:inherit nil :family "Iosevka" :foreground "royal blue"))))
- '(org-quote ((t (:inherit variable-pitch :family "ETBembo" :height 1.0 :slant italic))))
- '(org-scheduled ((t (nil))))
- '(org-scheduled-previously ((t (nil))))
- '(org-scheduled-today ((t (nil))))
- '(org-special-keyword ((t (:family "Iosevka" :height 0.8))))
- '(org-table ((t (:family "Iosevka" :height 0.9 :background "#282828" :foreground "#fe8019"))))
- '(org-tag ((t (:foreground "#7c6f64"))))
- '(org-time-grid ((t (nil))))
- '(org-upcoming-deadline ((t (nil))))
- '(org-warning ((t (nil))))
- '(variable-pitch ((t (:family "ETBembo" :height 1.3 :foreground "#ebdbb2")))))
+ )
 )
