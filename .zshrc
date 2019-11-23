@@ -11,6 +11,7 @@ export ZSH=~/.oh-my-zsh
 
 # Plugins
 plugins=(
+    emacs
     git
     docker
     ripgrep
@@ -54,3 +55,4 @@ export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}/usr/local/opt/zlib/lib/pkgconfig
 eval "$(pyenv init -)"
 # Initialize jenv
 eval "$(jenv init -)"
+export PATH="/usr/local/sbin:$PATH"
