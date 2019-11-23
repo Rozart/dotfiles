@@ -42,7 +42,6 @@ brew "jenv"
 brew "jq"
 brew "make"
 brew "mas"
-brew "maven"
 
 brew "nano"
 brew "neovim"
@@ -70,9 +69,11 @@ cask "mactex"
 cask "mat"
 
 cask "slack"
+cask "spotify"
+cask "discord"
 
 cask "adoptopenjdk/openjdk/adoptopenjdk11"
-
+brew "maven"
 
 mas "Dashlane", id: 552383089
 mas "Fantastical", id: 975937182
