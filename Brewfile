@@ -64,7 +64,7 @@ brew "railwaycat/emacsmacport/emacs-mac", args: ["with-spacemacs-icon"]
 cask "calibre"
 cask "dotnet-sdk"
 cask "dropbox"
-
+cask "adobe-creative-cloud"
 cask "mactex"
 cask "mat"
 
@@ -72,6 +72,8 @@ cask "slack"
 cask "spotify"
 cask "discord"
 cask "spectacle"
+cask "keybase"
+cask "intellij-idea"
 
 cask "adoptopenjdk/openjdk/adoptopenjdk11"
 brew "maven"

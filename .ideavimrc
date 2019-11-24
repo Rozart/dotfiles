@@ -1,0 +1,7 @@
+" Selected IntelliSpace modules
+source ~/.intellij-custom/intelli-space/spacemacs.vim
+source ~/.intellij-custom/intelli-space/extra.vim
+source ~/.intellij-custom/intelli-space/major.vim
+
+" My own vim commands
+nnoremap Y y$

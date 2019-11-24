@@ -4,4 +4,4 @@ alias cat='bat'
 alias ls='exa'
 alias vim='nvim'
 alias man='tldr --theme=base16'
-
+alias brewup='brew update; brew upgrade; brew prune; brew cleanup; brew doctor'

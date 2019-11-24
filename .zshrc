@@ -16,6 +16,7 @@ plugins=(
     git
     docker
     ripgrep
+    fzf
     zsh-syntax-highlighting
     zsh-autosuggestions
     zsh-completions
