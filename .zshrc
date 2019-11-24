@@ -8,6 +8,7 @@ export TERM=xterm-256color
 
 # Path to your oh-my-zsh installation.
 export ZSH=~/.oh-my-zsh
+export ZSH_CUSTOM=~/.oh-my-zsh-custom
 
 # Plugins
 plugins=(
@@ -31,6 +32,8 @@ source $ZSH/oh-my-zsh.sh
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# Setup pure theme
+fpath+=("$HOME/.zsh/pure")
 autoload -U promptinit; promptinit
 prompt pure
 

@@ -71,6 +71,7 @@ cask "mat"
 cask "slack"
 cask "spotify"
 cask "discord"
+cask "spectacle"
 
 cask "adoptopenjdk/openjdk/adoptopenjdk11"
 brew "maven"
