@@ -57,8 +57,6 @@ brew "wget"
 brew "zip"
 brew "zlib"
 
-brew "zsh-syntax-highlighting"
-
 brew "railwaycat/emacsmacport/emacs-mac", args: ["with-spacemacs-icon"]
 
 cask "calibre"
@@ -67,6 +65,7 @@ cask "dropbox"
 cask "adobe-creative-cloud"
 cask "mactex"
 cask "mat"
+cask "appcleaner"
 
 cask "slack"
 cask "spotify"
@@ -74,6 +73,8 @@ cask "discord"
 cask "spectacle"
 cask "keybase"
 cask "intellij-idea"
+cask "alfred"
+cask "bartender"
 
 cask "adoptopenjdk/openjdk/adoptopenjdk11"
 brew "maven"

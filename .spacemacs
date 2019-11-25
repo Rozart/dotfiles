@@ -665,6 +665,11 @@ you should place your code here."
 
   (setq exec-path (cons "/Users/rozart/.pyenv/shims" exec-path))
 
+  (evil-leader/set-key
+    "q q" 'spacemacs/frame-killer ;; Setup the quit shortcuts so they don't kill the Emacs Daemon
+    "q Q" 'spacemacs/frame-killer ;; Setup the quit shortcuts so they don't kill the Emacs Daemon
+    )
+
   )
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.

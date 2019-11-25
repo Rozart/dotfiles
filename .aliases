@@ -1,4 +1,4 @@
-alias e='emacsclient --no-wait'
+alias e=~/scripts/emacs-run.sh
 alias grep='rg'
 alias cat='bat'
 alias ls='exa'
