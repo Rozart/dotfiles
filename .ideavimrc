@@ -1,7 +1,151 @@
-" Selected IntelliSpace modules
-source ~/.intellij-custom/intelli-space/spacemacs.vim
-source ~/.intellij-custom/intelli-space/extra.vim
-source ~/.intellij-custom/intelli-space/major.vim
+" Spacemacs-like settings downloaded from:
+" https://ztlevi.github.io/posts/The-Minimal-Spacemacs-Tweaks-for-Jetbrain-IDES/
 
-" My own vim commands
-nnoremap Y y$
+let mapleader = " "
+
+set gdefault
+set smartcase
+
+" use system clipboard
+set clipboard=unnamedplus,unnamed
+
+set surround
+
+" Allow backspace and cursor keys to cross line boundaries
+set whichwrap+=<,>,h,l
+
+" black hole register
+vmap <backspace> "_d
+vmap <del> "_d
+
+" ============================================================================
+" key bindings for quickly moving between windows
+" h left, l right, k up, j down
+" ============================================================================
+nmap <leader>wh <c-w>h
+nmap <leader>wl <c-w>l
+nmap <leader>wk <c-w>k
+nmap <leader>wj <c-w>j
+nmap <leader>wv <c-w>v
+nmap <leader>ws <c-w>s
+nmap <leader>wc <c-w>c
+nmap <leader>wm :action HideAllWindows<CR>
+nmap <leader>wz :action ToggleDistractionFreeMode<CR>
+
+vmap <leader>wh <c-w>h
+vmap <leader>wl <c-w>l
+vmap <leader>wk <c-w>k
+vmap <leader>wj <c-w>j
+vmap <leader>wv <c-w>v
+vmap <leader>ws <c-w>s
+vmap <leader>wc <c-w>c
+vmap <leader>wm :<Backspace><Backspace><Backspace><Backspace><Backspace>action HideAllWindows<CR>
+vmap <leader>wz :<Backspace><Backspace><Backspace><Backspace><Backspace>action ToggleDistractionFreeMode<CR>
+
+" ============================================================================
+" expand and collapse
+" ============================================================================
+nmap zO :action ExpandAllRegions<CR>
+nmap zo :action ExpandRegion<CR>
+nmap zc :action CollapseRegion<CR>
+nmap zC :action CollapseAllRegions<CR>
+
+" ============================================================================
+" IDE actions
+" ============================================================================
+
+nmap <CR>            :action RecentFiles<CR>
+nmap <c-i>           :action Forward<CR>
+nmap <c-o>           :action Back<CR>
+nmap <leader>'       :action ActivateTerminalToolWindow<CR>
+nmap <leader><Space> :action GotoAction<CR>
+nmap <leader><tab>   :action RecentFiles<CR>
+nmap <leader>aa      :action $SelectAll<CR>
+nmap <leader>al      :actionlist<CR>
+nmap <leader>bb      :action RecentFiles<CR>
+nmap <leader>bi      :action ActivateStructureToolWindow<CR>
+nmap <leader>bu      :action ReopenClosedTab<CR>
+nmap <leader>cc      :action GotoClass<CR>
+nmap <leader>dD      :action DebugClass<CR>
+nmap <leader>dd      :action Debug<CR>
+nmap <leader>ee      :action ShowErrorDescription<CR>
+nmap <leader>fT      :action SelectInProjectView<CR>
+nmap <leader>fb      :action ShowBookmarks<CR>
+nmap <leader>fd      :action SmartSearchAction<CR>
+nmap <leader>ff      :action SearchEverywhere<CR>
+nmap <leader>fs      :action SaveAll<CR>
+nmap <leader>ft      :action ActivateProjectToolWindow<CR>
+nmap <leader>im      :action ImplementMethods<CR>
+nmap <leader>ji      :action FileStructurePopup<CR>
+nmap <leader>jj      :action AceAction<CR>
+nmap <leader>jl      :action AceLineAction<CR>
+nmap <leader>m=      :action ReformatCode<CR>
+nmap <leader>rR      :action RunClass<CR>
+nmap <leader>rr      :action Run<CR>
+nmap <leader>ss      :action Stop<CR>
+nmap <leader>tb      :action ToggleBookmark<CR>
+nmap <leader>tt      :action ToggleLineBreakpoint<CR>
+nmap gd              :action GotoDeclaration<CR>
+nmap gh              :action QuickJavaDoc<CR>
+nmap gr              :action FindUsages<CR>
+nmap gs              :action GotoSymbol<CR>
+
+vmap <CR>            :<Backspace><Backspace><Backspace><Backspace><Backspace>action RecentFiles<CR>
+vmap <c-i>           :<Backspace><Backspace><Backspace><Backspace><Backspace>action Forward<CR>
+vmap <c-o>           :<Backspace><Backspace><Backspace><Backspace><Backspace>action Back<CR>
+vmap <leader>'       :<Backspace><Backspace><Backspace><Backspace><Backspace>action ActivateTerminalToolWindow<CR>
+vmap <leader><Space> :<Backspace><Backspace><Backspace><Backspace><Backspace>action GotoAction<CR>
+vmap <leader><tab>   :<Backspace><Backspace><Backspace><Backspace><Backspace>action RecentFiles<CR>
+vmap <leader>aa      :<Backspace><Backspace><Backspace><Backspace><Backspace>action $SelectAll<CR>
+vmap <leader>al      :<Backspace><Backspace><Backspace><Backspace><Backspace>actionlist<CR>
+vmap <leader>bb      :<Backspace><Backspace><Backspace><Backspace><Backspace>action RecentFiles<CR>
+vmap <leader>bi      :<Backspace><Backspace><Backspace><Backspace><Backspace>action ActivateStructureToolWindow<CR>
+vmap <leader>bu      :<Backspace><Backspace><Backspace><Backspace><Backspace>action ReopenClosedTab<CR>
+vmap <leader>cc      :<Backspace><Backspace><Backspace><Backspace><Backspace>action GotoClass<CR>
+vmap <leader>dD      :<Backspace><Backspace><Backspace><Backspace><Backspace>action DebugClass<CR>
+vmap <leader>dd      :<Backspace><Backspace><Backspace><Backspace><Backspace>action Debug<CR>
+vmap <leader>ee      :<Backspace><Backspace><Backspace><Backspace><Backspace>action ShowErrorDescription<CR>
+vmap <leader>fT      :<Backspace><Backspace><Backspace><Backspace><Backspace>action SelectInProjectView<CR>
+vmap <leader>fb      :<Backspace><Backspace><Backspace><Backspace><Backspace>action ShowBookmarks<CR>
+vmap <leader>fd      :<Backspace><Backspace><Backspace><Backspace><Backspace>action SmartSearchAction<CR>
+vmap <leader>ff      :<Backspace><Backspace><Backspace><Backspace><Backspace>action SearchEverywhere<CR>
+vmap <leader>fs      :<Backspace><Backspace><Backspace><Backspace><Backspace>action SaveAll<CR>
+vmap <leader>ft      :<Backspace><Backspace><Backspace><Backspace><Backspace>:action ActivateProjectToolWindow<CR>
+vmap <leader>im      :<Backspace><Backspace><Backspace><Backspace><Backspace>action ImplementMethods<CR>
+vmap <leader>ji      :<Backspace><Backspace><Backspace><Backspace><Backspace>action FileStructurePopup<CR>
+vmap <leader>m=      :<Backspace><Backspace><Backspace><Backspace><Backspace>action ReformatCode<CR>
+vmap <leader>rR      :<Backspace><Backspace><Backspace><Backspace><Backspace>action RunClass<CR>
+vmap <leader>rr      :<Backspace><Backspace><Backspace><Backspace><Backspace>action Run<CR>
+vmap <leader>ss      :<Backspace><Backspace><Backspace><Backspace><Backspace>action Stop<CR>
+vmap <leader>tb      :<Backspace><Backspace><Backspace><Backspace><Backspace>action ToggleBookmark<CR>
+vmap <leader>tt      :<Backspace><Backspace><Backspace><Backspace><Backspace>action ToggleLineBreakpoint<CR>
+vmap gd              :<Backspace><Backspace><Backspace><Backspace><Backspace>action GotoDeclaration<CR>
+vmap gr              :<Backspace><Backspace><Backspace><Backspace><Backspace>action FindUsages<CR>
+
+" tab is used in karabiner as <C-i>, <C-d> as delete
+nmap <tab>           :action Forward<CR>
+nmap <delete>        <C-d>
+vmap <tab>           :<Backspace><Backspace><Backspace><Backspace><Backspace>action Forward<CR>
+vmap <delete>        <C-d>
+
+" Reload .ideavimrc
+nmap <leader>R :source ~/.ideavimrc<CR>
+vmap <leader>R :<Backspace><Backspace><Backspace><Backspace><Backspace>source ~/.ideavimrc<CR>
+
+" check the action list
+nmap <leader>al :actionlist<CR>
+vmap <leader>al :a<Backspace><Backspace><Backspace><Backspace><Backspace>ctionlist<CR>
+
+" git
+nmap <leader>gs :action Vcs.QuickListPopupAction<CR>
+vmap <leader>gs :<Backspace><Backspace><Backspace><Backspace><Backspace>action Vcs.QuickListPopupAction<CR>
+nmap <leader>gS :action ActivateVersionControlToolWindow<CR>
+vmap <leader>gS :<Backspace><Backspace><Backspace><Backspace><Backspace>action ActivateVersionControlToolWindow<CR>
+
+" search in project
+nmap <leader>sp :action FindInPath<CR>
+vmap <leader>sp :<Backspace><Backspace><Backspace><Backspace><Backspace>action FindInPath<CR>
+
+" replace in project
+nmap <leader>rp :action ReplaceInPath<CR>
+vmap <leader>rp :<Backspace><Backspace><Backspace><Backspace><Backspace>action FindInPath<CR>
