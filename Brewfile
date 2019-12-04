@@ -66,6 +66,8 @@ cask "adobe-creative-cloud"
 cask "mactex"
 cask "mat"
 cask "appcleaner"
+cask "caffeine"
+cask "paragon-ntfs"
 
 cask "slack"
 cask "spotify"
@@ -75,6 +77,7 @@ cask "keybase"
 cask "intellij-idea"
 cask "alfred"
 cask "bartender"
+
 
 cask "adoptopenjdk/openjdk/adoptopenjdk11"
 brew "maven"

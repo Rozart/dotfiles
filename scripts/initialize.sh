@@ -30,7 +30,7 @@ dash_app_path=$HOME/Applications/Dash.app
 if [ -d $dash_app_path ]; then
   printf "Dash.app already exists in ~/Applications\n"
 else
-  dash_download_url=https://london.kapeli.com/downloads/v4/Dash.zip
+  dash_download_url=https://london.kapeli.com/downloads/v5/Dash.zip
   wget $dash_download_url -O $temp_dir/Dash.zip
   unzip $temp_dir/Dash.zip -d $temp_dir/
   mv $temp_dir/Dash.app $dash_app_path
