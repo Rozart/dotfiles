@@ -116,7 +116,9 @@ values."
                                       spaceline-all-the-icons
                                       company-lsp
                                       kubernetes
-                                      kubernetes-evil)
+                                      kubernetes-evil
+                                      (sunrise-commander :location (recipe :fetcher github :repo "escherdragon/sunrise-commander"))
+                                      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
