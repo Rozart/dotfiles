@@ -68,6 +68,7 @@ cask "mat"
 cask "appcleaner"
 cask "caffeine"
 cask "paragon-ntfs"
+cask "commander-one"
 
 cask "slack"
 cask "spotify"
