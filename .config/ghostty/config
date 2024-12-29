@@ -1,0 +1,23 @@
+theme = "Monokai Soda"
+
+font-family = "Iosevka Nerd Font Mono"
+font-style = "Regular"
+font-style-bold = "Bold"
+font-style-italic = "Light Italic"
+font-style-bold-italic = "Bold Italic"
+font-size = 12
+
+shell-integration = zsh
+
+macos-auto-secure-input = true
+macos-option-as-alt = true
+
+background-opacity = 0.95
+background-blur-radius = 20
+
+window-padding-balance = true
+window-padding-x = 10
+window-padding-y = 10
+
+window-colorspace = "display-p3"
+background = 2d2a2e

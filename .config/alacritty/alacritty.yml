@@ -1,0 +1,7 @@
+scrolling:
+  history: 50000
+
+font:
+  family: Iosevka Nerd Font Mono
+  size: 11
+  style: Regular

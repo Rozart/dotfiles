@@ -1,0 +1,19 @@
+alias e=~/scripts/emacs-run.sh
+alias grep='rg'
+alias ls='exa'
+alias vim='nvim'
+alias vi='nvim'
+alias v='nvim'
+alias man='tldr --theme=base16'
+alias brewup='brew update; brew upgrade; brew prune; brew cleanup; brew doctor'
+
+# tmux aliases
+alias t='tmux'
+alias ta='t a -t'
+alias tls='t ls'
+alias tn='t new -t'
+
+alias dev='cd ~/Dev '
+alias envconf='cd ~/.config/'
+alias wiki='cd /Volumes/home/Wiki/Rozart-Second-Brain/ && nvim .'
+

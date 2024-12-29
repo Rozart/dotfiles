@@ -1,0 +1,30 @@
+# Ignore all files and directories by default
+/*
+# Except for these
+!.fonts/
+.fonts/.DS_Store
+!.gitignore
+!.gitmodules
+!.zshrc
+!.aliases
+!.spacemacs
+!Brewfile
+!.macos
+!.editorconfig
+!.spaceshiprc.zsh
+!spaceship-git-name.sh
+
+# Submodules
+!.oh-my-zsh/
+
+config/
+!.config
+!.config/alacritty/
+!.config/bat/
+!.config/ghostty/
+!.config/kitty/
+!.config/nvim/
+!.config/tmux/
+!.config/tmux-powerline/
+.config/24-bit-color.sh
+
