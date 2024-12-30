@@ -1,3 +1,5 @@
+working-directory = "home"
+
 theme = "Monokai Soda"
 
 font-family = "Iosevka Nerd Font Mono"
@@ -9,15 +11,20 @@ font-size = 12
 
 shell-integration = zsh
 
+fullscreen = true
+macos-non-native-fullscreen = true
 macos-auto-secure-input = true
+macos-secure-input-indication = true
 macos-option-as-alt = true
 
+
+background = 2d2a2e
 background-opacity = 0.95
 background-blur-radius = 20
 
+window-colorspace = "display-p3"
 window-padding-balance = true
 window-padding-x = 10
 window-padding-y = 10
 
-window-colorspace = "display-p3"
-background = 2d2a2e
+

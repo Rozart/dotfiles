@@ -3,6 +3,8 @@ return {
           "loctvl842/monokai-pro.nvim",
           config = function()
                require("monokai-pro").setup({
+                    -- transparent_background = true,
+                    terminal_colors = false,
                     filter = "pro", -- Options: "classic", "octagon", "pro", "machine", "ristretto", "spectrum"
                     devicons = true,
                     styles = {
@@ -16,8 +18,10 @@ return {
                          tag_attribute = { italic = true }, -- attribute of tag in reactjs
                     },
                })
+
+               -- Override highlight for indent lines
           end,
-     }, -- configure LazyVim to load monokai pro
+     },
      {
           "LazyVim/LazyVim",
           opts = {
