@@ -1,15 +1,20 @@
 working-directory = "home"
 
-theme = "Monokai Soda"
+theme = "Sonokai Shusia"
 
-font-family = "Iosevka Nerd Font Mono"
+font-family = ""
+font-family = IosevkaTerm Nerd Font Propo
 font-style = "Regular"
-font-style-bold = "Bold"
-font-style-italic = "Light Italic"
-font-style-bold-italic = "Bold Italic"
+font-style-bold = "ExtraBold"
+font-style-italic = "Italic"
+font-style-bold-italic = "ExtraBold Italic"
 font-size = 12
 
+adjust-underline-position = 4
+adjust-underline-thickness = -1
+
 shell-integration = zsh
+cursor-style = block
 
 fullscreen = true
 macos-non-native-fullscreen = true
@@ -17,8 +22,6 @@ macos-auto-secure-input = true
 macos-secure-input-indication = true
 macos-option-as-alt = true
 
-
-background = 2d2a2e
 background-opacity = 0.95
 background-blur-radius = 20
 
@@ -27,4 +30,4 @@ window-padding-balance = true
 window-padding-x = 10
 window-padding-y = 10
 
-
+bold-is-bright = true

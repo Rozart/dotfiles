@@ -9,4 +9,5 @@ truffle/
 wireshark/
 xnviewmp/
 yarn/
+!nvim/lua/config/
 

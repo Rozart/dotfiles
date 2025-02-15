@@ -1,3 +1,6 @@
+-- stylua: ignore
+if true then return {} end
+
 -- Code stolen from https://github.com/craftzdog/dotfiles-public/blob/master/.config/nvim/lua/craftzdog/discipline.lua
 local M = {}
 

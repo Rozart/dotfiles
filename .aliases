@@ -1,6 +1,6 @@
 alias e=~/scripts/emacs-run.sh
 alias grep='rg'
-alias ls='exa'
+alias ls='eza'
 alias vim='nvim'
 alias vi='nvim'
 alias v='nvim'
@@ -16,4 +16,7 @@ alias tn='t new -t'
 alias dev='cd ~/Dev '
 alias envconf='cd ~/.config/'
 alias wiki='cd /Volumes/home/Wiki/Rozart-Second-Brain/ && nvim .'
+
+alias pl="export LANG=pl_PL.UTF-8 && export LC_ALL=pl_PL.UTF-8"
+alias en="export LANG=en_US.UTF-8 && export LC_ALL=en_US.UTF-8"
 
