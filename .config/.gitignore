@@ -9,5 +9,6 @@ truffle/
 wireshark/
 xnviewmp/
 yarn/
+# tmux/plugins
 !nvim/lua/config/
 
