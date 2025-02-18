@@ -2,17 +2,24 @@ return {
      "saghen/blink.cmp",
      opts = {
           completion = {
+               trigger = {
+                    show_in_snippet = false,
+               },
                documentation = {
                     auto_show = true,
                     auto_show_delay_ms = 200,
                },
+               list = {
+                    selection = {
+                         auto_insert = true,
+                    },
+               },
           },
           keymap = {
-               -- Optionally, keep the default behavior for Ctrl+P and Ctrl+N
-               ["<C-p>"] = { "select_prev", "fallback" },
-               ["<C-n>"] = { "select_next", "fallback" },
-               -- Enter to confirm selection
-               ["<CR>"] = { "select_and_accept", "fallback" },
+               preset = "enter",
+               ["<Tab>"] = { "select_next", "fallback" },
+               ["<S-Tab>"] = { "select_prev", "fallback" },
           },
+          signature = { enabled = true },
      },
 }
