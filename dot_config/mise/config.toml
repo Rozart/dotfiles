@@ -1,0 +1,8 @@
+[tools]
+node = "23"
+python = "3.13.2"
+pnpm = "latest"
+uv = "latest"
+
+[settings]
+python.uv_venv_auto = true

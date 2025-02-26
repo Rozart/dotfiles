@@ -1,0 +1,28 @@
+alias mv='mv -v'
+alias cp='cp -v'
+alias rm='rm -v'
+
+alias cat='bat'
+alias ccat='cat'
+
+alias grep='rg'
+alias ls='eza --group-directories-first --icons'
+alias vim='nvim'
+alias vi='nvim'
+alias v='nvim'
+alias man='tldr --theme=base16'
+alias brewup='brew update; brew upgrade; brew prune; brew cleanup; brew doctor'
+
+# tmux aliases
+alias t='tmux'
+alias ta='t a -t'
+alias tls='t ls'
+alias tn='t new -t'
+
+alias dev='cd ~/Dev '
+alias envconf='cd ~/.config/'
+alias wiki='cd /Documents/Rozart-Second-Brain/ && nvim .'
+
+alias pl="export LANG=pl_PL.UTF-8 && export LC_ALL=pl_PL.UTF-8"
+alias en="export LANG=en_US.UTF-8 && export LC_ALL=en_US.UTF-8"
+
