@@ -1,0 +1,15 @@
+[user]
+  name = Artur Różalski	
+  email = rozart@gmail.com	
+[color]
+	diff = auto
+	status = auto
+	ui = auto
+[core]
+	editor = nvim
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+[commit]
+	gpgsign = true

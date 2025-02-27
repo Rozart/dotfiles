@@ -23,7 +23,7 @@ fullscreen = true
 macos-non-native-fullscreen = true
 macos-auto-secure-input = true
 macos-secure-input-indication = true
-macos-option-as-alt = true
+macos-option-as-alt = left
 
 background-opacity = 0.95
 background-blur-radius = 20

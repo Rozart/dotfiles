@@ -17,7 +17,7 @@ export SPACESHIP_CONFIG="$HOME/.spaceshiprc.zsh"
 plugins=(
     git
     docker
-    fzf
+    # fzf
     zsh-syntax-highlighting
     zsh-autosuggestions
     zsh-completions
@@ -38,12 +38,10 @@ HIST_STAMPS="yyyy-mm-dd"
 source $ZSH/oh-my-zsh.sh
 
 # Additional imports
-[ -f ~/.work.zsh ] && source ~/.work.zsh
 [ -f ~/.api_keys ] && source ~/.api_keys
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-[ -f ~/.data_engineer ] && source ~/.data_engineer
 [ -f ~/.completions ] && source ~/.completions
 [ -f ~/.aliases ] && source ~/.aliases
+
 
 export PATH=$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH
 export PATH=/usr/local/opt/openssl/bin:$PATH
@@ -85,3 +83,8 @@ esac
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 eval "$(/Users/rozart/.local/bin/mise activate zsh)"
 eval "$(zoxide init --cmd cd zsh)"
+
+. "$HOME/.atuin/bin/env"
+eval "$(atuin init zsh)"
+bindkey '^r' atuin-search
+
