@@ -1,7 +1,7 @@
-local base_path = vim.fn.expand("~/Documents/Rozart-Second-Brain/data/")
+local base_path = vim.fn.expand("~/Documents/Rozart-Second-Brain/data")
 
-local dailies_path = base_path .. "00_dailies"
-local templates_path = base_path .. "99_templates"
+local dailies_path = base_path .. "/00_dailies"
+local templates_path = base_path .. "/99_templates"
 
 local images_dir = "98_images"
 
@@ -40,8 +40,9 @@ return {
       home = base_path,
       dailies = dailies_path,
       image_subdir = images_dir,
-      template_new_daily = templates_path .. "daily.md",
-      template_new_note = templates_path .. "note.md",
+      templates = templates_path,
+      template_new_daily = templates_path .. "/daily.md",
+      template_new_note = templates_path .. "/note.md",
       journal_auto_open = true,
       auto_set_filepath = false,
     },

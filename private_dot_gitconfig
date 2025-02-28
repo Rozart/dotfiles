@@ -2,10 +2,13 @@
   name = Artur Różalski	
   email = rozart@gmail.com	
 [color]
-	diff = auto
-	status = auto
-	ui = auto
+	diff = true
+	status = true
+	ui = true
+  interactive = true
+  branch = true
 [core]
+  autocrlf = input
 	editor = nvim
 [gpg]
 	format = ssh

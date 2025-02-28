@@ -2,12 +2,18 @@ return {
   "saghen/blink.cmp",
   opts = {
     completion = {
-      trigger = {
-        show_in_snippet = false,
-      },
       documentation = {
         auto_show = true,
         auto_show_delay_ms = 200,
+        window = { border = "single" },
+      },
+      accept = {
+        auto_brackets = {
+          enabled = true,
+        },
+      },
+      trigger = {
+        show_in_snippet = false,
       },
       list = {
         selection = {
