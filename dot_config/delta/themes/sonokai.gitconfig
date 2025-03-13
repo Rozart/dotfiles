@@ -1,0 +1,31 @@
+[delta "sonokai-shusia"]
+ blame-palette = "#1a181a #211f21 #2d2a2e #37343a #3b383e"
+ commit-decoration-style = "#848089" bold box ul
+ dark = true
+ file-decoration-style = "#848089"
+ file-style = "#e3e1e4"
+ hunk-header-decoration-style = "#848089" box ul
+ hunk-header-file-style = bold
+ hunk-header-line-number-style = bold "#605d68"
+ hunk-header-style = file line-number syntax
+ line-numbers-left-style = "#848089"
+ line-numbers-minus-style = bold "#f85e84"
+ line-numbers-plus-style = bold "#9ecd6f"
+ line-numbers-right-style = "#848089"
+ line-numbers-zero-style = "#848089"
+ # 25% red 75% base
+ minus-emph-style = bold syntax "#55393d"
+ # 10% red 90% base
+ minus-style = syntax "#3b383e"
+ # 25% green 75% base
+ plus-emph-style = bold syntax "#394634"
+ # 10% green 90% base
+ plus-style = syntax "#3b383e"
+ map-styles = \
+ 	bold purple => syntax "#ab9df2", \
+ 	bold blue => syntax "#7accd7", \
+ 	bold cyan => syntax "#78dce8", \
+ 	bold yellow => syntax "#e5c463"
+ # Should match the name of the bat theme
+ syntax-theme = Sonokai Shusia
+  

@@ -1,10 +1,8 @@
-alias mv='mv -v'
-alias cp='cp -v'
-alias rm='rm -v'
+#alias mv='mv -v'
+#alias cp='cp -v'
+#alias rm='rm -v'
 
 alias cat='bat'
-alias ccat='cat'
-
 alias grep='rg'
 alias ls='eza --group-directories-first --icons'
 alias vim='nvim'

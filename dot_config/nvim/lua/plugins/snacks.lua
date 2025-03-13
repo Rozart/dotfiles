@@ -1,34 +1,42 @@
 return {
   {
     "folke/snacks.nvim",
+    keys = {
+      { "<leader>fz", "<Cmd>lua Snacks.picker.zoxide()<Cr>", mode = { "n" }, desc = "Open from Zoxide" },
+    },
     opts = {
-      explorer = {
-        actions = {},
+      animate = {
+        fps = 120,
       },
-      -- picker = {
-      --   layout = {
-      --     preset = "default",
-      --   },
-      --   matcher = {
-      --     frecency = true,
-      --     history_bonus = true,
-      --   },
-      -- },
-      zen = {
-        enter = true,
-        fixbuf = false,
-        minimal = false,
-        width = 120,
-        height = 0,
-        backdrop = { transparent = true, blend = 40 },
-        keys = { q = false },
-        zindex = 40,
+      picker = {
+        matcher = {
+          frecency = true,
+        },
+      },
+      explorer = {
+        git_status_open = true,
+        actions = {},
         wo = {
-          winhighlight = "NormalFloat:Normal",
+          style = {
+            winhighlight = "CursorLine:SnacksPickerListCursorLine",
+          },
         },
-        w = {
-          snacks_main = true,
+      },
+      zen = {
+        toggles = {
+          dim = false,
         },
+        win = {
+          backdrop = { transparent = true, blend = 40 },
+          width = 0.5,
+        },
+        zindex = 40,
+      },
+      indent = {
+        priority = 1,
+        enabled = true,
+        char = "│",
+        only_current = true,
       },
     },
   },

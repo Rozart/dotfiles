@@ -6,12 +6,14 @@ return {
         "nvim-lua/plenary.nvim", -- required
         "sindrets/diffview.nvim", -- optional - Diff integration
       },
-      config = true,
       keys = {
         { "<leader>gg", "<cmd>Neogit<CR>", mode = { "n" }, desc = "Open Neogit (root)" },
         { "<leader>gG", "<cmd>Neogit cwd=<cwd><CR>", mode = { "n" }, desc = "Open Neogit (cwd)" },
       },
       opts = {
+        integrations = {
+          diffview = true,
+        },
         graph_style = "kitty",
         kind = "split",
         auto_show_console = false,

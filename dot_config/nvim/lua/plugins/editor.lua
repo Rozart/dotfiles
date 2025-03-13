@@ -2,14 +2,34 @@ return {
   {
     "windwp/nvim-autopairs",
     event = "InsertEnter",
-    config = true,
-    opts = {},
+    opts = {
+      check_ts = true,
+      fast_wrap = {
+        check_comma = true,
+      },
+    },
+    config = function(_, opts)
+      require("nvim-autopairs").setup(opts)
+    end,
   },
   {
     "echasnovski/mini.pairs",
     enabled = false,
   },
   {
-    "HiPhish/rainbow-delimiters.nvim",
+    "catgoose/nvim-colorizer.lua",
+    config = function()
+      require("colorizer").setup({
+        filetypes = { "*" },
+        user_default_options = {
+          names = false,
+        },
+      })
+    end,
   },
+  -- {
+  --   "stevearc/quicker.nvim",
+  --   event = "FileType qf",
+  --   opts = {},
+  -- },
 }

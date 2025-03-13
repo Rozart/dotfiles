@@ -17,7 +17,7 @@ return {
   -- Telekasten.nvim
   {
     "nvim-telekasten/telekasten.nvim",
-    dependencies = { "nvim-telescope/telescope.nvim", "nvim-telekasten/calendar-vim" },
+    dependencies = { "nvim-telescope/telescope.nvim" },
     keys = {
       { "<leader>zf", "<cmd>Telekasten find_notes<CR>", desc = "Find notes" },
       { "<leader>zg", "<cmd>Telekasten search_notes<CR>", desc = "Grep notes" },
@@ -45,6 +45,7 @@ return {
       template_new_note = templates_path .. "/note.md",
       journal_auto_open = true,
       auto_set_filepath = false,
+      auto_set_filetype = false,
     },
   },
 }
