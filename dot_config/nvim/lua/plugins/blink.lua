@@ -8,7 +8,7 @@ return {
     "saghen/blink.cmp",
     dependencies = {
       "xzbdmw/colorful-menu.nvim",
-      "sainnhe/sonokai",
+      "rozart/sonokai",
       "fang2hou/blink-copilot",
     },
     opts = {
@@ -27,8 +27,9 @@ return {
         menu = {
           max_height = 30,
           min_width = 50,
+          border = "single",
           draw = {
-            columns = { { "label", gap = 1 }, { "kind_icon", "kind" }, { "source_name" } },
+            columns = { { "label", gap = 2 }, { "kind_icon", "kind" }, { "source_name" } },
             components = {
               label = {
                 width = { fill = true },

@@ -9,6 +9,13 @@ return {
     },
   },
   {
+    "dmmulroy/ts-error-translator.nvim",
+    opts = {},
+    config = function(_, opts)
+      require("ts-error-translator").setup(opts)
+    end,
+  },
+  {
     "artemave/workspace-diagnostics.nvim",
     dependencies = {
       "nvim-lspconfig",

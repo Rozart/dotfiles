@@ -1,3 +1,32 @@
+local function git_user()
+  -- Get the directory of the current file
+  local cwd = vim.fn.expand("%:p:h")
+  -- Check if the current file is inside a Git repository by looking for a .git directory
+  local git_dir = vim.fn.finddir(".git", cwd .. ";")
+  if git_dir == "" then
+    return ""
+  end
+
+  local function get_git_value(cmd)
+    local handle = io.popen(cmd .. " 2>/dev/null")
+    if not handle then
+      return ""
+    end
+    local value = handle:read("*a") or ""
+    handle:close()
+    return value:gsub("\n", "")
+  end
+
+  local username = get_git_value("git -C " .. cwd .. " config user.name")
+  local email = get_git_value("git -C " .. cwd .. " config user.email")
+
+  if username == "" and email == "" then
+    return ""
+  end
+
+  return username .. " <" .. email .. ">"
+end
+
 return {
   {
     "SmiteshP/nvim-navic",
@@ -9,6 +38,10 @@ return {
   {
     "nvim-lualine/lualine.nvim",
     opts = function(_, opts)
+      opts.sections.lualine_b = {
+        { git_user },
+        "branch",
+      }
       opts.sections.lualine_c = {
         LazyVim.lualine.root_dir(),
         {

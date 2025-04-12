@@ -17,6 +17,7 @@ Snacks.toggle({
 return {
   {
     "sindrets/diffview.nvim",
+    event = "VeryLazy",
     keys = {
       { "<leader>gH", "<cmd>DiffviewFileHistory --follow %<CR>", mode = { "n" }, desc = "Git File History" },
     },

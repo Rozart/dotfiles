@@ -1,6 +1,3 @@
-[user]
-  name = Artur Różalski	
-  email = rozart@gmail.com	
 [color]
 	diff = true
 	status = true
@@ -16,3 +13,7 @@
 	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
 [commit]
 	gpgsign = true
+[includeIf "hasconfig:remote.*.url:workgit:*"]
+	path = "~/config/git/.gitconfig_work"
+[includeIf "hasconfig:remote.*.url:personalgit:*"]
+	path = "~/config/git/.gitconfig_private"

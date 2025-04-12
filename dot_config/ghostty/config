@@ -3,21 +3,22 @@ working-directory = "home"
 theme = "Sonokai Shusia"
 
 font-family = ""
-font-family = IosevkaTerm Nerd Font Propo
-#font-family = ZedMono Nerd Font Propo
-#font-family = VictorMono Nerd Font Propo
+font-family = Pragmasevka Nerd Font
 font-family-italic = Iosevka Term SS15
+
 font-style = "Regular"
-font-style-bold = "ExtraBold"
-font-style-italic = "Italic"
-font-style-bold-italic = "ExtraBold Italic"
+font-style-bold = "Bold"
+font-style-italic = "Medium Italic"
+font-style-bold-italic = "Bold Italic"
 font-size = 11
 
+# I want the cursor-color to be as bright and visible as possible
+cursor-color = "#03fc07"
 adjust-underline-position = 4
 adjust-underline-thickness = -1
+#adjust-cell-height = 5%
 
-shell-integration = zsh
-cursor-style = block
+shell-integration = detect
 
 fullscreen = true
 
@@ -25,6 +26,7 @@ macos-non-native-fullscreen = true
 macos-auto-secure-input = true
 macos-secure-input-indication = true
 macos-option-as-alt = left
+macos-titlebar-style = transparent
 
 
 

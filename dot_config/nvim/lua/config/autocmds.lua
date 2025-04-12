@@ -15,8 +15,10 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     set_hl("NormalFloat", palette.fg, palette.none)
     set_hl("FloatBorder", palette.grey, palette.none)
     set_hl("FloatTitle", palette.red, palette.bg0, "bold")
+
     set_hl("Italic", palette.fg, palette.none, "italic")
     set_hl("Bold", palette.fg, palette.none, "bold")
+    set_hl("Visual", palette.none, palette.diff_green)
 
     -- Custom highlights for Snacks
     set_hl("SnacksPickerListCursorLine", palette.none, palette.bg2, "bold")
@@ -57,8 +59,9 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     set_hl("TinyInlineDiagnosticVirtualTextArrow", palette.bg4, palette.none, "bold")
 
     -- Custom highlight for blink.cmp
-    set_hl("BlinkCmpMenu", palette.none, palette.none)
-    set_hl("BlinkCmpMenuSelection", palette.bg0, palette.bg_green, "bold")
+    set_hl("BlinkCmpMenu", palette.none, palette.bg0)
+    set_hl("BlinkCmpMenuBorder", palette.green, palette.none)
+    set_hl("BlinkCmpMenuSelection", palette.bg0, palette.yellow, "bold")
     set_hl("BlinkCmpDocBorder", palette.green, palette.none)
     set_hl("BlinkCmpDoc", palette.none, palette.none, "italic")
     set_hl("BlinkCmpDocSeparator", palette.green, palette.none)
@@ -74,5 +77,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 
     -- Custom highlight for calendar-vim
     set_hl("CalNavi", palette.grey, palette.none)
+
+    set_hl("IblScope", palette.purple, palette.none)
   end,
 })

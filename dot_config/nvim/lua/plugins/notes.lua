@@ -7,6 +7,24 @@ local images_dir = "98_images"
 
 return {
   {
+    dir = "~/Dev/nvim-picker-bridge",
+    name = "picker_bridge",
+    lazy = false,
+    keys = {
+      {
+        "<leader>zT",
+        function()
+          local picker_bridge = require("picker_bridge")
+          picker_bridge.picker({
+            title = "Picker bridge",
+            items = { "orange", "blue", "green", "red" },
+          })
+        end,
+        desc = "Picker bridge",
+      },
+    },
+  },
+  {
     "folke/which-key.nvim",
     opts = {
       spec = {

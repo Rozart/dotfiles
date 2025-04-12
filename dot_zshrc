@@ -1,18 +1,35 @@
-#If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:/usr/local/bin:$PATH
+# PATH variables
+OPEN_SSL_BIN=/usr/local/opt/openssl/bin
+CURL_BIN=/usr/local/opt/curl/bin
+CURL_OPENSSL_BIN=/usr/local/opt/curl-openssl/bin
+
+BIN=$HOME/bin
+LOCAL_BIN=/usr/local/bin
+SBIN=/usr/local/sbin
+HOMEBREW_BIN=/opt/homebrew/bin
+
+TOOLS=$HOME/Tools
+
+export PATH=$BIN\
+:$LOCAL_BIN\
+:$SBIN\
+:$HOMEBREW_BIN\
+:$TOOLS\
+:$OPEN_SSL_BIN\
+:$CURL_BIN\
+:$CURL_OPENSSL_BIN\
+:$PATH
+
 
 # General variables
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export EDITOR=nvim
+export EMACS=/opt/homebrew/bin/emacs
 
 # Path to your oh-my-zsh installation.
 export ZSH=~/.oh-my-zsh
 export ZSH_CUSTOM=~/.oh-my-zsh-custom
-
-# Set ZSH theme
-export ZSH_THEME="spaceship"
-export SPACESHIP_CONFIG="$HOME/.spaceshiprc.zsh"
 
 # Plugins
 plugins=(
@@ -23,12 +40,12 @@ plugins=(
     zsh-completions
     gcloud
     zsh-vi-mode
-    spaceship-vi-mode
     mise
     chezmoi
     tmux
     zoxide
     fzf
+    heroku
 )
 
 
@@ -37,7 +54,6 @@ export HIST_STAMPS="yyyy-mm-dd"
 
 function zvm_after_init() {
     zvm_bindkey viins "^R" fzf-history-widget
-    zvm_bindkey viins '^I^I' autosuggest-accept
 }
 
 source $ZSH/oh-my-zsh.sh
@@ -47,19 +63,10 @@ source $ZSH/oh-my-zsh.sh
 [ -f ~/.completions ] && source ~/.completions
 [ -f ~/.aliases ] && source ~/.aliases
 
+export GITCONFIG_WORK=$HOME/.config/git/.gitconfig_work
+export GITCONFIG_PRIVATE=$HOME/.config/git/.gitconfig_private
 
-export PATH=$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH
-export PATH=/usr/local/opt/openssl/bin:$PATH
-export PATH=/usr/local/opt/curl/bin:$PATH
-export PATH=/usr/local/opt/curl-openssl/bin:$PATH
-export PATH=$HOME/.jenv/bin/$PATH
-export TOOLS=$HOME/Tools
 
-export GCLOUD_HOME=$TOOLS/google-cloud-sdk
-export PATH=$GCLOUD_HOME/bin:$PATH
-export CLOUDSDK_PYTHON=$(which python3)
-
-export PATH=$TOOLS:$PATH
 
 # For compilers to find zlib you may need to set:
 export LDFLAGS="${LDFLAGS} -L/usr/local/opt/zlib/lib"
@@ -67,17 +74,15 @@ export CPPFLAGS="${CPPFLAGS} -I/usr/local/opt/zlib/include"
 # For pkg-config to find zlib you may need to set:
 export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}/usr/local/opt/zlib/lib/pkgconfig
 
-export PATH="/usr/local/sbin:$PATH"
-
-
-export PATH="$HOME/.poetry/bin:$PATH"
-export PATH="$PATH:/Users/rozart/.foundry/bin"
-export PATH="/Users/rozart/.local/share/solana/install/active_release/bin:$PATH"
 
 # tabtab source for packages
 # uninstall by removing these lines
 [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . ~/.config/tabtab/zsh/__tabtab.zsh || true
 
-eval "$(/Users/rozart/.local/bin/mise activate zsh)"
 eval "$(zoxide init --cmd cd zsh)"
-
+eval "$(/Users/rozart/.local/bin/mise activate zsh)"
+#
+# Set ZSH theme
+export ZSH_THEME=""
+export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
+eval "$(starship init zsh)"

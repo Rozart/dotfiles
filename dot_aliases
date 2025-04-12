@@ -24,3 +24,6 @@ alias wiki='cd /Documents/Rozart-Second-Brain/ && nvim .'
 alias pl="export LANG=pl_PL.UTF-8 && export LC_ALL=pl_PL.UTF-8"
 alias en="export LANG=en_US.UTF-8 && export LC_ALL=en_US.UTF-8"
 
+alias gitwork="git config --local include.path $GITCONFIG_WORK"
+alias gitprivate="git config --local include.path $GITCONFIG_PRIVATE"
+alias gitpriv="gitprivate"
