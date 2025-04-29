@@ -80,7 +80,7 @@ export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}/usr/local/opt/zlib/lib/pkgconfig
 [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . ~/.config/tabtab/zsh/__tabtab.zsh || true
 
 eval "$(zoxide init --cmd cd zsh)"
-eval "$(/Users/rozart/.local/bin/mise activate zsh)"
+eval "$(~/.local/bin/mise activate zsh)"
 #
 # Set ZSH theme
 export ZSH_THEME=""

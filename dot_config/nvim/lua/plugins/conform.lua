@@ -12,6 +12,7 @@ return {
         ["typescriptreact"] = { "biome" },
         ["json"] = { "biome" },
         ["jsonc"] = { "biome" },
+        ["python"] = { "isort", "ruff" },
       },
     },
   },

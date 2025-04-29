@@ -5,7 +5,6 @@ return {
       { "<leader>fz", "<Cmd>lua Snacks.picker.zoxide()<Cr>", mode = { "n" }, desc = "Open from Zoxide" },
     },
     opts = function()
-      vim.g.snacks_animate = false
       return {
         animate = {
           fps = 120,

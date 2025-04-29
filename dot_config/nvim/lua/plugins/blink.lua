@@ -5,23 +5,53 @@ return {
     enabled = false,
   },
   {
+    "Kaiser-Yang/blink-cmp-git",
+    dependencies = { "nvim-lua/plenary.nvim" },
+  },
+  {
     "saghen/blink.cmp",
     dependencies = {
       "xzbdmw/colorful-menu.nvim",
       "rozart/sonokai",
+      "Kaiser-Yang/blink-cmp-avante",
       "fang2hou/blink-copilot",
     },
     opts = {
       sources = {
+        default = { "lsp", "git", "path", "snippets", "buffer" },
         providers = {
+          git = {
+            module = "blink-cmp-git",
+            name = "Git",
+            enabled = function()
+              return vim.tbl_contains({ "octo", "gitcommit", "markdown" }, vim.bo.filetype)
+            end,
+            opts = {},
+          },
           copilot = {
             module = "blink-copilot",
           },
+        },
+        per_filetype = {
+          codecompanion = { "codecompanion" },
         },
       },
       appearance = {
         use_nvim_cmp_as_default = false,
         nerd_font_variant = "mono",
+      },
+      cmdline = {
+        completion = {
+          menu = {
+            auto_show = true,
+          },
+          ghost_text = {
+            enabled = true,
+          },
+        },
+        keymap = {
+          preset = "inherit",
+        },
       },
       completion = {
         menu = {

@@ -1,7 +1,3 @@
-if status is-interactive
-    # Commands to run in interactive sessions can go here
-end
-
 # Internal-only variables
 set OPEN_SSL_BIN /usr/local/opt/openssl/bin
 set CURL_BIN /usr/local/opt/curl/bin
@@ -34,13 +30,19 @@ set -gx EMACS /opt/homebrew/bin/emacs
 set -fx FZF_DEFAULT_COMMAND 'fd --type file'
 set -gx FZF_CTRL_T_COMMAND $FZF_DEFAULT_COMMAND
 
+set -gx HOMEBREW_PREFIX /opt/homebrew
 set -gx LDFLAGS "$LDFLAGS -L/usr/local/opt/zlib/lib"
 set -gx CPPFLAGS "$CPPFLAGS -I/usr/local/opt/zlib/include"
-set -gx PKG_CONFIG_PATH "$PKG_CONFIG_PATH /usr/local/opt/zlib/lib/pkgconfig"
+set -gx PKG_CONFIG_PATH \
+    /opt/homebrew/bin/pkg-config \
+    (brew --prefix icu4c)/lib/pkgconfig \
+    (brew --prefix curl)/lib/pkgconfig \
+    (brew --prefix icu4c)/lib/pkgconfig \
+    (brew --prefix openssl@3)/lib/pkgconfig \
+    (brew --prefix zlib)/lib/pkgconfig
 
 set -gx STARSHIP_CONFIG ~/.config/starship/starship.toml
 
-fish_vi_key_bindings
 set fish_greeting
 
 set -gx GITCONFIG_WORK ~/.config/git/.gitconfig_work
@@ -54,6 +56,17 @@ if test -f ~/.aliases
     source ~/.aliases
 end
 
-zoxide init fish | source
-starship init fish | source
-~/.local/bin/mise activate fish | source
+if status is-interactive
+    fish_vi_key_bindings
+    set fish_greeting
+    zoxide init fish | source
+    starship init fish | source
+    ~/.local/bin/mise activate fish | source
+end
+
+# pnpm
+set -gx PNPM_HOME /Users/rozart/Library/pnpm
+if not string match -q -- $PNPM_HOME $PATH
+    set -gx PATH "$PNPM_HOME" $PATH
+end
+# pnpm end

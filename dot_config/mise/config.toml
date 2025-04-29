@@ -4,6 +4,9 @@ python = "3.13.2"
 pnpm = "latest"
 uv = "latest"
 poetry = "latest"
+java = "openjdk-21"
+gradle = "latest"
 
 [settings]
 python.uv_venv_auto = true
+experimental = true

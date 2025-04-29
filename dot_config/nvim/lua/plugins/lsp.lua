@@ -34,14 +34,36 @@ return {
             "--stdio",
           },
           filetypes = { "solidity" },
+          ---@diagnostic disable-next-line: deprecated
           root_dir = require("lspconfig").util.find_git_ancestor,
           single_file_support = true,
         },
         gopls = {
           gofumpt = true,
         },
+        basedpyright = {
+          settings = {
+            basedpyright = {
+              analysis = {
+                typeCheckingMode = "standard",
+              },
+            },
+          },
+        },
       },
     },
+  },
+  {
+    "Chaitanyabsprip/fastaction.nvim",
+    opts = {
+      dismiss_keys = { "j", "k", "<c-c>", "q", "<Esc>" },
+      keys = "asdfghlzxcvbnm",
+    },
+    config = function(_, opts)
+      local fastaction = require("fastaction")
+      fastaction.setup(opts)
+      vim.keymap.set({ "n", "x" }, "<leader>ca", fastaction.code_action, { noremap = true, silent = true })
+    end,
   },
   {
     "aznhe21/actions-preview.nvim",
