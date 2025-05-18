@@ -20,6 +20,7 @@ return {
             autoUseWorkspaceTsdk = true,
             completion = {
               enableServerSideFuzzyMatch = true,
+              entriesLimit = 50,
             },
           },
           typescript = {
@@ -53,18 +54,18 @@ return {
       },
     },
   },
-  {
-    "Chaitanyabsprip/fastaction.nvim",
-    opts = {
-      dismiss_keys = { "j", "k", "<c-c>", "q", "<Esc>" },
-      keys = "asdfghlzxcvbnm",
-    },
-    config = function(_, opts)
-      local fastaction = require("fastaction")
-      fastaction.setup(opts)
-      vim.keymap.set({ "n", "x" }, "<leader>ca", fastaction.code_action, { noremap = true, silent = true })
-    end,
-  },
+  -- {
+  --   "Chaitanyabsprip/fastaction.nvim",
+  --   opts = {
+  --     dismiss_keys = { "j", "k", "<c-c>", "q", "<Esc>" },
+  --     keys = "asdfghlzxcvbnm",
+  --   },
+  --   config = function(_, opts)
+  --     local fastaction = require("fastaction")
+  --     fastaction.setup(opts)
+  --     vim.keymap.set({ "n", "x" }, "<leader>ca", fastaction.code_action, { noremap = true, silent = true })
+  --   end,
+  -- },
   {
     "aznhe21/actions-preview.nvim",
     opts = {

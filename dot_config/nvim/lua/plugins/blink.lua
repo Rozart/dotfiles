@@ -54,6 +54,10 @@ return {
         },
       },
       completion = {
+        ghost_text = {
+          enabled = true,
+          show_with_menu = false,
+        },
         menu = {
           max_height = 30,
           min_width = 50,
@@ -96,8 +100,6 @@ return {
       },
       keymap = {
         preset = "enter",
-        ["<Tab>"] = { "select_next", "fallback" },
-        ["<S-Tab>"] = { "select_prev", "fallback" },
       },
     },
   },
