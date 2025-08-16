@@ -20,16 +20,28 @@ return {
       sources = {
         default = { "lsp", "git", "path", "snippets", "buffer" },
         providers = {
+          lsp = {
+            score_offset = 5,
+          },
+          path = {
+            score_offset = 1,
+          },
+          snippets = {
+            score_offset = 2,
+          },
+          buffer = { score_offset = 4 },
+          copilot = {
+            module = "blink-copilot",
+            score_offset = 3,
+          },
           git = {
+            score_offset = 4,
             module = "blink-cmp-git",
             name = "Git",
             enabled = function()
               return vim.tbl_contains({ "octo", "gitcommit", "markdown" }, vim.bo.filetype)
             end,
             opts = {},
-          },
-          copilot = {
-            module = "blink-copilot",
           },
         },
         per_filetype = {

@@ -6,6 +6,7 @@ uv = "latest"
 poetry = "latest"
 java = "openjdk-21"
 gradle = "latest"
+go = "latest"
 
 [settings]
 python.uv_venv_auto = true

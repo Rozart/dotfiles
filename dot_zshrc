@@ -7,6 +7,7 @@ BIN=$HOME/bin
 LOCAL_BIN=/usr/local/bin
 SBIN=/usr/local/sbin
 HOMEBREW_BIN=/opt/homebrew/bin
+SSH_AUTH_SOCK=/home/rozart/.1password/agent.sock
 
 TOOLS=$HOME/Tools
 

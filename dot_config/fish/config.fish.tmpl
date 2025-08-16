@@ -6,7 +6,10 @@ set CURL_OPENSSL_BIN /usr/local/opt/curl-openssl/bin
 set BIN $HOME/bin
 set LOCAL_BIN /usr/local/bin
 set SBIN /usr/local/sbin
+
+{{ if eq .chezmoi.os "darwin" }}
 set HOMEBREW_BIN /opt/homebrew/bin
+{{ end }}
 set TOOLS $HOME/Tools
 
 # Only export PATH
@@ -25,11 +28,15 @@ set -gx PATH \
 set -gx LANG en_US.UTF-8
 set -gx LC_ALL en_US.UTF-8
 set -gx EDITOR nvim
+
+{{ if eq .chezmoi.os "darwin" }}
 set -gx EMACS /opt/homebrew/bin/emacs
+{{ end }}
 
 set -fx FZF_DEFAULT_COMMAND 'fd --type file'
 set -gx FZF_CTRL_T_COMMAND $FZF_DEFAULT_COMMAND
 
+{{ if eq .chezmoi.os "darwin" }}
 set -gx HOMEBREW_PREFIX /opt/homebrew
 set -gx LDFLAGS "$LDFLAGS -L/usr/local/opt/zlib/lib"
 set -gx CPPFLAGS "$CPPFLAGS -I/usr/local/opt/zlib/include"
@@ -40,6 +47,7 @@ set -gx PKG_CONFIG_PATH \
     (brew --prefix icu4c)/lib/pkgconfig \
     (brew --prefix openssl@3)/lib/pkgconfig \
     (brew --prefix zlib)/lib/pkgconfig
+{{ end }}
 
 set -gx STARSHIP_CONFIG ~/.config/starship/starship.toml
 
@@ -61,11 +69,22 @@ if status is-interactive
     set fish_greeting
     zoxide init fish | source
     starship init fish | source
+    {{ if eq .chezmoi.os "darwin" }}
     ~/.local/bin/mise activate fish | source
+    {{ end }}
+    {{ if eq .chezmoi.os "linux" }}
+    /usr/bin/mise activate fish | source
+    {{ end }}
 end
 
 # pnpm
+
+{{ if eq .chezmoi.os "darwin" }}
 set -gx PNPM_HOME /Users/rozart/Library/pnpm
+{{ end }}
+{{ if eq .chezmoi.os "linux" }}
+set -gx PNPM_HOME /home/rozart/.local/share/pnpm
+{{ end }}
 if not string match -q -- $PNPM_HOME $PATH
     set -gx PATH "$PNPM_HOME" $PATH
 end
