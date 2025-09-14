@@ -1,5 +1,7 @@
 working-directory = "home"
 
+auto-update-channel = tip
+
 theme = "Sonokai Shusia"
 
 font-family = ""
@@ -10,7 +12,14 @@ font-style = "Regular"
 font-style-bold = "Bold"
 font-style-italic = "Medium Italic"
 font-style-bold-italic = "Bold Italic"
+
+{{ if eq .chezmoi.os "darwin" }}
+font-size = 11
+{{ end }}
+
+{{ if eq .chezmoi.os "linux" }}
 font-size = 8.5
+{{ end }}
 
 # I want the cursor-color to be as bright and visible as possible
 cursor-color = "#03fc07"
@@ -21,14 +30,16 @@ adjust-underline-thickness = -1
 shell-integration = detect
 
 {{ if eq .chezmoi.os "darwin" }}
-fullscreen = true
-macos-non-native-fullscreen = true
+fullscreen = false
+macos-non-native-fullscreen = false
 macos-auto-secure-input = true
 macos-secure-input-indication = true
 macos-option-as-alt = left
 macos-titlebar-style = transparent
 
 window-colorspace = "display-p3"
+
+custom-shader = shaders/cursor_smear_fade.glsl
 {{ end }}
 
 background-opacity = 0.93
