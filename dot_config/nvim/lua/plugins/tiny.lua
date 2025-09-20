@@ -1,25 +1,4 @@
 return {
-  -- {
-  --   "rachartier/tiny-code-action.nvim",
-  --   event = "LspAttach",
-  --   dependencies = {
-  --     { "nvim-lua/plenary.nvim" },
-  --     { "nvim-telescope/telescope.nvim" },
-  --   },
-  --   opts = {
-  --     backend = "vim",
-  -- telescope_opts = {
-  --   layout_strategy = "horizontal",
-  --   layout_config = {
-  --     width = 0.6,
-  --     preview_width = 0.6,
-  --   },
-  -- },
-  --   },
-  --   config = function(_, opts)
-  --     require("tiny-code-action").setup(opts)
-  --   end,
-  -- },
   {
     "rachartier/tiny-inline-diagnostic.nvim",
     priority = 2000,
