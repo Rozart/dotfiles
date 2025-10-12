@@ -1,5 +1,4 @@
 return {
-  { import = "lazyvim.plugins.extras.ai.copilot" },
   {
     "giuxtaposition/blink-cmp-copilot",
     enabled = false,
