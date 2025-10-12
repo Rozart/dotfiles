@@ -54,18 +54,6 @@ return {
       },
     },
   },
-  -- {
-  --   "Chaitanyabsprip/fastaction.nvim",
-  --   opts = {
-  --     dismiss_keys = { "j", "k", "<c-c>", "q", "<Esc>" },
-  --     keys = "asdfghlzxcvbnm",
-  --   },
-  --   config = function(_, opts)
-  --     local fastaction = require("fastaction")
-  --     fastaction.setup(opts)
-  --     vim.keymap.set({ "n", "x" }, "<leader>ca", fastaction.code_action, { noremap = true, silent = true })
-  --   end,
-  -- },
   {
     "aznhe21/actions-preview.nvim",
     opts = {
@@ -81,10 +69,4 @@ return {
       require("actions-preview").setup(opts)
     end,
   },
-  -- {
-  --   "zeioth/garbage-day.nvim",
-  --   dependencies = "neovim/nvim-lspconfig",
-  --   event = "VeryLazy",
-  --   opts = {},
-  -- },
 }
