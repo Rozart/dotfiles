@@ -52,10 +52,10 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.util.dot" },
     { import = "lazyvim.plugins.extras.util.project" },
     { import = "lazyvim.plugins.extras.util.startuptime" },
+
     -- import/override with your plugins
     { import = "plugins" },
     { import = "plugins/langs" },
-    { import = "plugins/ai" },
   },
   defaults = {
     -- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.
@@ -84,5 +84,8 @@ require("lazy").setup({
         "zipPlugin",
       },
     },
+  },
+  rocks = {
+    enabled = false,
   },
 })

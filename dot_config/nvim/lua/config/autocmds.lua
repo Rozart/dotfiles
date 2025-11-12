@@ -75,6 +75,8 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     set_hl("tkTagSep", palette.grey, palette.none)
     set_hl("tkAliasedLink", palette.orange, palette.none, "undercurl,bold")
 
+    set_hl("BlinkIndent", palette.bg1, palette.none)
+
     -- Custom highlight for calendar-vim
     set_hl("CalNavi", palette.grey, palette.none)
 

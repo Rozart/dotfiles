@@ -43,7 +43,7 @@ return {
         indent = {
           priority = 1,
           char = "│",
-          enabled = true,
+          enabled = false,
           only_current = true,
           only_scope = true,
           scope = {

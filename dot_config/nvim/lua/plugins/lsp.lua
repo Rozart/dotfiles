@@ -2,20 +2,48 @@ return {
   {
     "neovim/nvim-lspconfig",
     init = function()
-      local keys = require("lazyvim.plugins.lsp.keymaps").get()
-      keys[#keys + 1] = { "<leader>ca", false }
-      keys[#keys + 1] = { "<leader>cA", false }
-      vim.keymap.set("n", "<leader>ca", function()
-        require("actions-preview").code_actions()
-      end, { noremap = false, silent = true, desc = "Code action [tiny]" })
-      vim.keymap.set("n", "<leader>cA", function()
-        require("actions-preview").code_actions({ context = { only = { "source" } } })
-      end, { noremap = true, silent = true, desc = "Source action [tiny]" })
       vim.diagnostic.config({ virtual_text = false })
     end,
     opts = {
       servers = {
+        ["*"] = {
+          keys = {
+            {
+              "<leader>ca",
+              function()
+                require("actions-preview").code_actions()
+              end,
+              desc = "Source action [tiny]",
+            },
+            {
+              "<leader>cA",
+              function()
+                require("actions-preview").code_actions({ context = { only = { "source" } } })
+              end,
+              desc = "Source action [tiny]",
+            },
+          },
+        },
+        eslint = {
+          filetypes = {
+            "javascript",
+            "javascriptreact",
+            "javascript.jsx",
+            "typescript",
+            "typescriptreact",
+            "typescript.tsx",
+            "vue",
+            "svelte",
+            "astro",
+            "htmlangular",
+            "json",
+            "jsonc",
+          },
+        },
         vtsls = {
+          settings = {
+            typescript = {},
+          },
           experimental = {
             autoUseWorkspaceTsdk = true,
             completion = {
@@ -27,8 +55,19 @@ return {
             tsserver = {
               maxTsServerMemory = 16384,
             },
+            preferences = {
+              includeCompletionsForModuleExports = true,
+              includeCompletionsForImportStatements = true,
+              importModuleSpecifier = "non-relative",
+              importModuleSpecifierPreference = "non-relative",
+              importModuleSpecifierEnding = "minimal",
+            },
+            suggest = {
+              includeCompletionsForModuleExports = true,
+            },
           },
         },
+        copilot = {},
         solidity = {
           cmd = {
             "nomicfoundation-solidity-language-server",

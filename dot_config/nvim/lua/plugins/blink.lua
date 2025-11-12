@@ -1,24 +1,28 @@
 return {
   {
-    "giuxtaposition/blink-cmp-copilot",
-    enabled = false,
-  },
-  {
     "Kaiser-Yang/blink-cmp-git",
     dependencies = { "nvim-lua/plenary.nvim" },
   },
+  { "fang2hou/blink-copilot", opts = {} },
   {
     "saghen/blink.cmp",
     dependencies = {
       "xzbdmw/colorful-menu.nvim",
       "rozart/sonokai",
-      "Kaiser-Yang/blink-cmp-avante",
       "fang2hou/blink-copilot",
     },
     opts = {
       sources = {
-        default = { "lsp", "git", "path", "snippets", "buffer" },
+        default = { "copilot", "lsp", "git", "path", "snippets", "buffer" },
         providers = {
+          copilot = {
+            score_offset = 7,
+            module = "blink-copilot",
+            async = true,
+            opts = {
+              max_completions = 2,
+            },
+          },
           lsp = {
             score_offset = 5,
           },
@@ -29,10 +33,6 @@ return {
             score_offset = 2,
           },
           buffer = { score_offset = 4 },
-          copilot = {
-            module = "blink-copilot",
-            score_offset = 3,
-          },
           git = {
             score_offset = 4,
             module = "blink-cmp-git",
@@ -42,9 +42,6 @@ return {
             end,
             opts = {},
           },
-        },
-        per_filetype = {
-          codecompanion = { "codecompanion" },
         },
       },
       appearance = {
