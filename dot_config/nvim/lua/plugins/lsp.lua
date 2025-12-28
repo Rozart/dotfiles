@@ -61,6 +61,7 @@ return {
               importModuleSpecifier = "non-relative",
               importModuleSpecifierPreference = "non-relative",
               importModuleSpecifierEnding = "minimal",
+              noErrorTruncation = true,
             },
             suggest = {
               includeCompletionsForModuleExports = true,
@@ -68,16 +69,6 @@ return {
           },
         },
         copilot = {},
-        solidity = {
-          cmd = {
-            "nomicfoundation-solidity-language-server",
-            "--stdio",
-          },
-          filetypes = { "solidity" },
-          ---@diagnostic disable-next-line: deprecated
-          root_dir = require("lspconfig").util.find_git_ancestor,
-          single_file_support = true,
-        },
         gopls = {
           gofumpt = true,
         },

@@ -30,7 +30,7 @@ return {
             score_offset = 1,
           },
           snippets = {
-            score_offset = 2,
+            score_offset = 6,
           },
           buffer = { score_offset = 4 },
           git = {
@@ -63,7 +63,7 @@ return {
       },
       completion = {
         ghost_text = {
-          enabled = true,
+          enabled = false,
           show_with_menu = false,
         },
         menu = {

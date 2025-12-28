@@ -1,4 +1,5 @@
 return {
+  { "mfussenegger/nvim-jdtls", enabled = false },
   {
     "nvim-java/nvim-java",
     config = false,

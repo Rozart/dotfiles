@@ -11,6 +11,9 @@ return {
       require("tiny-inline-diagnostic").setup({
         preset = "powerline",
         options = {
+          show_source = {
+            enabled = true,
+          },
           use_icons_from_diagnostic = true,
         },
       })

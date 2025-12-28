@@ -7,6 +7,7 @@ local with = context_manager.with
 
 local config = {
   dailies_dir = vim.fn.expand("~/Documents/Rozart-Second-Brain/data/00_dailies"),
+  template_path = vim.fn.expand("~/Documents/Rozart-Second-Brain/data/99_templates/daily.md"),
   header = {
     prefix = "##",
   },
@@ -34,22 +35,57 @@ function M.get_current_daily_note_path()
   return string.format("%s/%s.md", config.dailies_dir, date)
 end
 
+function M.ensure_daily_exists(file_path)
+  if vim.fn.filereadable(file_path) == 1 then
+    return true
+  end
+
+  -- Read template
+  if vim.fn.filereadable(config.template_path) ~= 1 then
+    vim.notify("Template not found: " .. config.template_path, vim.log.levels.WARN)
+    return false
+  end
+
+  local template_content = with(open(config.template_path, "r"), function(file)
+    return file:read("*a")
+  end)
+
+  -- Replace {{date}} placeholder with today's date
+  local date = os.date("%Y-%m-%d")
+  template_content = template_content:gsub("{{date}}", date)
+
+  -- Write new daily file
+  with(open(file_path, "w"), function(file)
+    file:write(template_content)
+  end)
+
+  local filename = vim.fn.fnamemodify(file_path, ":t")
+  vim.notify("✓ Created " .. filename, vim.log.levels.INFO)
+  return true
+end
+
 function M.find_md_header(name, file_path)
   local ripgrep_cmd = string.format("rg --vimgrep '^## %s' %s", name, file_path)
   return vim.fn.systemlist(ripgrep_cmd)
 end
 
 function M.add_entry_for_header(name, prefix, prefix_pattern, header_prefix, content, file_path)
+  -- Ensure daily note exists (create from template if needed)
+  if not M.ensure_daily_exists(file_path) then
+    vim.notify("Failed to create daily note", vim.log.levels.ERROR)
+    return
+  end
+
   local header = M.find_md_header(name, file_path)
   if #header == 0 then
-    print("Header not found")
+    vim.notify("Header not found: " .. name, vim.log.levels.ERROR)
     return
   end
 
   -- Extract line number correctly
   local line_number = string.match(header[1], ":(%d+):")
   if not line_number then
-    print("Failed to parse line number")
+    vim.notify("Failed to parse line number", vim.log.levels.ERROR)
     return
   end
 
@@ -98,6 +134,10 @@ function M.add_entry_for_header(name, prefix, prefix_pattern, header_prefix, con
   if buf_exists ~= -1 then
     vim.cmd("checktime")
   end
+
+  -- Success notification
+  local filename = vim.fn.fnamemodify(file_path, ":t")
+  vim.notify("✓ Added to " .. filename, vim.log.levels.INFO)
 end
 
 function M.add_braindump_entry(content)

@@ -1,0 +1,24 @@
+{
+	"React Component Function": {
+		"prefix": "rcomp",
+		"body": [
+			"import { ReactElement } from \"react\";",
+			"",
+			"export interface ${1:ComponentName}Properties {",
+			"\tclassName?: string;",
+			"\t$0",
+			"}",
+			"",
+			"export function ${1:ComponentName}({",
+			"\tclassName,",
+			"}: Readonly<${1:ComponentName}Properties>): ReactElement {",
+			"\treturn (",
+			"\t\t<div className={className}>",
+			"\t\t\t$2",
+			"\t\t</div>",
+			"\t);",
+			"}"
+		],
+		"description": "Standard React Component with Readonly properties and ReactElement return type."
+	}
+}

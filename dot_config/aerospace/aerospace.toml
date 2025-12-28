@@ -95,6 +95,13 @@ run = "move-node-to-workspace 12"
 if.app-id = "com.automattic.beeper.desktop"
 run = "move-node-to-workspace 12"
 
+[[on-window-detected]]
+if.app-id = "com.mitchellh.ghostty"
+run = [
+    "layout tiling", 
+    "move-node-to-workspace 1"
+]
+
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 # 'main' binding mode must be always presented

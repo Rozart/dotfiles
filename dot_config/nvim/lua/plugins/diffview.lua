@@ -28,6 +28,8 @@ return {
           layout = "diff2_horizontal",
         },
         merge_tool = {
+          disable_diagnostics = false,
+          winbar_info = true,
           layout = "diff3_horizontal",
         },
         file_history = {

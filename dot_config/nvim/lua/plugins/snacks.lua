@@ -10,6 +10,8 @@ return {
           fps = 120,
         },
         picker = {
+          exclude = { ".git", "node_modules", "venv", "__pycache__", ".nx", ".rollup.cache", "dist" },
+
           matcher = {
             frecency = true,
           },
