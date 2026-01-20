@@ -1,0 +1,6 @@
+[commit]
+	gpgsign = true
+[user]
+  name = Artur Różalski	
+  email = artur.rozalski@programium.com	
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICkf2BmN6P8VpMQ8ok/1/zcDRKTZ7xpPN+XHMPqdzlVK

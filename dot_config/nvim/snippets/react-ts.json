@@ -1,24 +1,47 @@
 {
-	"React Component Function": {
-		"prefix": "rcomp",
-		"body": [
-			"import { ReactElement } from \"react\";",
-			"",
-			"export interface ${1:ComponentName}Properties {",
-			"\tclassName?: string;",
-			"\t$0",
-			"}",
-			"",
-			"export function ${1:ComponentName}({",
-			"\tclassName,",
-			"}: Readonly<${1:ComponentName}Properties>): ReactElement {",
-			"\treturn (",
-			"\t\t<div className={className}>",
-			"\t\t\t$2",
-			"\t\t</div>",
-			"\t);",
-			"}"
-		],
-		"description": "Standard React Component with Readonly properties and ReactElement return type."
-	}
+  "React Component Function": {
+    "prefix": "rcomp",
+    "body": [
+      "import { type ReactElement } from \"react\";",
+      "",
+      "export interface ${1:ComponentName}Properties {",
+      "\tclassName?: string;",
+      "\t$0",
+      "}",
+      "",
+      "export function ${1:ComponentName}({",
+      "\tclassName,",
+      "}: Readonly<${1:ComponentName}Properties>): ReactElement {",
+      "\treturn (",
+      "\t\t<div className={className}>",
+      "\t\t\t$2",
+      "\t\t</div>",
+      "\t);",
+      "}"
+    ],
+    "description": "Standard React Component with Readonly properties and ReactElement return type."
+  },
+  "React Hook Standard": {
+    "prefix": "rhook",
+    "body": [
+      "export interface ${1:HookName}Properties {",
+      "\t$2",
+      "}",
+      "",
+      "export interface ${1:HookName}ReturnType {",
+      "\t$3",
+      "}",
+      "",
+      "export function ${1:HookName}({",
+      "\t$4",
+      "}: Readonly<${1:HookName}Properties>): ${1:HookName}ReturnType {",
+      "\t$0",
+      "",
+      "\treturn {",
+      "\t\t",
+      "\t};",
+      "}"
+    ],
+    "description": "General Hook with Readonly properties and explicit ReturnType interface."
+  }
 }

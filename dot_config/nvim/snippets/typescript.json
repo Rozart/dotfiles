@@ -1,0 +1,25 @@
+{
+  "React Hook Standard": {
+    "prefix": "rhook",
+    "body": [
+      "export interface ${1:HookName}Properties {",
+      "\t$2",
+      "}",
+      "",
+      "export interface ${1:HookName}ReturnType {",
+      "\t$3",
+      "}",
+      "",
+      "export function ${1:HookName}({",
+      "\t$4",
+      "}: Readonly<${1:HookName}Properties>): ${1:HookName}ReturnType {",
+      "\t$0",
+      "",
+      "\treturn {",
+      "\t\t",
+      "\t};",
+      "}"
+    ],
+    "description": "General Hook with Readonly properties and explicit ReturnType interface."
+  }
+}

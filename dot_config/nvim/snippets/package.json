@@ -1,13 +1,19 @@
 {
-	"name": "rozart-snippets",
-	"contributes": {
-		"snippets": [
-			{
-				"language": [
-					"typescriptreact"
-				],
-				"path": "./react-ts.json"
-			}
-		]
-	}
+  "name": "rozart-snippets",
+  "contributes": {
+    "snippets": [
+      {
+        "language": [
+          "typescriptreact"
+        ],
+        "path": "./react-ts.json"
+      },
+      {
+        "language": [
+          "typescript"
+        ],
+        "path": "./typescript.json"
+      }
+    ]
+  }
 }
