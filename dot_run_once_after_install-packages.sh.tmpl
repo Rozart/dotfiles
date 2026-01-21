@@ -1,0 +1,40 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/bin/bash
+
+echo "Installing development tools (chezmoi script)..."
+
+if ! command -v docker &>/dev/null; then
+	echo "Installing Docker"
+	sudo install -m 0755 -d /etc/apt/keyrings
+	sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+	echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+	sudo apt update && sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+	sudo usermod -aG docker $USER
+fi
+
+echo "Installing cli tools"
+sudo apt install -y ripgrep tmux bat btop fzf zoxide
+
+mkdir -p ~/.local/bin
+ln -sf /usr/bin/batcat ~/.local/bin/bat
+
+if ! command -v eza &>/dev/null; then
+	echo "Installing eza"
+	sudo mkdir -p /etc/apt/keyrings
+	wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+	echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+	sudo apt update && sudo apt install -y eza
+fi
+
+if ! command -v mise &>/dev/null; then
+	echo "Installing mise"
+	curl https://mise.jdx.dev/install.sh | sh
+fi
+
+if ! command -v lazydocker &>/dev/null; then
+	echo "Installing lazydocker"
+	curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
+fi
+
+echo "Installation complete"
+{{ end -}}
