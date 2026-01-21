@@ -4,17 +4,16 @@ set CURL_BIN /usr/local/opt/curl/bin
 set CURL_OPENSSL_BIN /usr/local/opt/curl-openssl/bin
 
 set BIN $HOME/bin
+set USER_LOCAL_BIN $HOME/.local/bin
 set LOCAL_BIN /usr/local/bin
 set SBIN /usr/local/sbin
-
-{{ if eq .chezmoi.os "darwin" }}
-set HOMEBREW_BIN /opt/homebrew/bin
-{{ end }}
-set TOOLS $HOME/Tools
+{ { if eq .chezmoi.os darwin } set HOMEBREW_BIN /opt/homebrew/bin
+        { { end } set TOOLS $HOME/Tools
 
 # Only export PATH
 set -gx PATH \
     $BIN \
+    $USER_LOCAL_BIN \
     $LOCAL_BIN \
     $SBIN \
     $HOMEBREW_BIN \
@@ -28,28 +27,20 @@ set -gx PATH \
 set -gx LANG en_US.UTF-8
 set -gx LC_ALL en_US.UTF-8
 set -gx EDITOR nvim
-
-{{ if eq .chezmoi.os "darwin" }}
-set -gx EMACS /opt/homebrew/bin/emacs
-{{ end }}
-
-set -fx FZF_DEFAULT_COMMAND 'fd --type file'
+{ { if eq .chezmoi.os darwin } set -gx EMACS /opt/homebrew/bin/emacs
+        { { end } set -fx FZF_DEFAULT_COMMAND 'fd --type file'
 set -gx FZF_CTRL_T_COMMAND $FZF_DEFAULT_COMMAND
-
-{{ if eq .chezmoi.os "darwin" }}
-set -gx HOMEBREW_PREFIX /opt/homebrew
-set -gx LDFLAGS "$LDFLAGS -L/usr/local/opt/zlib/lib"
-set -gx CPPFLAGS "$CPPFLAGS -I/usr/local/opt/zlib/include"
-set -gx PKG_CONFIG_PATH \
-    /opt/homebrew/bin/pkg-config \
-    (brew --prefix icu4c)/lib/pkgconfig \
-    (brew --prefix curl)/lib/pkgconfig \
-    (brew --prefix icu4c)/lib/pkgconfig \
-    (brew --prefix openssl@3)/lib/pkgconfig \
-    (brew --prefix zlib)/lib/pkgconfig
-{{ end }}
-
-set -gx STARSHIP_CONFIG ~/.config/starship/starship.toml
+{ { if eq .chezmoi.os darwin } set -gx HOMEBREW_PREFIX /opt/homebrew
+        set -gx LDFLAGS "$LDFLAGS -L/usr/local/opt/zlib/lib"
+        set -gx CPPFLAGS "$CPPFLAGS -I/usr/local/opt/zlib/include"
+        set -gx PKG_CONFIG_PATH \
+            /opt/homebrew/bin/pkg-config \
+            (brew --prefix icu4c)/lib/pkgconfig \
+            (brew --prefix curl)/lib/pkgconfig \
+            (brew --prefix icu4c)/lib/pkgconfig \
+            (brew --prefix openssl@3)/lib/pkgconfig \
+            (brew --prefix zlib)/lib/pkgconfig
+        { { end } set -gx STARSHIP_CONFIG ~/.config/starship/starship.toml
 
 set fish_greeting
 
@@ -69,23 +60,11 @@ if status is-interactive
     set fish_greeting
     zoxide init fish | source
     starship init fish | source
-    {{ if eq .chezmoi.os "darwin" }}
-    ~/.local/bin/mise activate fish | source
-    {{ end }}
-    {{ if eq .chezmoi.os "linux" }}
-    /usr/bin/mise activate fish | source
-    {{ end }}
-end
-
-# pnpm
-
-{{ if eq .chezmoi.os "darwin" }}
-set -gx PNPM_HOME /Users/rozart/Library/pnpm
-{{ end }}
-{{ if eq .chezmoi.os "linux" }}
-set -gx PNPM_HOME /home/rozart/.local/share/pnpm
-{{ end }}
-if not string match -q -- $PNPM_HOME $PATH
-    set -gx PATH "$PNPM_HOME" $PATH
+    { { if eq .chezmoi.os darwin } mise activate fish | source
+            { { end { { if eq .chezmoi.os linux } mise activate fish | source
+{ { { { if eq .chezmoi.os darwin } set -gx PNPM_HOME /Users/rozart/Library/pnpm
+{ { { { if eq .chezmoi.os linux } set -gx PNPM_HOME /home/rozart/.local/share/pnpm
+{ { end } if not string match -q -- $PNPM_HOME $PATH
+set -gx PATH "$PNPM_HOME" $PATH
 end
 # pnpm end
