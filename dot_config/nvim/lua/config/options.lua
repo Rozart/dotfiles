@@ -16,3 +16,4 @@ vim.g.lazyvim_python_lsp = "basedpyright"
 vim.g.lazyvim_python_ruff = "ruff"
 -- vim.o.tabstop = 4
 -- vim.o.shiftwidth = 4
+vim.opt.clipboard = "unnamedplus"

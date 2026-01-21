@@ -2,7 +2,6 @@
 #alias cp='cp -v'
 #alias rm='rm -v'
 
-alias cd='z'
 alias cat='bat'
 alias grep='rg'
 alias ls='eza --group-directories-first --icons'
@@ -11,6 +10,7 @@ alias vi='nvim'
 alias v='nvim'
 alias man='tldr --theme=base16'
 alias brewup='brew update; brew upgrade; brew prune; brew cleanup; brew doctor'
+alias docker-compose='docker compose'
 
 # tmux aliases
 alias t='tmux'
