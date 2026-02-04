@@ -3,6 +3,7 @@ return {
     "folke/snacks.nvim",
     keys = {
       { "<leader>fz", "<Cmd>lua Snacks.picker.zoxide()<Cr>", mode = { "n" }, desc = "Open from Zoxide" },
+      { "<leader>ss", false },
     },
     opts = function()
       return {
@@ -16,9 +17,12 @@ return {
             frecency = true,
           },
           sources = {
+            lsp_symbols = { enabled = false },
+            lsp_workspace_symbols = { enabled = false },
             explorer = {
               layout = {
                 layout = { width = 60 },
+                auto_hide = { "input" },
               },
             },
           },

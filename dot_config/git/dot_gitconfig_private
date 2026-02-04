@@ -1,6 +1,13 @@
+[user]
+  name = Artur Różalski
+  email = rozart@gmail.com
+  signingkey = ~/.ssh/id_git_private_signing.pub
+
+[gpg]
+  format = ssh
+
+[gpg "ssh"]
+  allowedSignersFile = ~/.config/git/allowed_signers
+
 [commit]
 	gpgsign = true
-[user]
-  name = Artur Różalski	
-  email = rozart@gmail.com	
-	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPYtE4M92Obgl4xd9sUzzkYM/+53kZlZc5sJ2o+bOuCO

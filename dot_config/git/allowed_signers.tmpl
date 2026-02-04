@@ -1,0 +1,8 @@
+{{- $privateKey := joinPath .chezmoi.homeDir ".ssh/id_git_private_signing.pub" -}}
+{{- $workKey := joinPath .chezmoi.homeDir ".ssh/id_git_work_signing.pub" -}}
+{{- if stat $privateKey -}}
+rozart@gmail.com {{ include $privateKey | trim }}
+{{ end -}}
+{{- if stat $workKey -}}
+artur.rozalski@programium.com {{ include $workKey | trim }}
+{{ end -}}

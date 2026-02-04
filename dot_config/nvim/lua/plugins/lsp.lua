@@ -8,6 +8,7 @@ return {
       servers = {
         ["*"] = {
           keys = {
+            { "<leader>ss", false }, -- use namu instead
             {
               "<leader>ca",
               function()
@@ -25,6 +26,32 @@ return {
           },
         },
         eslint = {
+          -- Monorepo markers first to avoid multiple instances
+          root_markers = {
+            "nx.json",
+            "pnpm-workspace.yaml",
+            "eslint.config.ts",
+            "eslint.config.js",
+            "eslint.config.mjs",
+            ".eslintrc.js",
+            ".eslintrc.json",
+          },
+          settings = {
+            -- "location" mode uses nearest eslint.config as working directory
+            workingDirectories = { mode = "location" },
+            run = "onType", -- runs on open and as you type
+            -- Enable experimental flat config support
+            experimental = {
+              useFlatConfig = true,
+            },
+            -- Caching options
+            options = {
+              cache = true,
+              cacheLocation = "node_modules/.cache/eslint-lsp",
+            },
+            -- Debounce validation to reduce CPU
+            validate = "probe",
+          },
           filetypes = {
             "javascript",
             "javascriptreact",
@@ -41,31 +68,73 @@ return {
           },
         },
         vtsls = {
+          -- Monorepo markers first, then standard markers (order matters!)
+          root_markers = {
+            "nx.json",
+            "pnpm-workspace.yaml",
+            "tsconfig.base.json",
+            "tsconfig.json",
+            "package.json",
+            ".git",
+          },
           settings = {
-            typescript = {},
-          },
-          experimental = {
-            autoUseWorkspaceTsdk = true,
-            completion = {
-              enableServerSideFuzzyMatch = true,
-              entriesLimit = 50,
+            vtsls = {
+              experimental = {
+                autoUseWorkspaceTsdk = true,
+                completion = {
+                  enableServerSideFuzzyMatch = true,
+                  entriesLimit = 50,
+                },
+              },
+            },
+            typescript = {
+              tsserver = {
+                maxTsServerMemory = 16384,
+              },
+              preferences = {
+                includeCompletionsForModuleExports = true,
+                includeCompletionsForImportStatements = true,
+                importModuleSpecifier = "non-relative",
+                importModuleSpecifierPreference = "non-relative",
+                importModuleSpecifierEnding = "minimal",
+                noErrorTruncation = true,
+              },
+              suggest = {
+                includeCompletionsForModuleExports = true,
+              },
             },
           },
-          typescript = {
-            tsserver = {
-              maxTsServerMemory = 16384,
-            },
-            preferences = {
-              includeCompletionsForModuleExports = true,
-              includeCompletionsForImportStatements = true,
-              importModuleSpecifier = "non-relative",
-              importModuleSpecifierPreference = "non-relative",
-              importModuleSpecifierEnding = "minimal",
-              noErrorTruncation = true,
-            },
-            suggest = {
-              includeCompletionsForModuleExports = true,
-            },
+        },
+        oxfmt = {
+          cmd = { "oxfmt", "--lsp" },
+          filetypes = {
+            "javascript",
+            "javascriptreact",
+            "javascript.jsx",
+            "typescript",
+            "typescriptreact",
+            "typescript.tsx",
+            "json",
+            "jsonc",
+            "yaml",
+            "toml",
+            "html",
+            "htmlangular",
+            "vue",
+            "css",
+            "scss",
+            "less",
+            "markdown",
+            "mdx",
+            "graphql",
+            "handlebars",
+          },
+          root_markers = {
+            "nx.json",
+            "pnpm-workspace.yaml",
+            ".oxfmtrc.json",
+            "package.json",
+            ".git",
           },
         },
         copilot = {},

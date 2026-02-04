@@ -13,7 +13,7 @@ return {
     },
     opts = {
       sources = {
-        default = { "copilot", "lsp", "git", "path", "snippets", "buffer" },
+        default = { "copilot", "lsp", "git", "path", "snippets" },
         providers = {
           copilot = {
             score_offset = 7,
@@ -32,7 +32,6 @@ return {
           snippets = {
             score_offset = 6,
           },
-          buffer = { score_offset = 4 },
           git = {
             score_offset = 4,
             module = "blink-cmp-git",

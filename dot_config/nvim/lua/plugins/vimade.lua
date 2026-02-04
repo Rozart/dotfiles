@@ -30,5 +30,9 @@ return {
       fadelevel = 0.4, -- any value between 0 and 1. 0 is hidden and 1 is opaque.
       basebg = "",
     },
+    config = function(_, opts)
+      require("vimade").setup(opts)
+      vim.cmd("VimadeToggle")
+    end,
   },
 }

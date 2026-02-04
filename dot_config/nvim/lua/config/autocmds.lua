@@ -18,11 +18,15 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 
     set_hl("Italic", palette.fg, palette.none, "italic")
     set_hl("Bold", palette.fg, palette.none, "bold")
-    set_hl("Visual", palette.none, palette.diff_green)
+    set_hl("Visual", palette.none, palette.bg3)
 
     -- Custom highlights for Snacks
     set_hl("SnacksPickerListCursorLine", palette.none, palette.bg2, "bold")
     set_hl("SnacksPickerListCursorLineNC", palette.none, palette.bg_red, "bold")
+    set_hl("SnacksPickerPreviewCursorLine", palette.none, palette.bg1)
+    set_hl("SnacksPickerMatch", palette.none, palette.grey_dim)
+    set_hl("SnacksPickerSearch", palette.none, palette.grey_dim)
+    -- set_hl("SnacksPickerPickWin", palette.none, palette.diff_green)
 
     set_hl("SnacksPickerGitDetached", palette.orange, palette.none)
     set_hl("SnacksPickerGitStatusUnmerged", palette.red, palette.none)
@@ -81,5 +85,40 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     set_hl("CalNavi", palette.grey, palette.none)
 
     set_hl("IblScope", palette.purple, palette.none)
+
+    -- Custom highlights for diffview.nvim
+    -- Use green for additions instead of blue
+    set_hl("DiffAdd", palette.none, palette.diff_green)
+    set_hl("DiffChange", palette.none, palette.diff_yellow)
+    set_hl("DiffDelete", palette.none, palette.diff_red)
+    set_hl("DiffText", palette.bg0, palette.blue)
+
+    -- Diffview specific highlights
+    set_hl("DiffviewDiffAdd", palette.none, palette.diff_green)
+    set_hl("DiffviewDiffAddAsDelete", palette.none, palette.diff_red)
+    set_hl("DiffviewDiffChange", palette.none, palette.diff_green)
+    set_hl("DiffviewDiffDelete", palette.none, palette.diff_red)
+    set_hl("DiffviewDiffText", palette.bg0, palette.green)
+
+    -- Custom highlights for namu.nvim
+    set_hl("NamuNormal", palette.fg, palette.bg0)
+    set_hl("NamuBorder", palette.green, palette.none)
+    set_hl("NamuCursorLine", palette.none, palette.bg2, "bold")
+    set_hl("NamuPreview", palette.none, palette.bg2)
+    set_hl("NamuParent", palette.grey, palette.none)
+    set_hl("NamuNested", palette.blue, palette.none)
+    -- Symbol kind highlights
+    set_hl("NamuFunction", palette.green, palette.none)
+    set_hl("NamuMethod", palette.green, palette.none)
+    set_hl("NamuClass", palette.yellow, palette.none)
+    set_hl("NamuInterface", palette.blue, palette.none)
+    set_hl("NamuVariable", palette.fg, palette.none)
+    set_hl("NamuConstant", palette.purple, palette.none)
+    set_hl("NamuProperty", palette.orange, palette.none)
+    set_hl("NamuField", palette.orange, palette.none)
+    set_hl("NamuModule", palette.blue, palette.none)
+    set_hl("NamuEnum", palette.yellow, palette.none)
+    set_hl("NamuStruct", palette.yellow, palette.none)
+    set_hl("NamuTypeParameter", palette.blue, palette.none)
   end,
 })

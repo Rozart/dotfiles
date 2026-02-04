@@ -35,6 +35,10 @@ set -gx EDITOR nvim
 set -gx EMACS /opt/homebrew/bin/emacs
 {{ end }}
 
+{{ if eq .chezmoi.hostname "roz-dev-station" }}
+set XDG_CURRENT_DESKTOP XFCE
+{{ end }}
+
 set -fx FZF_DEFAULT_COMMAND 'fd --type file'
 set -gx FZF_CTRL_T_COMMAND $FZF_DEFAULT_COMMAND
 
@@ -69,6 +73,7 @@ if status is-interactive
 
     fish_vi_key_bindings
 
+    # Set correct cursor in vi mode
     set fish_vi_force_cursor 1
     set fish_cursor_default block blink
     set fish_cursor_insert line blink
@@ -100,4 +105,15 @@ if status is-interactive
         set -gx PATH "$PNPM_HOME" $PATH
     end
 end
-# pnpm end
+
+{{ if eq .chezmoi.hostname "roz-dev-station" }}
+function __infra_auto_refresh --on-event fish_prompt
+    if functions -q refresh_ssh_agent
+        refresh_ssh_agent
+    end
+end
+
+if functions -q refresh_ssh_agent
+    refresh_ssh_agent
+end
+{{ end }}

@@ -1,0 +1,13 @@
+{{- if or (eq .chezmoi.hostname "roz-dev-station") (eq .chezmoi.hostname "roz-docker-host") }}
+Host personalgit
+	HostName github.com
+	User git
+	IdentityFile ~/.ssh/id_github_auth.pub
+	IdentitiesOnly yes
+
+Host workgit
+	HostName github.com
+	User git
+	IdentityFile ~/.ssh/id_github_auth.pub
+	IdentitiesOnly yes
+{{- end }}

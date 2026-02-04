@@ -11,9 +11,26 @@ vim.opt.timeoutlen = 1000
 vim.opt.ttimeoutlen = 0
 vim.g.ai_cmp = false
 
+vim.opt.updatetime = 200
+
+vim.opt.lazyredraw = true
+
+vim.opt.synmaxcol = 300
+
+vim.opt.regexpengine = 1
+
+vim.opt.maxmempattern = 5000
+
+vim.opt.redrawtime = 3000
+
+vim.opt.ttyfast = true
+
+vim.opt.shortmess:append("c")
+
+-- ============================================================================
 -- Python specific settings
+-- ============================================================================
 vim.g.lazyvim_python_lsp = "basedpyright"
 vim.g.lazyvim_python_ruff = "ruff"
 -- vim.o.tabstop = 4
 -- vim.o.shiftwidth = 4
-vim.opt.clipboard = "unnamedplus"
