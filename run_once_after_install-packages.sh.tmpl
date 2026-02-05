@@ -13,7 +13,14 @@ if ! command -v docker &>/dev/null; then
 fi
 
 echo "Installing cli tools"
-sudo apt install -y ripgrep tmux bat btop fzf zoxide unzip build-essential
+sudo apt install -y ripgrep tmux bat btop fzf zoxide unzip build-essential fish
+
+# Set fish as default shell if not already
+if [ "$SHELL" != "$(which fish)" ]; then
+	echo ""
+	echo ">>> Run 'chsh -s $(which fish)' to set fish as your default shell <<<"
+	echo ""
+fi
 
 mkdir -p ~/.local/bin
 ln -sf /usr/bin/batcat ~/.local/bin/bat
