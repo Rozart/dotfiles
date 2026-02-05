@@ -1,4 +1,3 @@
-{{- if or (eq .chezmoi.hostname "roz-dev-station") (eq .chezmoi.hostname "roz-docker-host") }}
 Host personalgit
 	HostName github.com
 	User git
@@ -10,4 +9,46 @@ Host workgit
 	User git
 	IdentityFile ~/.ssh/id_github_auth.pub
 	IdentitiesOnly yes
+
+{{- if eq .chezmoi.os "darwin" }}
+Host proxmox
+	HostName 192.168.0.40
+	User root
+	IdentityFile ~/.ssh/proxmox.pub
+	IdentitiesOnly yes
+
+Host dev-station
+	HostName 192.168.0.41
+	User rozart
+	IdentityFile ~/.ssh/dev-station.pub
+	IdentitiesOnly yes
+	LocalForward 3100 localhost:3100
+	LocalForward 4200 localhost:4200
+	LogLevel QUIET
+
+Host docker-host
+	HostName 192.168.0.46
+	User rozart
+	IdentityFile ~/.ssh/docker-host.pub
+	IdentitiesOnly yes
+
+Host proxmox-tailscale
+	HostName 192.168.0.44
+	User root
+	IdentityFile ~/.ssh/proxmox-tailscale-lxc.pub
+	IdentitiesOnly yes
+
+Host pve-remote
+	HostName proxmox.home.rozart.dev
+	User root
+
+Host dev-remote
+	HostName dev-station.home.rozart.dev
+	User rozart
+
+Host *
+	IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+	ServerAliveInterval 60
+	ServerAliveCountMax 3
+	ForwardAgent yes
 {{- end }}

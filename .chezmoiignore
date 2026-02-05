@@ -1,0 +1,7 @@
+# Ignore Mac-specific SSH keys on non-darwin systems
+{{- if ne .chezmoi.os "darwin" }}
+.ssh/proxmox.pub
+.ssh/dev-station.pub
+.ssh/docker-host.pub
+.ssh/proxmox-tailscale-lxc.pub
+{{- end }}

@@ -17,7 +17,9 @@ set -g allow-rename off
 set -g mouse on
 
 set -g renumber-windows on
-# set -s copy-command 'pbcopy'
+{{- if eq .chezmoi.os "darwin" }}
+set -s copy-command 'pbcopy'
+{{- end }}
 
 bind h select-pane -L
 bind j select-pane -D
@@ -28,8 +30,8 @@ bind c new-window -c "#{pane_current_path}"
 bind '"' split-window -c "#{pane_current_path}"
 bind % split-window -h -c "#{pane_current_path}"
 
-# unbind-key -T copy-mode-vi v
-# unbind-key -T vi-copy v
+unbind-key -T copy-mode-vi v
+unbind-key -T vi-copy v
 
 bind -T copy-mode-vi v send-keys -X begin-selection
 bind -T copy-mode-vi C-v send-keys -X rectangle-toggle \; send -X begin-selection
@@ -49,7 +51,6 @@ set-window-option -g mode-keys vi
 # List of plugins
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'tmux-plugins/tmux-sensible'
-# set -g @plugin 'tmux-plugins/tmux-yank'
 set -g @plugin 'tmux-plugins/tmux-copycat'
 set -g @plugin 'tmux-plugins/tmux-prefix-highlight'
 set -g @plugin 'tmux-plugins/tmux-resurrect'
@@ -77,16 +78,12 @@ set -g @prefix_highlight_copy_mode_attr 'fg=colour00,bg=colour05,bold'
 set -g @prefix_highlight_prefix_prompt 'PREFIX'
 set -g @prefix_highlight_copy_prompt 'COPY'
 
-# set -g @yank_action 'copy-pipe'
-# set -g @custom_copy_command ''
-# set -g @override_copy_command ''
-
 TMUX_FZF_LAUNCH_KEY="C-Space"
 set -g allow-passthrough on
 set -s set-clipboard on
 set -as terminal-features ",*:clipboard"
 
-set -g update-environment "DISPLAY SSH_AUTH_SOCK SSH_ASKPASS SSH_AGENT_PID SSH_CONNECTION WINDOWID XAUTHORITY DISPLAY LC_DESKTOP_HOST"
+set -g update-environment "DISPLAY SSH_AUTH_SOCK SSH_ASKPASS SSH_AGENT_PID SSH_CONNECTION WINDOWID XAUTHORITY LC_DESKTOP_HOST"
 
 # Run Tmux Plugin Manager
 run '~/.tmux/plugins/tpm/tpm'
