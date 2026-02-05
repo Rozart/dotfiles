@@ -36,10 +36,13 @@ return {
             ".eslintrc.js",
             ".eslintrc.json",
           },
+          -- Client-side debounce (Neovim 10+ uses pull diagnostics, bypassing server settings)
+          flags = {
+            debounce_text_changes = 1000, -- wait 1s after typing stops
+          },
           settings = {
             -- "location" mode uses nearest eslint.config as working directory
             workingDirectories = { mode = "location" },
-            run = "onType", -- runs on open and as you type
             -- Enable experimental flat config support
             experimental = {
               useFlatConfig = true,
@@ -49,8 +52,6 @@ return {
               cache = true,
               cacheLocation = "node_modules/.cache/eslint-lsp",
             },
-            -- Debounce validation to reduce CPU
-            validate = "probe",
           },
           filetypes = {
             "javascript",
