@@ -62,11 +62,19 @@ outer.top = 10
 outer.right = 10
 
 [workspace-to-monitor-force-assignment]
+{{- if eq .chezmoi.hostname "laptop" }}
+1 = 4
+2 = 4
+3 = 4
+4 = 4
+5 = 4
+{{- else }}
 1 = 2
 2 = 2
 3 = 2
 4 = 2
 5 = 2
+{{- end }}
 
 6 = 1
 7 = 1
@@ -98,7 +106,11 @@ run = "move-node-to-workspace 12"
 [[on-window-detected]]
 if.app-id = "com.mitchellh.ghostty"
 run = [
-    "layout tiling", 
+{{- if eq .chezmoi.hostname "laptop" }}
+    "layout floating",
+{{- else }}
+    "layout tiling",
+{{- end }}
     "move-node-to-workspace 1"
 ]
 

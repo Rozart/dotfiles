@@ -22,8 +22,10 @@ Host dev-station
 	User rozart
 	IdentityFile ~/.ssh/dev-station.pub
 	IdentitiesOnly yes
-	LocalForward 3100 localhost:3100
 	LocalForward 4200 localhost:4200
+	LocalForward 3100 localhost:3100
+	RequestTTY yes
+	RemoteCommand tmux new-session -A -s dev-station
 	LogLevel QUIET
 
 Host docker-host
@@ -31,6 +33,8 @@ Host docker-host
 	User rozart
 	IdentityFile ~/.ssh/docker-host.pub
 	IdentitiesOnly yes
+	RequestTTY yes
+	RemoteCommand tmux new-session -A -s docker-host
 
 Host proxmox-tailscale
 	HostName 192.168.0.44
@@ -51,4 +55,5 @@ Host *
 	ServerAliveInterval 60
 	ServerAliveCountMax 3
 	ForwardAgent yes
+	LogLevel QUIET
 {{- end }}
