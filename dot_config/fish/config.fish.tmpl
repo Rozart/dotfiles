@@ -106,7 +106,7 @@ if status is-interactive
     end
 end
 
-{{ if eq .chezmoi.hostname "roz-dev-station" }}
+{{ if (or (eq .chezmoi.hostname "roz-dev-station") (eq .chezmoi.hostname "roz-docker-host")) }}
 function __infra_auto_refresh --on-event fish_prompt
     if functions -q refresh_ssh_agent
         refresh_ssh_agent
