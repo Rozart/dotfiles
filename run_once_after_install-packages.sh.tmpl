@@ -38,6 +38,11 @@ if ! command -v mise &>/dev/null; then
 	curl https://mise.jdx.dev/install.sh | sh
 fi
 
+if ! command -v starship &>/dev/null; then
+	echo "Installing starship"
+	curl -sS https://starship.rs/install.sh | sh -s -- -y
+fi
+
 if ! command -v lazydocker &>/dev/null; then
 	echo "Installing lazydocker"
 	curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash

@@ -36,6 +36,14 @@ Host docker-host
 	RequestTTY yes
 	RemoteCommand tmux new-session -A -s docker-host
 
+Host media-host
+	HostName 192.168.0.49
+	User rozart
+	IdentityFile ~/.ssh/media-host.pub
+	IdentitiesOnly yes
+	RequestTTY yes
+	RemoteCommand tmux new-session -A -s media-host
+
 Host proxmox-tailscale
 	HostName 192.168.0.44
 	User root

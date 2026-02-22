@@ -3,5 +3,6 @@
 .ssh/proxmox.pub
 .ssh/dev-station.pub
 .ssh/docker-host.pub
+.ssh/media-host.pub
 .ssh/proxmox-tailscale-lxc.pub
 {{- end }}
