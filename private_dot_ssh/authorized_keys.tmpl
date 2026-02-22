@@ -1,0 +1,7 @@
+{{- if eq .chezmoi.hostname "roz-docker-host" -}}
+{{ include "private_dot_ssh/docker-host.pub" -}}
+{{- else if eq .chezmoi.hostname "roz-media-host" -}}
+{{ include "private_dot_ssh/media-host.pub" -}}
+{{- else if eq .chezmoi.hostname "roz-dev-station" -}}
+{{ include "private_dot_ssh/dev-station.pub" -}}
+{{- end }}
