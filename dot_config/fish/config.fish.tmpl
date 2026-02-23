@@ -8,6 +8,7 @@ set LOCAL_BIN /usr/local/bin
 set SBIN /usr/local/sbin
 
 {{ if eq .chezmoi.os "darwin" }}
+/opt/homebrew/bin/brew shellenv | source
 set HOMEBREW_BIN /opt/homebrew/bin
 {{ end }}
 

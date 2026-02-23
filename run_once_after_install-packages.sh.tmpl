@@ -15,6 +15,12 @@ fi
 echo "Installing cli tools"
 sudo apt install -y ripgrep tmux bat btop fzf zoxide unzip build-essential fish
 
+# Add fish to /etc/shells if not already there
+if ! grep -q "$(which fish)" /etc/shells; then
+	echo "Adding fish to /etc/shells"
+	echo "$(which fish)" | sudo tee -a /etc/shells
+fi
+
 # Set fish as default shell if not already
 if [ "$SHELL" != "$(which fish)" ]; then
 	echo ""
