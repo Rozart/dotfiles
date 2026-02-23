@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+{{- if eq .chezmoi.os "linux" }}
+ARCHIVE="nvim-linux-x86_64.tar.gz"
+EXTRACTED_NAME="nvim-linux-x86_64"
+{{- else if eq .chezmoi.os "darwin" }}
+{{- if eq .chezmoi.arch "arm64" }}
+ARCHIVE="nvim-macos-arm64.tar.gz"
+EXTRACTED_NAME="nvim-macos-arm64"
+{{- else }}
+ARCHIVE="nvim-macos-x86_64.tar.gz"
+EXTRACTED_NAME="nvim-macos-x86_64"
+{{- end }}
+{{- end }}
+
+NVIM_DIR="$HOME/.local/nvim"
+CHANNEL="${1:-}"
+
+if [ -z "$CHANNEL" ]; then
+	echo "Select Neovim version to update:"
+	echo "  1) nightly"
+	echo "  2) stable"
+	printf "Choice [1]: "
+	read -r choice
+	case "${choice:-1}" in
+	1) CHANNEL="nightly" ;;
+	2) CHANNEL="stable" ;;
+	*)
+		echo "Invalid choice" >&2
+		exit 1
+		;;
+	esac
+fi
+
+case "$CHANNEL" in
+nightly | stable) ;;
+*)
+	echo "Usage: update-nvim [nightly|stable]" >&2
+	exit 1
+	;;
+esac
+
+RELEASE_URL="https://github.com/neovim/neovim/releases/download/$CHANNEL"
+INSTALL_DIR="$NVIM_DIR/$CHANNEL"
+
+echo "Updating Neovim $CHANNEL..."
+
+TMPDIR=$(mktemp -d)
+trap 'rm -rf "$TMPDIR"' EXIT
+
+echo "Downloading $ARCHIVE ($CHANNEL)..."
+curl -fL --progress-bar -o "$TMPDIR/$ARCHIVE" "$RELEASE_URL/$ARCHIVE"
+
+echo "Extracting..."
+tar xzf "$TMPDIR/$ARCHIVE" -C "$TMPDIR"
+
+EXTRACTED_DIR="$TMPDIR/$EXTRACTED_NAME"
+
+if [ ! -d "$EXTRACTED_DIR" ]; then
+	echo "Error: extracted directory not found at $EXTRACTED_DIR" >&2
+	exit 1
+fi
+
+rm -rf "$INSTALL_DIR"
+mkdir -p "$INSTALL_DIR"
+cp -r "$EXTRACTED_DIR/"* "$INSTALL_DIR/"
+
+echo ""
+echo "Done! Downloaded $CHANNEL:"
+"$INSTALL_DIR/bin/nvim" --version | head -1
+
+# If no version is currently active, activate this one
+if [ ! -L "$HOME/.local/bin/nvim" ]; then
+	echo "No active version found — activating $CHANNEL."
+	choose-nvim "$CHANNEL"
+fi

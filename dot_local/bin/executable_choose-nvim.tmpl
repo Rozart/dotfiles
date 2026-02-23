@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+NVIM_DIR="$HOME/.local/nvim"
+BIN_LINK="$HOME/.local/bin/nvim"
+
+# Detect currently active channel
+current=""
+if [ -L "$BIN_LINK" ]; then
+  target=$(readlink "$BIN_LINK")
+  if [[ "$target" == *"/nightly/"* ]]; then
+    current="nightly"
+  elif [[ "$target" == *"/stable/"* ]]; then
+    current="stable"
+  fi
+fi
+
+# Discover installed versions
+installed=()
+for channel in nightly stable; do
+  if [ -x "$NVIM_DIR/$channel/bin/nvim" ]; then
+    installed+=("$channel")
+  fi
+done
+
+if [ ${#installed[@]} -eq 0 ]; then
+  echo "No Neovim versions installed. Run 'update-nvim' first." >&2
+  exit 1
+fi
+
+CHANNEL="${1:-}"
+
+if [ -z "$CHANNEL" ]; then
+  echo "Installed Neovim versions:"
+  i=1
+  for ch in "${installed[@]}"; do
+    version=$("$NVIM_DIR/$ch/bin/nvim" --version | head -1)
+    marker=""
+    if [ "$ch" = "$current" ]; then
+      marker=" (active)"
+    fi
+    echo "  $i) $ch — $version$marker"
+    i=$((i + 1))
+  done
+
+  printf "Choice: "
+  read -r choice
+
+  if ! [[ "$choice" =~ ^[0-9]+$ ]] || [ "$choice" -lt 1 ] || [ "$choice" -gt ${#installed[@]} ]; then
+    echo "Invalid choice" >&2
+    exit 1
+  fi
+  CHANNEL="${installed[$((choice - 1))]}"
+fi
+
+if [ ! -x "$NVIM_DIR/$CHANNEL/bin/nvim" ]; then
+  echo "Neovim $CHANNEL is not installed. Run 'update-nvim $CHANNEL' first." >&2
+  exit 1
+fi
+
+mkdir -p "$(dirname "$BIN_LINK")"
+ln -sf "$NVIM_DIR/$CHANNEL/bin/nvim" "$BIN_LINK"
+
+echo "Activated: $CHANNEL"
+nvim --version | head -1
