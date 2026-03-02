@@ -1,4 +1,4 @@
-local base_path = vim.fn.expand("~/Documents/Rozart-Second-Brain/data")
+local base_path = vim.fn.expand("{{ .obsidian_base }}/data")
 
 local dailies_path = base_path .. "/00_dailies"
 local templates_path = base_path .. "/99_templates"
@@ -47,5 +47,17 @@ return {
       auto_set_filepath = false,
       auto_set_filetype = false,
     },
+  },
+  -- Braindump plugin
+  {
+    dir = vim.fn.expand("~/.config/nvim/lua/rozart"),
+    config = function()
+      require("rozart.braindump").setup({
+        obsidian_base = "{{ .obsidian_base }}",
+      })
+      vim.keymap.set("n", "<leader>aT", "<Cmd>AddTodo<CR>", { desc = "Add TODO In Daily Note" })
+      vim.keymap.set("n", "<leader>aB", "<Cmd>AddBraindump<CR>", { desc = "Add Braidump In Daily Note" })
+      vim.keymap.set("n", "<leader>aJ", "<Cmd>AddJournal<CR>", { desc = "Add Journal In Daily Note" })
+    end,
   },
 }

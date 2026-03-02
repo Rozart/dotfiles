@@ -6,8 +6,9 @@ local open = context_manager.open
 local with = context_manager.with
 
 local config = {
-  dailies_dir = vim.fn.expand("~/Documents/Rozart-Second-Brain/data/00_dailies"),
-  template_path = vim.fn.expand("~/Documents/Rozart-Second-Brain/data/99_templates/daily.md"),
+  obsidian_base = "~/Documents/obsidian/vault", -- Example path, override in setup()
+  dailies_dir = nil, -- Will be set based on obsidian_base
+  template_path = nil, -- Will be set based on obsidian_base
   header = {
     prefix = "##",
   },
@@ -212,7 +213,18 @@ function M.open_journal_input()
   end)
 end
 
-function M.setup()
+function M.setup(opts)
+  opts = opts or {}
+
+  -- Override config with provided options
+  if opts.obsidian_base then
+    config.obsidian_base = opts.obsidian_base
+  end
+
+  -- Set derived paths from obsidian_base
+  config.dailies_dir = vim.fn.expand(config.obsidian_base .. "/data/00_dailies")
+  config.template_path = vim.fn.expand(config.obsidian_base .. "/data/99_templates/daily.md")
+
   vim.api.nvim_create_user_command("AddTodo", M.open_todo_input, {})
   vim.api.nvim_create_user_command("AddBraindump", M.open_braindump_input, {})
   vim.api.nvim_create_user_command("AddJournal", M.open_journal_input, {})

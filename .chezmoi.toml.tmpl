@@ -1,0 +1,20 @@
+{{- $osID := .chezmoi.os -}}
+{{- $hostname := .chezmoi.hostname -}}
+
+[data]
+    name = "rozart"
+    osid = {{ $osID | quote }}
+    hostname = {{ $hostname | quote }}
+    
+    is_local = {{ eq $osID "darwin" }}
+    is_dev_station = {{ eq $hostname "dev-station" }}
+    is_docker_host = {{ eq $hostname "docker-host" }}
+    is_media_host = {{ eq $hostname "media-host" }}
+
+    enable_ssh_refresh = {{ or (eq $hostname "dev-station") (eq $hostname "docker-host") (eq $hostname "media-host") }}
+
+{{- if or (eq $hostname "dev-station") (eq $hostname "docker-host") (eq $hostname "media-host") }}
+    obsidian_base = "/mnt/nas/cloud/obsidian/roz-obsidian"
+{{- else }}
+    obsidian_base = "~/obsidian/roz-obsidian"
+{{- end }}
