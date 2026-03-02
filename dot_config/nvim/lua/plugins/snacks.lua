@@ -12,7 +12,11 @@ return {
         },
         picker = {
           exclude = { ".git", "node_modules", "venv", "__pycache__", ".nx", ".rollup.cache", "dist" },
-
+          layout = {
+            layout = {
+              width = 0.4,
+            },
+          },
           matcher = {
             frecency = true,
           },
