@@ -1,0 +1,11 @@
+[Unit]
+Description=Glances system monitor
+After=network.target
+
+[Service]
+ExecStart=/opt/glances/bin/glances -w --disable-webui
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

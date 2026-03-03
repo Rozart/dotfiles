@@ -6,3 +6,8 @@
 .ssh/media-host.pub
 .ssh/proxmox-tailscale-lxc.pub
 {{- end }}
+
+# Ignore systemd-related files on macOS
+{{- if eq .chezmoi.os "darwin" }}
+.config/glances/glances.service
+{{- end }}

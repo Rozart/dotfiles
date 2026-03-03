@@ -54,5 +54,13 @@ if ! command -v lazydocker &>/dev/null; then
 	curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
 fi
 
+if ! command -v glances &>/dev/null; then
+	echo "Installing glances"
+	sudo apt install -y python3-pip python3-venv
+	sudo python3 -m venv /opt/glances
+	sudo /opt/glances/bin/pip install 'glances[web]'
+	sudo ln -sf /opt/glances/bin/glances /usr/local/bin/glances
+fi
+
 echo "Installation complete"
 {{ end -}}

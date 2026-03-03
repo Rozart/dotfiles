@@ -1,0 +1,18 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/bin/bash
+
+# glances.service hash: {{ include "dot_config/glances/glances.service" | sha256sum }}
+
+echo "Setting up Glances systemd service..."
+
+if [ ! -f /opt/glances/bin/glances ]; then
+	echo "Glances not found at /opt/glances/bin/glances, skipping service setup"
+	exit 0
+fi
+
+sudo cp "$HOME/.config/glances/glances.service" /etc/systemd/system/glances.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now glances
+
+echo "Glances service started on port 61208"
+{{ end -}}

@@ -10,6 +10,9 @@
     is_dev_station = {{ eq $hostname "dev-station" }}
     is_docker_host = {{ eq $hostname "docker-host" }}
     is_media_host = {{ eq $hostname "media-host" }}
+    is_proxmox = {{ eq $hostname "proxmox" }}
+    is_raspbox1 = {{ eq $hostname "raspbox1" }}
+    is_raspbox2 = {{ eq $hostname "raspbox2" }}
 
     enable_ssh_refresh = {{ or (eq $hostname "dev-station") (eq $hostname "docker-host") (eq $hostname "media-host") }}
 
