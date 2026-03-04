@@ -7,16 +7,16 @@
     hostname = {{ $hostname | quote }}
     
     is_local = {{ eq $osID "darwin" }}
-    is_dev_station = {{ eq $hostname "dev-station" }}
-    is_docker_host = {{ eq $hostname "docker-host" }}
-    is_media_host = {{ eq $hostname "media-host" }}
+    is_dev_station = {{ eq $hostname "roz-dev-station" }}
+    is_docker_host = {{ eq $hostname "roz-docker-host" }}
+    is_media_host = {{ eq $hostname "roz-media-host" }}
     is_proxmox = {{ eq $hostname "proxmox" }}
     is_raspbox1 = {{ eq $hostname "raspbox1" }}
     is_raspbox2 = {{ eq $hostname "raspbox2" }}
 
-    enable_ssh_refresh = {{ or (eq $hostname "dev-station") (eq $hostname "docker-host") (eq $hostname "media-host") }}
+    enable_ssh_refresh = {{ or (eq $hostname "roz-dev-station") (eq $hostname "roz-docker-host") (eq $hostname "roz-media-host") }}
 
-{{- if or (eq $hostname "dev-station") (eq $hostname "docker-host") (eq $hostname "media-host") }}
+{{- if or (eq $hostname "roz-dev-station") (eq $hostname "roz-docker-host") (eq $hostname "roz-media-host") }}
     obsidian_base = "/mnt/nas/cloud/obsidian/roz-obsidian"
 {{- else }}
     obsidian_base = "~/obsidian/roz-obsidian"
