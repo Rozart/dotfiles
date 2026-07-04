@@ -1,9 +1,6 @@
 local M = {}
 
 local Snacks = require("snacks")
-local context_manager = require("plenary.context_manager")
-local open = context_manager.open
-local with = context_manager.with
 
 local config = {
   obsidian_base = "~/Documents/obsidian/vault", -- Example path, override in setup()
@@ -47,18 +44,14 @@ function M.ensure_daily_exists(file_path)
     return false
   end
 
-  local template_content = with(open(config.template_path, "r"), function(file)
-    return file:read("*a")
-  end)
+  local template_content = table.concat(vim.fn.readfile(config.template_path), "\n")
 
   -- Replace {{date}} placeholder with today's date
   local date = os.date("%Y-%m-%d")
   template_content = template_content:gsub("{{date}}", date)
 
   -- Write new daily file
-  with(open(file_path, "w"), function(file)
-    file:write(template_content)
-  end)
+  vim.fn.writefile(vim.split(template_content, "\n"), file_path)
 
   local filename = vim.fn.fnamemodify(file_path, ":t")
   vim.notify("✓ Created " .. filename, vim.log.levels.INFO)
@@ -95,41 +88,27 @@ function M.add_entry_for_header(name, prefix, prefix_pattern, header_prefix, con
   local found_section = false
   local last_section_entry_index = tonumber(line_number)
 
-  -- [TODO] Modify to simplify
-  local file_content = with(open(file_path, "r"), function(file)
-    local lines = {}
-    local curr_line_number = 0
-    local found_last_section_entry = false
-
-    for line in file:lines() do
-      curr_line_number = curr_line_number + 1
-      table.insert(lines, line)
-
-      if not found_last_section_entry then
-        if curr_line_number == tonumber(line_number) then
-          found_section = true
-        elseif found_section then
-          if line:match(string.format("%s .+", prefix_pattern)) then
-            last_section_entry_index = curr_line_number
-          elseif line:match(string.format("%s .+", header_prefix)) then
-            found_last_section_entry = true
-          end
+  local file_content = vim.fn.readfile(file_path)
+  local found_last_section_entry = false
+  for curr_line_number, line in ipairs(file_content) do
+    if not found_last_section_entry then
+      if curr_line_number == tonumber(line_number) then
+        found_section = true
+      elseif found_section then
+        if line:match(string.format("%s .+", prefix_pattern)) then
+          last_section_entry_index = curr_line_number
+        elseif line:match(string.format("%s .+", header_prefix)) then
+          found_last_section_entry = true
         end
       end
     end
-
-    return lines
-  end)
+  end
 
   if found_section then
     table.insert(file_content, last_section_entry_index + 1, new_entry)
   end
 
-  with(open(file_path, "w"), function(file)
-    for _, line in ipairs(file_content) do
-      file:write(line .. "\n")
-    end
-  end)
+  vim.fn.writefile(file_content, file_path)
 
   local buf_exists = vim.fn.bufnr(file_path)
   if buf_exists ~= -1 then
@@ -189,11 +168,66 @@ function M.add_todos_entry(content)
   )
 end
 
+local function format_date(time)
+  return os.date("%Y-%m-%d", time)
+end
+
+local function ask_importance(cb)
+  vim.ui.select({ "No", "Yes" }, {
+    prompt = "Important? (#p1)",
+  }, function(choice)
+    if choice == nil then
+      return
+    end
+    cb(choice == "Yes")
+  end)
+end
+
+local function ask_due_date(cb)
+  vim.ui.select({ "No due date", "Set due date" }, {
+    prompt = "Due date?",
+  }, function(choice)
+    if choice == nil then
+      return
+    end
+    if choice == "No due date" then
+      cb(nil)
+      return
+    end
+    local tomorrow = format_date(os.time() + 24 * 60 * 60)
+    Snacks.input({
+      prompt = "Due date (YYYY-MM-DD)",
+      default = tomorrow,
+    }, function(value)
+      if not value or value == "" then
+        cb(nil)
+        return
+      end
+      cb(value)
+    end)
+  end)
+end
+
 function M.open_todo_input()
   Snacks.input({
     prompt = "Add TODO entry for today",
   }, function(value)
-    M.add_todos_entry(value)
+    if not value or value == "" then
+      return
+    end
+    ask_importance(function(is_important)
+      ask_due_date(function(due)
+        local parts = { value }
+        if is_important then
+          table.insert(parts, "#p1")
+        end
+        table.insert(parts, "➕ " .. format_date(os.time()))
+        if due then
+          table.insert(parts, "📅 " .. due)
+        end
+        M.add_todos_entry(table.concat(parts, " "))
+      end)
+    end)
   end)
 end
 

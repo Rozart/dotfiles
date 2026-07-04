@@ -84,6 +84,23 @@ return {
     },
     opts = function()
       local actions = get_diffview_actions()
+      -- Shared merge/conflict keymaps, identical across view/diff3/diff4.
+      local merge = {
+        { "n", "g?", show_merge_help, { desc = "Show merge help" } },
+        { "n", "]x", actions.next_conflict, { desc = "Next conflict" } },
+        { "n", "[x", actions.prev_conflict, { desc = "Previous conflict" } },
+        { "n", "<leader>mo", actions.conflict_choose("ours"), { desc = "Merge: choose OURS" } },
+        { "n", "<leader>mt", actions.conflict_choose("theirs"), { desc = "Merge: choose THEIRS" } },
+        { "n", "<leader>mb", actions.conflict_choose("base"), { desc = "Merge: choose BASE" } },
+        { "n", "<leader>ma", actions.conflict_choose("all"), { desc = "Merge: choose ALL" } },
+        { "n", "<leader>md", actions.conflict_choose("none"), { desc = "Merge: delete conflict" } },
+        { "n", "<leader>MO", actions.conflict_choose_all("ours"), { desc = "Merge: OURS (file)" } },
+        { "n", "<leader>MT", actions.conflict_choose_all("theirs"), { desc = "Merge: THEIRS (file)" } },
+        { "n", "<leader>MB", actions.conflict_choose_all("base"), { desc = "Merge: BASE (file)" } },
+        { "n", "<leader>MA", actions.conflict_choose_all("all"), { desc = "Merge: ALL (file)" } },
+        { "n", "<leader>MD", actions.conflict_choose_all("none"), { desc = "Merge: delete all conflicts" } },
+        { "n", "<leader>mx", actions.cycle_layout, { desc = "Merge: cycle layout" } },
+      }
       return {
         enhanced_diff_hl = true,
         view = {
@@ -100,59 +117,12 @@ return {
           },
         },
         keymaps = {
-          view = {
-            { "n", "q", "<Cmd>DiffviewClose<CR>", { desc = "Close Diffview" } },
-            { "n", "g?", show_merge_help, { desc = "Show merge help" } },
-            -- Conflict navigation
-            { "n", "]x", actions.next_conflict, { desc = "Next conflict" } },
-            { "n", "[x", actions.prev_conflict, { desc = "Previous conflict" } },
-            -- Single conflict resolution
-            { "n", "<leader>mo", actions.conflict_choose("ours"), { desc = "Merge: choose OURS" } },
-            { "n", "<leader>mt", actions.conflict_choose("theirs"), { desc = "Merge: choose THEIRS" } },
-            { "n", "<leader>mb", actions.conflict_choose("base"), { desc = "Merge: choose BASE" } },
-            { "n", "<leader>ma", actions.conflict_choose("all"), { desc = "Merge: choose ALL" } },
-            { "n", "<leader>md", actions.conflict_choose("none"), { desc = "Merge: delete conflict" } },
-            -- Whole file resolution
-            { "n", "<leader>MO", actions.conflict_choose_all("ours"), { desc = "Merge: OURS (file)" } },
-            { "n", "<leader>MT", actions.conflict_choose_all("theirs"), { desc = "Merge: THEIRS (file)" } },
-            { "n", "<leader>MB", actions.conflict_choose_all("base"), { desc = "Merge: BASE (file)" } },
-            { "n", "<leader>MA", actions.conflict_choose_all("all"), { desc = "Merge: ALL (file)" } },
-            { "n", "<leader>MD", actions.conflict_choose_all("none"), { desc = "Merge: delete all conflicts" } },
-            -- Layout
-            { "n", "<leader>mx", actions.cycle_layout, { desc = "Merge: cycle layout" } },
-          },
-          diff3 = {
-            { "n", "g?", show_merge_help, { desc = "Show merge help" } },
-            { "n", "]x", actions.next_conflict, { desc = "Next conflict" } },
-            { "n", "[x", actions.prev_conflict, { desc = "Previous conflict" } },
-            { "n", "<leader>mo", actions.conflict_choose("ours"), { desc = "Merge: choose OURS" } },
-            { "n", "<leader>mt", actions.conflict_choose("theirs"), { desc = "Merge: choose THEIRS" } },
-            { "n", "<leader>mb", actions.conflict_choose("base"), { desc = "Merge: choose BASE" } },
-            { "n", "<leader>ma", actions.conflict_choose("all"), { desc = "Merge: choose ALL" } },
-            { "n", "<leader>md", actions.conflict_choose("none"), { desc = "Merge: delete conflict" } },
-            { "n", "<leader>MO", actions.conflict_choose_all("ours"), { desc = "Merge: OURS (file)" } },
-            { "n", "<leader>MT", actions.conflict_choose_all("theirs"), { desc = "Merge: THEIRS (file)" } },
-            { "n", "<leader>MB", actions.conflict_choose_all("base"), { desc = "Merge: BASE (file)" } },
-            { "n", "<leader>MA", actions.conflict_choose_all("all"), { desc = "Merge: ALL (file)" } },
-            { "n", "<leader>MD", actions.conflict_choose_all("none"), { desc = "Merge: delete all conflicts" } },
-            { "n", "<leader>mx", actions.cycle_layout, { desc = "Merge: cycle layout" } },
-          },
-          diff4 = {
-            { "n", "g?", show_merge_help, { desc = "Show merge help" } },
-            { "n", "]x", actions.next_conflict, { desc = "Next conflict" } },
-            { "n", "[x", actions.prev_conflict, { desc = "Previous conflict" } },
-            { "n", "<leader>mo", actions.conflict_choose("ours"), { desc = "Merge: choose OURS" } },
-            { "n", "<leader>mt", actions.conflict_choose("theirs"), { desc = "Merge: choose THEIRS" } },
-            { "n", "<leader>mb", actions.conflict_choose("base"), { desc = "Merge: choose BASE" } },
-            { "n", "<leader>ma", actions.conflict_choose("all"), { desc = "Merge: choose ALL" } },
-            { "n", "<leader>md", actions.conflict_choose("none"), { desc = "Merge: delete conflict" } },
-            { "n", "<leader>MO", actions.conflict_choose_all("ours"), { desc = "Merge: OURS (file)" } },
-            { "n", "<leader>MT", actions.conflict_choose_all("theirs"), { desc = "Merge: THEIRS (file)" } },
-            { "n", "<leader>MB", actions.conflict_choose_all("base"), { desc = "Merge: BASE (file)" } },
-            { "n", "<leader>MA", actions.conflict_choose_all("all"), { desc = "Merge: ALL (file)" } },
-            { "n", "<leader>MD", actions.conflict_choose_all("none"), { desc = "Merge: delete all conflicts" } },
-            { "n", "<leader>mx", actions.cycle_layout, { desc = "Merge: cycle layout" } },
-          },
+          view = vim.list_extend(
+            { { "n", "q", "<Cmd>DiffviewClose<CR>", { desc = "Close Diffview" } } },
+            merge
+          ),
+          diff3 = merge,
+          diff4 = merge,
           file_panel = {
             { "n", "q", "<Cmd>DiffviewClose<CR>", { desc = "Close Diffview" } },
             { "n", "g?", show_merge_help, { desc = "Show merge help" } },

@@ -2,6 +2,7 @@ return {
   { "mfussenegger/nvim-jdtls", enabled = false },
   {
     "nvim-java/nvim-java",
+    ft = "java",
     config = false,
     dependencies = {
       {
@@ -9,7 +10,20 @@ return {
         opts = {
           servers = {
             jdtls = {
-              -- Your custom jdtls settings goes here
+              settings = {
+                java = {
+                  saveActions = {
+                    organizeImports = true,
+                  },
+                  compile = {
+                    nullAnalysis = {
+                      mode = "automatic",
+                      nonnull = { "javax.annotation.Nonnull", "org.eclipse.jdt.annotation.NonNull", "org.springframework.lang.NonNull" },
+                      nullable = { "javax.annotation.Nullable", "org.eclipse.jdt.annotation.Nullable", "org.springframework.lang.Nullable" },
+                    },
+                  },
+                },
+              },
             },
           },
           setup = {

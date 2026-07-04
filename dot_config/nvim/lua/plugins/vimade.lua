@@ -23,6 +23,7 @@ Snacks.toggle({
 return {
   {
     "tadaa/vimade",
+    event = "VeryLazy",
     dependencies = { "folke/snacks.nvim" },
     opts = {
       recipe = { "default", { animate = false } },

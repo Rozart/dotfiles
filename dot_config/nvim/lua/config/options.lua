@@ -13,9 +13,7 @@ vim.g.ai_cmp = false
 
 vim.opt.updatetime = 200
 vim.opt.synmaxcol = 300
-vim.opt.regexpengine = 1
 vim.opt.maxmempattern = 5000
-vim.opt.ttyfast = true
 vim.opt.shortmess:append("c")
 vim.opt.iskeyword:remove("_")
 

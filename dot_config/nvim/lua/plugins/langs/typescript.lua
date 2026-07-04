@@ -1,29 +1,4 @@
--- local function find_tsconfig()
---   -- Try to find tsconfig.app.json first, then fall back to tsconfig.json
---   local configs = { "tsconfig.app.json", "tsconfig.lib.json", "tsconfig.json" }
---   for _, config in ipairs(configs) do
---     if vim.fn.filereadable(config) == 1 then
---       return config
---     end
---   end
---   return nil
--- end
-
 return {
-  {
-    "dmmulroy/tsc.nvim",
-    opts = {
-      flags = {
-        noEmit = true,
-        -- project = find_tsconfig(),
-        watch = true,
-      },
-      run_as_monorepo = true,
-      use_diagnostics = true,
-      max_tsconfig_files = 30,
-      auto_open_qflist = true,
-    },
-  },
   {
     "MaximilianLloyd/tw-values.nvim",
     keys = {
