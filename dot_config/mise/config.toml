@@ -4,9 +4,10 @@ python = "3.13.2"
 pnpm = "latest"
 uv = "latest"
 poetry = "latest"
-java = "openjdk-21"
+java = "openjdk-25"
 gradle = "latest"
 go = "latest"
+maven = "3.9"
 
 [settings]
 python.uv_venv_auto = true
