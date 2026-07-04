@@ -55,9 +55,14 @@ return {
       require("rozart.braindump").setup({
         obsidian_base = "{{ .obsidian_base }}",
       })
+      require("rozart.tasks").setup({
+        obsidian_base = "{{ .obsidian_base }}",
+        display = "float",
+      })
       vim.keymap.set("n", "<leader>aT", "<Cmd>AddTodo<CR>", { desc = "Add TODO In Daily Note" })
       vim.keymap.set("n", "<leader>aB", "<Cmd>AddBraindump<CR>", { desc = "Add Braidump In Daily Note" })
       vim.keymap.set("n", "<leader>aJ", "<Cmd>AddJournal<CR>", { desc = "Add Journal In Daily Note" })
+      vim.keymap.set("n", "<leader>ad", "<Cmd>TaskDashboard<CR>", { desc = "Task Dashboard (Eisenhower)" })
     end,
   },
 }
