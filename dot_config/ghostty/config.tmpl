@@ -1,8 +1,6 @@
 working-directory = "home"
 command = fish
 
-auto-update-channel = tip
-
 theme = "Sonokai Shusia"
 
 font-family = ""
@@ -53,8 +51,14 @@ window-vsync = true
 
 bold-is-bright = true
 
-# Clipboard settings - allow Ghostty to use clipboard without prompting
+# Clipboard settings
 clipboard-read = allow
 clipboard-write = allow
-clipboard-paste-protection = false
-clipboard-paste-bracketed-safe = false
+clipboard-paste-protection = true
+clipboard-paste-bracketed-safe = true
+copy-on-select = clipboard
+
+{{ if eq .chezmoi.os "linux" }}
+gtk-single-instance = true
+{{ end }}
+mouse-hide-while-typing = true
