@@ -1,7 +1,4 @@
 # Internal-only variables
-set OPEN_SSL_BIN /usr/local/opt/openssl/bin
-set CURL_BIN /usr/local/opt/curl/bin
-set CURL_OPENSSL_BIN /usr/local/opt/curl-openssl/bin
 set BIN $HOME/bin
 set USER_LOCAL_BIN $HOME/.local/bin
 set LOCAL_BIN /usr/local/bin
@@ -10,9 +7,10 @@ set SBIN /usr/local/sbin
 {{ if eq .chezmoi.os "darwin" }}
 /opt/homebrew/bin/brew shellenv | source
 set HOMEBREW_BIN /opt/homebrew/bin
+set OPEN_SSL_BIN /usr/local/opt/openssl/bin
+set CURL_BIN /usr/local/opt/curl/bin
+set CURL_OPENSSL_BIN /usr/local/opt/curl-openssl/bin
 {{ end }}
-
-set TOOLS $HOME/Tools
 
 # Only export PATH
 set -gx PATH \
@@ -20,12 +18,18 @@ set -gx PATH \
     $USER_LOCAL_BIN \
     $LOCAL_BIN \
     $SBIN \
+    $PATH
+{{ if eq .chezmoi.os "darwin" }}
+set -gx PATH \
     $HOMEBREW_BIN \
-    $TOOLS \
     $OPEN_SSL_BIN \
     $CURL_BIN \
     $CURL_OPENSSL_BIN \
     $PATH
+{{ end }}
+if test -d $HOME/Tools
+    set -gx PATH $HOME/Tools $PATH
+end
 
 # General variables
 set -gx LANG en_US.UTF-8
@@ -40,7 +44,7 @@ set -gx EMACS /opt/homebrew/bin/emacs
 set XDG_CURRENT_DESKTOP XFCE
 {{ end }}
 
-set -fx FZF_DEFAULT_COMMAND 'fd --type file'
+set -gx FZF_DEFAULT_COMMAND 'fd --type file'
 set -gx FZF_CTRL_T_COMMAND $FZF_DEFAULT_COMMAND
 
 {{ if eq .chezmoi.os "darwin" }}
@@ -83,7 +87,6 @@ if status is-interactive
 
     set -gx COLORTERM truecolor
 
-    set fish_greeting
     zoxide init fish --cmd cd | source
     starship init fish | source
 
