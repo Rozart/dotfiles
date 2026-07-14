@@ -7,9 +7,11 @@
 [core]
   autocrlf = input
 	editor = nvim
+	pager = delta
 [gpg]
 	format = ssh
 [gpg "ssh"]
+	allowedSignersFile = ~/.config/git/allowed_signers
 {{ if (stat "/opt/1Password/op-ssh-sign") }}
     program = "/opt/1Password/op-ssh-sign"
 {{ else if (stat "/Applications/1Password.app/Contents/MacOS/op-ssh-sign") }}
@@ -19,6 +21,26 @@
 	hideResolved = true
 [commit]
 	gpgsign = true
+[interactive]
+	diffFilter = delta --color-only
+[include]
+	path = ~/.config/delta/delta.config
+[delta]
+	navigate = true
+[init]
+	defaultBranch = main
+[pull]
+	rebase = true
+[push]
+	autoSetupRemote = true
+[fetch]
+	prune = true
+[diff]
+	colorMoved = default
+[merge]
+	conflictStyle = zdiff3
+[rerere]
+	enabled = true
 [includeIf "hasconfig:remote.*.url:workgit:*"]
 	path = "~/.config/git/.gitconfig_work"
 [includeIf "hasconfig:remote.*.url:personalgit:*"]
