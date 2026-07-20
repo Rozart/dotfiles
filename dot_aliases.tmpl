@@ -4,7 +4,9 @@
 
 alias cat='bat'
 alias grep='rg'
-alias ls='eza --group-directories-first --icons'
+# --icons=always, not bare --icons: since eza 0.18 the flag takes an optional
+# value, so `eza --icons ~/Downloads` swallows the path as the flag's argument.
+alias ls='eza --group-directories-first --icons=always'
 alias vim='nvim'
 alias vi='nvim'
 alias v='nvim'
