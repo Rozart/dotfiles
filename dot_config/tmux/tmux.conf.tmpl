@@ -3,7 +3,10 @@ set -as terminal-overrides ',*:Setulc=\E[58::2::%p1%{65536}%/%d::%p1%{256}%/%{25
 set -as terminal-overrides ',*:RGB' # true-color support
 
 set -g prefix C-a
-source ~/.config/tmux/tmuxline/sonokai-shusia.tmux.conf
+# Statusline theme follows ~/.config/theme (written by the `theme` fish function).
+# run-shell, not `source -F`: #() in a format is async and returns empty on first
+# evaluation, so source -F silently loads nothing. Verified on tmux 3.4.
+run-shell "tmux source-file ~/.config/tmux/tmuxline/$(cat ~/.config/theme 2>/dev/null || echo sonokai-shusia).tmux.conf"
 
 # start with window 1 (instead of 0)
 set -g base-index 1
@@ -62,6 +65,8 @@ set -g @plugin 'sainnhe/tmux-fzf'
 
 set -g @plugin 'toddyamakawa/tmux-scratchpad'
 set -g @plugin 'christoomey/vim-tmux-navigator'
+
+set -g history-limit 10000
 
 set -g @resurrect-strategy-vim 'session'
 set -g @resurrect-strategy-nvim 'session'

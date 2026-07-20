@@ -2,6 +2,14 @@ working-directory = "home"
 command = fish
 
 theme = "Sonokai Shusia"
+# Active theme override, written by the `theme` fish function. Optional (?) so a
+# machine that has never run `theme` still gets Sonokai Shusia above.
+#
+# MUST stay here, directly under the default theme. Later keys win in ghostty —
+# that is why cursor-color below beats the theme's own cursor-color. Move this
+# include to the bottom of the file and the theme's cursor-color would land
+# after ours and eat the bright green cursor.
+config-file = ?theme.conf
 
 font-family = ""
 font-family = Pragmasevka Nerd Font

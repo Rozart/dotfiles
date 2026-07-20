@@ -8,7 +8,6 @@ return {
     "saghen/blink.cmp",
     dependencies = {
       "xzbdmw/colorful-menu.nvim",
-      "rozart/sonokai",
       "fang2hou/blink-copilot",
     },
     opts = {
