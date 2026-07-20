@@ -1,7 +1,11 @@
 function theme --description "Switch the shared nvim/tmux/ghostty colour theme"
-    # Index-matched: slug -> ghostty theme file under ~/.config/ghostty/themes/
+    # All index-matched to $slugs.
+    #   ghostty_names -> theme file under ~/.config/ghostty/themes/
+    #   bat_themes    -> delta's syntax-theme; must be a theme bat knows about
+    #                    (`bat --list-themes`). Only Sonokai Shusia is custom.
     set -l slugs sonokai-shusia rose-pine-dawn catppuccin-latte everforest-light tokyonight-day
     set -l ghostty_names "Sonokai Shusia" "Rose Pine Dawn" "Catppuccin Latte" "Everforest Light" "Tokyo Night Day"
+    set -l bat_themes sonokai-shusia GitHub GitHub gruvbox-light OneHalfLight
 
     set -l state ~/.config/theme
 
@@ -31,6 +35,10 @@ function theme --description "Switch the shared nvim/tmux/ghostty colour theme"
     # include (pulled in by `config-file = ?theme.conf`).
     echo "theme = \"$ghostty_names[$i]\"" >~/.config/ghostty/theme.conf
 
+    # delta reads git config fresh on every invocation, so no reload needed.
+    printf '[delta]\n  features = %s\n  syntax-theme = "%s"\n' \
+        $slug $bat_themes[$i] >~/.config/delta/active.gitconfig
+
     set_color --bold
     echo "$slug"
     set_color normal
@@ -43,6 +51,7 @@ function theme --description "Switch the shared nvim/tmux/ghostty colour theme"
     end
 
     echo "  nvim     next launch"
+    echo "  git      delta follows immediately"
 
     # No CLI reloads ghostty's config; it's the reload_config keybind or restart.
     if test (uname) = Darwin

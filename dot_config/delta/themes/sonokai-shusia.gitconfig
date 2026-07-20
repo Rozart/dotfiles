@@ -26,6 +26,7 @@
  	bold blue => syntax "#7accd7", \
  	bold cyan => syntax "#78dce8", \
  	bold yellow => syntax "#e5c463"
- # Should match the name of the bat theme
- syntax-theme = Sonokai Shusia
+ # Must match the name bat reports in `bat --list-themes`, which is the
+ # .tmTheme file stem — NOT the display name inside the file.
+ syntax-theme = sonokai-shusia
   

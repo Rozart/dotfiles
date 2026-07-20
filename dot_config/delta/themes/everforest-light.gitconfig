@@ -1,0 +1,27 @@
+[delta "everforest-light"]
+ blame-palette = "#fdf6e3 #f4f0d9 #efebd4 #e6e2cc #e0dcc7"
+ commit-decoration-style = "#939f91" bold box ul
+ light = true
+ file-decoration-style = "#939f91"
+ file-style = "#5c6a72"
+ hunk-header-decoration-style = "#939f91" box ul
+ hunk-header-file-style = bold
+ hunk-header-line-number-style = bold "#a6b0a0"
+ hunk-header-style = file line-number syntax
+ line-numbers-left-style = "#a6b0a0"
+ line-numbers-minus-style = bold "#f85552"
+ line-numbers-plus-style = bold "#8da101"
+ line-numbers-right-style = "#a6b0a0"
+ line-numbers-zero-style = "#a6b0a0"
+ # everforest ships bg_red / bg_green directly — no mixing needed here
+ minus-emph-style = bold syntax "#f7d5c8"
+ minus-style = syntax "#ffe7de"
+ plus-emph-style = bold syntax "#e0e9bb"
+ plus-style = syntax "#f3f5d9"
+ map-styles = \
+ 	bold purple => syntax "#df69ba", \
+ 	bold blue => syntax "#3a94c5", \
+ 	bold cyan => syntax "#35a77c", \
+ 	bold yellow => syntax "#dfa000"
+ # Should match the name of the bat theme
+ syntax-theme = gruvbox-light
