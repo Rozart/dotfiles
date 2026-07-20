@@ -21,12 +21,42 @@
 	hideResolved = true
 [commit]
 	gpgsign = true
+	verbose = true
 [interactive]
 	diffFilter = delta --color-only
 [include]
 	path = ~/.config/delta/delta.config
 [delta]
 	navigate = true
+	hyperlinks = true
+[pretty]
+	# Aligned table. Only %an is padded — %h and %as are already fixed-width, and
+	# padding the LAST column (%s) would both truncate long subjects and leave
+	# trailing whitespace on every line, breaking copy-paste and `git lg | grep`.
+	# %<(N,trunc) pads by display column, so multibyte names (Różalski) stay in line.
+	# No --graph here: a merge prefix is 2 cols on a plain commit but 4 on a merge,
+	# which skews every column after it.
+	tbl = "%C(auto)%h%C(reset) %C(blue)%as%C(reset) %C(green)%<(14,trunc)%an%C(reset) %s%C(auto)%d"
+	# Free-flowing, for when topology matters more than scanning.
+	# Never add -p to the graph aliases: the graph prefix on diff lines defeats
+	# delta's parser and it silently falls back to git's own colours.
+	gph = "%C(auto)%h %C(blue)%as%C(reset) %C(green)%an%C(reset) %s%C(auto)%d"
+[alias]
+	lg = log --pretty=tbl
+	lgg = log --graph --pretty=gph
+	lga = log --graph --pretty=gph --all
+	last = log -1 --stat
+	st = status --short
+	ss = status
+[column]
+	# auto, not always: disables itself when piped, so nothing that parses
+	# git output breaks.
+	ui = auto
+[status]
+	showStash = true
+	branch = true
+[rebase]
+	autosquash = true
 [init]
 	defaultBranch = main
 [pull]
@@ -37,6 +67,8 @@
 	prune = true
 [diff]
 	colorMoved = default
+	# Cleaner than the default myers on repetitive/structured code.
+	algorithm = histogram
 [merge]
 	conflictStyle = zdiff3
 [rerere]
