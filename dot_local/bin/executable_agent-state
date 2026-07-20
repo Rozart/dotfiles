@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# agent-state — surface an AI coding agent's state on its tmux window.
+#
+# Deliberately tool-agnostic: any client (Claude Code, Codex, aider, a Gemini
+# CLI, ...) wires its own lifecycle hooks to this one command. Adding a tool
+# means passing a different <tool> label — nothing here changes.
+#
+#   agent-state busy  claude    # working
+#   agent-state wait  claude    # needs the human (permission prompt / idle)
+#   agent-state done  claude    # finished; badge persists until the window is viewed
+#   agent-state clear           # remove the badge
+#
+# Sets two per-window tmux options on the window owning $TMUX_PANE:
+#   @agent_state  raw state, for tmux hooks to key off (see tmux.conf)
+#   @agent_badge  pre-rendered status fragment, so window-status-format stays
+#                 a single conditional instead of nested per-state ones
+#
+# Colours are tmux palette names, not hex, so the badge follows whichever
+# terminal theme is active without needing a per-theme entry.
+
+set -euo pipefail
+
+# Outside tmux (or a remote/background session) there is nothing to decorate.
+[ -n "${TMUX:-}" ] && [ -n "${TMUX_PANE:-}" ] || exit 0
+
+state=${1:-clear}
+tool=${2:-agent}
+
+unset_badge() {
+	tmux set-option -w -t "$TMUX_PANE" -u @agent_state 2>/dev/null || true
+	tmux set-option -w -t "$TMUX_PANE" -u @agent_badge 2>/dev/null || true
+}
+
+case $state in
+busy)
+	icon='󰔟'
+	colour=yellow
+	;;
+wait)
+	icon='󰀦'
+	colour=red
+	;;
+done)
+	icon='󰄬'
+	colour=green
+	;;
+clear)
+	unset_badge
+	tmux refresh-client -S 2>/dev/null || true
+	exit 0
+	;;
+*)
+	echo "agent-state: unknown state '$state' (busy|wait|done|clear)" >&2
+	exit 1
+	;;
+esac
+
+tmux set-option -w -t "$TMUX_PANE" @agent_state "$state"
+# Only fg is set: bg carries over from the surrounding window-status segment, and
+# the template re-asserts the full style afterwards. Emitting #[default] here would
+# reset bg to window-status-style and break the *current* window's highlight.
+tmux set-option -w -t "$TMUX_PANE" @agent_badge "#[fg=$colour]$icon $tool"
+# Options alone don't always trigger a repaint; force one so the badge is immediate.
+tmux refresh-client -S 2>/dev/null || true
