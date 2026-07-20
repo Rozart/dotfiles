@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Rebuild bat's theme cache so custom .tmTheme files are actually registered.
+# Without this, `bat --list-themes` never shows them and delta's
+# `syntax-theme = "Sonokai Shusia"` silently falls back to its default.
+#
+# Re-runs whenever a theme file changes:
+# sonokai-shusia hash: {{ include "dot_config/bat/themes/sonokai-shusia.tmTheme" | sha256sum }}
+# gruvbox-dark hash:   {{ include "dot_config/bat/themes/gruvbox-dark.tmTheme" | sha256sum }}
+
+if ! command -v bat &>/dev/null; then
+	echo "bat not found, skipping theme cache build"
+	exit 0
+fi
+
+echo "Building bat theme cache..."
+bat cache --build
+
+# bat names a theme after the .tmTheme file stem, not the display name inside it.
+if bat --list-themes | grep -qx "sonokai-shusia"; then
+	echo "bat theme cache built; sonokai-shusia registered"
+else
+	echo "WARNING: bat cache built but 'sonokai-shusia' is not listed" >&2
+	echo "         delta's syntax-theme will fall back to its default" >&2
+fi
