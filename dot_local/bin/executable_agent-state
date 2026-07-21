@@ -10,141 +10,196 @@
 #   agent-state done  claude    # finished; badge persists until the window is viewed
 #   agent-state sub+  claude    # a subagent started
 #   agent-state sub-  claude    # a subagent finished
-#   agent-state clear           # remove the badge
+#   agent-state clear           # this pane's agent is gone
+#   agent-state viewed <win>    # window was looked at; forget its finished agents
 #
-# Sets these per-window tmux options on the window owning $TMUX_PANE:
-#   @agent_state         raw state, for tmux hooks to key off (see tmux.conf)
-#   @agent_badge         pre-rendered status fragment, so window-status-format stays
-#                        a single conditional instead of nested per-state ones
-#   @agent_subs          count of in-flight subagents, rendered as a ×N suffix
-#   @agent_done_pending  set when the main loop finished while subagents were still
-#                        running — the badge stays busy until the last one lands,
-#                        otherwise a green checkmark would claim work was over
-#                        while background agents were still going.
+# State is owned per PANE, because a window routinely holds more than one agent
+# session and they must not clobber each other:
+#   @agent_pane_state    busy|wait|done for this pane's agent
+#   @agent_pane_subs     in-flight subagents spawned by this pane
+#   @agent_pane_pending  this pane's loop stopped while subagents were still out
+#   @agent_pane_seen     @agent_pane_subs as of this pane's last stop (staleness check)
+#   @agent_pane_tool     label to render
+#
+# The window options the status bar actually reads are DERIVED from the panes on
+# every change, never accumulated:
+#   @agent_state  raw state, for tmux hooks to key off (see tmux.conf)
+#   @agent_badge  pre-rendered status fragment, so window-status-format stays
+#                 a single conditional instead of nested per-state ones
+# Deriving is what makes this self-healing: a miscounted pane can make one badge
+# wrong, but it can never wedge the window into a state it cannot leave.
 #
 # Colours are tmux palette names, not hex, so the badge follows whichever
 # terminal theme is active without needing a per-theme entry.
 
 set -euo pipefail
 
-# Outside tmux (or a remote/background session) there is nothing to decorate.
-[ -n "${TMUX:-}" ] && [ -n "${TMUX_PANE:-}" ] || exit 0
+# Outside tmux there is nothing to decorate.
+[ -n "${TMUX:-}" ] || [ "${1:-}" = viewed ] || exit 0
 
-state=${1:-clear}
+action=${1:-clear}
 tool=${2:-agent}
 
-opt_get() { tmux show-option -qvw -t "$TMUX_PANE" "$1" 2>/dev/null || true; }
-opt_set() { tmux set-option -w -t "$TMUX_PANE" "$1" "$2" 2>/dev/null || true; }
-opt_del() { tmux set-option -w -t "$TMUX_PANE" -u "$1" 2>/dev/null || true; }
+pane_get() { tmux show-option -qvp -t "$1" "$2" 2>/dev/null || true; }
+pane_set() { tmux set-option -p -t "$1" "$2" "$3" 2>/dev/null || true; }
+pane_del() { tmux set-option -p -t "$1" -u "$2" 2>/dev/null || true; }
 
-subs() {
+subs_of() {
 	local n
-	n=$(opt_get @agent_subs)
+	n=$(pane_get "$1" @agent_pane_subs)
 	echo "${n:-0}"
 }
 
-# Paints @agent_state + @agent_badge for the given state, appending the subagent
-# count when any are live. Every path goes through here so the ×N suffix can
-# never drift out of sync with the counter.
-render() {
-	local icon colour n suffix=''
-	case $1 in
-	busy)
-		icon='󰔟'
-		colour=yellow
-		;;
-	wait)
-		icon='󰀦'
-		colour=red
-		;;
-	done)
-		icon='󰄬'
-		colour=green
-		;;
-	esac
+# Recompute the window badge from whatever its panes currently claim. Priority is
+# wait > busy > done: a pane blocked on the human outranks one that is merely
+# working, which outranks one that has finished.
+refresh_window() {
+	local win=$1 p s rank best=0 state='' tool_label=agent total=0 n icon colour suffix=''
 
-	n=$(subs)
-	[ "$n" -gt 0 ] && suffix=" ×$n"
+	while read -r p; do
+		[ -n "$p" ] || continue
+		s=$(pane_get "$p" @agent_pane_state)
+		[ -n "$s" ] || continue
+		n=$(subs_of "$p")
+		total=$((total + n))
+		case $s in
+		wait) rank=3 ;;
+		busy) rank=2 ;;
+		done) rank=1 ;;
+		*) rank=0 ;;
+		esac
+		if [ "$rank" -gt "$best" ]; then
+			best=$rank
+			state=$s
+			tool_label=$(pane_get "$p" @agent_pane_tool)
+			tool_label=${tool_label:-agent}
+		fi
+	done < <(tmux list-panes -t "$win" -F '#{pane_id}' 2>/dev/null || true)
 
-	opt_set @agent_state "$1"
-	# Only fg is set: bg carries over from the surrounding window-status segment, and
-	# the template re-asserts the full style afterwards. Emitting #[default] here would
-	# reset bg to window-status-style and break the *current* window's highlight.
-	opt_set @agent_badge "#[fg=$colour]$icon $tool$suffix"
+	if [ -z "$state" ]; then
+		tmux set-option -w -t "$win" -u @agent_state 2>/dev/null || true
+		tmux set-option -w -t "$win" -u @agent_badge 2>/dev/null || true
+	else
+		case $state in
+		busy)
+			icon='󰔟'
+			colour=yellow
+			;;
+		wait)
+			icon='󰀦'
+			colour=red
+			;;
+		done)
+			icon='󰄬'
+			colour=green
+			;;
+		esac
+		[ "$total" -gt 0 ] && suffix=" ×$total"
+		tmux set-option -w -t "$win" @agent_state "$state" 2>/dev/null || true
+		# Only fg is set: bg carries over from the surrounding window-status segment, and
+		# the template re-asserts the full style afterwards. Emitting #[default] here would
+		# reset bg to window-status-style and break the *current* window's highlight.
+		tmux set-option -w -t "$win" @agent_badge "#[fg=$colour]$icon $tool_label$suffix" 2>/dev/null || true
+	fi
 	# Options alone don't always trigger a repaint; force one so the badge is immediate.
 	tmux refresh-client -S 2>/dev/null || true
 }
 
+# A window was selected: forget the panes that had already finished, so "done"
+# keeps meaning "done and you haven't looked". Panes still busy or waiting are
+# describing the present and are left alone.
+if [ "$action" = viewed ]; then
+	win=${2:-}
+	[ -n "$win" ] || exit 0
+	while read -r p; do
+		[ -n "$p" ] || continue
+		if [ "$(pane_get "$p" @agent_pane_state)" = done ]; then
+			for o in @agent_pane_state @agent_pane_subs @agent_pane_pending @agent_pane_seen @agent_pane_tool; do
+				pane_del "$p" "$o"
+			done
+		fi
+	done < <(tmux list-panes -t "$win" -F '#{pane_id}' 2>/dev/null || true)
+	refresh_window "$win"
+	exit 0
+fi
+
+# Everything below mutates the calling pane's own state.
+[ -n "${TMUX_PANE:-}" ] || exit 0
+self=$TMUX_PANE
+
 # Parallel subagent spawns fire their hooks near-simultaneously, so the counter's
-# read-modify-write genuinely races. A lost increment means the counter never
-# reaches 0 again and the badge never goes green, so this is worth a lock.
+# read-modify-write genuinely races.
 # ponytail: no flock (macOS, minimal containers) degrades to the racy path rather
 # than failing — a miscounted badge beats a hook that errors out.
-lock_id=$(tmux display-message -p -t "$TMUX_PANE" '#{session_id}#{window_id}' 2>/dev/null || echo "$TMUX_PANE")
-lockfile="${TMPDIR:-/tmp}/agent-state.$(id -u).${lock_id//[^a-zA-Z0-9]/_}.lock"
+lockfile="${TMPDIR:-/tmp}/agent-state.$(id -u).${self//[^a-zA-Z0-9]/_}.lock"
+if command -v flock >/dev/null 2>&1; then
+	exec 9>"$lockfile"
+	flock 9
+fi
 
-with_lock() {
-	if command -v flock >/dev/null 2>&1; then
-		exec 9>"$lockfile"
-		flock 9
-	fi
-	"$@"
-}
-
-sub_inc() {
-	opt_set @agent_subs "$(($(subs) + 1))"
-	render busy
-}
-
-sub_dec() {
-	local n
-	n=$(subs)
-	[ "$n" -gt 0 ] && n=$((n - 1))
-	opt_set @agent_subs "$n"
-
-	# Last subagent home and the main loop already stopped: now it's really done.
-	if [ "$n" -eq 0 ] && [ -n "$(opt_get @agent_done_pending)" ]; then
-		opt_del @agent_done_pending
-		render done
-	else
-		render busy
-	fi
-}
-
-case $state in
+case $action in
 busy)
-	# A fresh user turn is the self-heal: whatever the counter drifted to during
-	# the last turn, it starts from zero here.
-	opt_set @agent_subs 0
-	opt_del @agent_done_pending
-	render busy
+	# A fresh turn is the self-heal: whatever the counter drifted to last turn, it
+	# starts from zero here.
+	pane_set "$self" @agent_pane_state busy
+	pane_set "$self" @agent_pane_tool "$tool"
+	pane_set "$self" @agent_pane_subs 0
+	pane_del "$self" @agent_pane_pending
+	pane_del "$self" @agent_pane_seen
 	;;
 wait)
-	render wait
+	# Blocked on the human means the loop is interactive again, so any subagents it
+	# was tracking are no longer what this pane is waiting on.
+	pane_set "$self" @agent_pane_state wait
+	pane_set "$self" @agent_pane_tool "$tool"
+	pane_set "$self" @agent_pane_subs 0
+	pane_del "$self" @agent_pane_pending
 	;;
 done)
-	if [ "$(subs)" -gt 0 ]; then
-		opt_set @agent_done_pending 1
-		render busy
+	n=$(subs_of "$self")
+	seen=$(pane_get "$self" @agent_pane_seen)
+	pane_set "$self" @agent_pane_tool "$tool"
+	if [ "$n" -gt 0 ] && [ "$n" != "${seen:-}" ]; then
+		# Subagents still out, and the count has moved since the last stop — real work
+		# is landing, so hold the green back.
+		pane_set "$self" @agent_pane_state busy
+		pane_set "$self" @agent_pane_pending 1
+		pane_set "$self" @agent_pane_seen "$n"
 	else
-		render done
+		# Either nothing is out, or we stopped twice with the count frozen — those
+		# increments are orphaned (a subagent denied or interrupted never reports a
+		# stop) and must not pin this pane yellow forever.
+		pane_set "$self" @agent_pane_state done
+		pane_set "$self" @agent_pane_subs 0
+		pane_del "$self" @agent_pane_pending
+		pane_del "$self" @agent_pane_seen
 	fi
 	;;
 sub+)
-	with_lock sub_inc
+	pane_set "$self" @agent_pane_subs "$(($(subs_of "$self") + 1))"
+	pane_set "$self" @agent_pane_tool "$tool"
 	;;
 sub-)
-	with_lock sub_dec
+	n=$(subs_of "$self")
+	[ "$n" -gt 0 ] && n=$((n - 1))
+	pane_set "$self" @agent_pane_subs "$n"
+	# A decrement means something FINISHED. It is never evidence that work is
+	# running, so it must not assert busy — it only resolves a deferred done.
+	if [ "$n" -eq 0 ] && [ -n "$(pane_get "$self" @agent_pane_pending)" ]; then
+		pane_set "$self" @agent_pane_state done
+		pane_del "$self" @agent_pane_pending
+		pane_del "$self" @agent_pane_seen
+	fi
 	;;
 clear)
-	opt_del @agent_state
-	opt_del @agent_badge
-	opt_del @agent_subs
-	opt_del @agent_done_pending
-	tmux refresh-client -S 2>/dev/null || true
+	for o in @agent_pane_state @agent_pane_subs @agent_pane_pending @agent_pane_seen @agent_pane_tool; do
+		pane_del "$self" "$o"
+	done
 	;;
 *)
-	echo "agent-state: unknown state '$state' (busy|wait|done|sub+|sub-|clear)" >&2
+	echo "agent-state: unknown action '$action' (busy|wait|done|sub+|sub-|clear|viewed)" >&2
 	exit 1
 	;;
 esac
+
+refresh_window "$self"

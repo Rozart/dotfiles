@@ -71,7 +71,7 @@ set -g history-limit 10000
 # AI agent state badge (see ~/.local/bin/agent-state). Viewing a window clears a
 # finished badge — that's what makes "done" mean "done and you haven't looked".
 # `wait` and `busy` are left alone: they describe the present, not something unseen.
-set-hook -g after-select-window 'if -F "#{==:#{@agent_state},done}" "set -w -u @agent_state ; set -w -u @agent_badge ; set -w -u @agent_subs ; set -w -u @agent_done_pending"'
+set-hook -g after-select-window 'run-shell -b "~/.local/bin/agent-state viewed #{window_id}"'
 
 set -g @resurrect-strategy-vim 'session'
 set -g @resurrect-strategy-nvim 'session'
