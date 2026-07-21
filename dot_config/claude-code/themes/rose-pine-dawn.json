@@ -1,8 +1,10 @@
 {
   "name": "rose-pine-dawn",
-  "base": "light-ansi",
+  "base": "light",
   "overrides": {
     "claude": "#286983",
+    "inactive": "#716d8b",
+    "subtle": "#716d8b",
     "diffAdded": "#dfeae8",
     "diffRemoved": "#f2dfdd",
     "diffAddedWord": "#c2dbd9",

@@ -1,18 +1,18 @@
 [delta "catppuccin-latte"]
  blame-palette = "#eff1f5 #e6e9ef #dce0e8 #ccd0da #bcc0cc"
- commit-decoration-style = "#6c6f85" bold box ul
+ commit-decoration-style = "#6a6d82" bold box ul
  light = true
- file-decoration-style = "#6c6f85"
+ file-decoration-style = "#6a6d82"
  file-style = "#4c4f69"
- hunk-header-decoration-style = "#6c6f85" box ul
+ hunk-header-decoration-style = "#6a6d82" box ul
  hunk-header-file-style = bold
- hunk-header-line-number-style = bold "#9ca0b0"
+ hunk-header-line-number-style = bold "#676c81"
  hunk-header-style = file line-number syntax
- line-numbers-left-style = "#9ca0b0"
+ line-numbers-left-style = "#676c81"
  line-numbers-minus-style = bold "#d20f39"
  line-numbers-plus-style = bold "#40a02b"
- line-numbers-right-style = "#9ca0b0"
- line-numbers-zero-style = "#9ca0b0"
+ line-numbers-right-style = "#676c81"
+ line-numbers-zero-style = "#676c81"
  minus-emph-style = bold syntax "#f0bfc9"
  minus-style = syntax "#f7dce2"
  plus-emph-style = bold syntax "#c0e3b6"

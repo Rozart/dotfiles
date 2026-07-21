@@ -27,7 +27,7 @@ M.palettes = {
   -- load dawn (see plugins/colorscheme.lua), so this is unambiguous.
   ["rose-pine"] = {
     fg = "#575279", -- text
-    grey = "#797593", -- subtle
+    grey = "#716d8b", -- subtle (darkened to WCAG AA ≥4.5:1 on bg0)
     grey_dim = "#9893a5", -- muted
     red = "#b4637a", -- love
     orange = "#d7827e", -- rose
@@ -51,7 +51,7 @@ M.palettes = {
   -- https://catppuccin.com/palette (latte)
   ["catppuccin-latte"] = {
     fg = "#4c4f69", -- text
-    grey = "#6c6f85", -- subtext0
+    grey = "#6a6d82", -- subtext0 (darkened to WCAG AA ≥4.5:1 on bg0)
     grey_dim = "#9ca0b0", -- overlay0
     red = "#d20f39",
     orange = "#fe640b", -- peach
@@ -75,7 +75,7 @@ M.palettes = {
   -- sainnhe/everforest, light / medium. Ships bg_* surfaces directly.
   ["everforest"] = {
     fg = "#5c6a72",
-    grey = "#939f91", -- grey1
+    grey = "#687566", -- grey1 (darkened to WCAG AA ≥4.5:1 on bg0)
     grey_dim = "#a6b0a0", -- grey0
     red = "#f85552",
     orange = "#f57d26",
@@ -99,7 +99,7 @@ M.palettes = {
   -- folke/tokyonight.nvim, day variant
   ["tokyonight-day"] = {
     fg = "#3760bf",
-    grey = "#848cb5", -- comment
+    grey = "#586293", -- comment (darkened to WCAG AA ≥4.5:1 on bg0)
     grey_dim = "#a8aecb",
     red = "#f52a65",
     orange = "#b15c00",

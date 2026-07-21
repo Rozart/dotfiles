@@ -1,18 +1,18 @@
 [delta "tokyonight-day"]
  blame-palette = "#e1e2e7 #e9e9ed #d0d5e3 #c4c8da #b7c1e3"
- commit-decoration-style = "#848cb5" bold box ul
+ commit-decoration-style = "#586293" bold box ul
  light = true
- file-decoration-style = "#848cb5"
+ file-decoration-style = "#586293"
  file-style = "#3760bf"
- hunk-header-decoration-style = "#848cb5" box ul
+ hunk-header-decoration-style = "#586293" box ul
  hunk-header-file-style = bold
- hunk-header-line-number-style = bold "#848cb5"
+ hunk-header-line-number-style = bold "#586293"
  hunk-header-style = file line-number syntax
- line-numbers-left-style = "#848cb5"
+ line-numbers-left-style = "#586293"
  line-numbers-minus-style = bold "#f52a65"
  line-numbers-plus-style = bold "#587539"
- line-numbers-right-style = "#848cb5"
- line-numbers-zero-style = "#848cb5"
+ line-numbers-right-style = "#586293"
+ line-numbers-zero-style = "#586293"
  minus-emph-style = bold syntax "#e3b8c6"
  minus-style = syntax "#eed4dd"
  plus-emph-style = bold syntax "#c1d4b8"

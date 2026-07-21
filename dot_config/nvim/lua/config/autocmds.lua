@@ -22,6 +22,9 @@ local function apply_highlights()
     end
 
     -- General adjustments of base highlights
+    set_hl("Comment", palette.grey, nil, "italic")
+    set_hl("@comment", palette.grey, nil)
+    set_hl("LineNr", palette.grey, nil)
     set_hl("NormalFloat", palette.fg, nil)
     set_hl("FloatBorder", palette.grey, nil)
     set_hl("FloatTitle", palette.red, palette.bg0, "bold")
@@ -69,7 +72,7 @@ local function apply_highlights()
     set_hl("TinyInlineInvDiagnosticVirtualTextInfo", palette.diff_blue, nil, "italic")
     set_hl("TinyInlineInvDiagnosticVirtualTextHint", palette.diff_green, nil, "italic")
 
-    set_hl("TinyInlineDiagnosticVirtualTextArrow", palette.bg4, nil, "bold")
+    set_hl("TinyInlineDiagnosticVirtualTextArrow", palette.grey, nil, "bold")
 
     -- Custom highlight for blink.cmp
     set_hl("BlinkCmpMenu", nil, palette.bg0)
