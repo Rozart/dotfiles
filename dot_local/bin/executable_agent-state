@@ -7,6 +7,7 @@
 #
 #   agent-state busy  claude    # working
 #   agent-state wait  claude    # needs the human (permission prompt / idle)
+#   agent-state resume claude   # a tool ran — heal wait back to busy mid-turn
 #   agent-state done  claude    # finished; badge persists until the window is viewed
 #   agent-state sub+  claude    # a subagent started
 #   agent-state sub-  claude    # a subagent finished
@@ -147,6 +148,13 @@ busy)
 	pane_del "$self" @agent_pane_pending
 	pane_del "$self" @agent_pane_seen
 	;;
+resume)
+	# A tool just executed, which proves the loop is running again — the only signal
+	# that exists for "the human answered the permission prompt". Unlike `busy` it
+	# fires mid-turn, so it must not reset the subagent counter.
+	pane_set "$self" @agent_pane_state busy
+	pane_set "$self" @agent_pane_tool "$tool"
+	;;
 wait)
 	# Blocked on the human means the loop is interactive again, so any subagents it
 	# was tracking are no longer what this pane is waiting on.
@@ -197,7 +205,7 @@ clear)
 	done
 	;;
 *)
-	echo "agent-state: unknown action '$action' (busy|wait|done|sub+|sub-|clear|viewed)" >&2
+	echo "agent-state: unknown action '$action' (busy|resume|wait|done|sub+|sub-|clear|viewed)" >&2
 	exit 1
 	;;
 esac
