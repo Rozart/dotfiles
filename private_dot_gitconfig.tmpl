@@ -36,23 +36,28 @@
 	# %<(N,trunc) pads by display column, so multibyte names (Różalski) stay in line.
 	# No --graph here: a merge prefix is 2 cols on a plain commit but 4 on a merge,
 	# which skews every column after it.
-	# %G? is the signature verdict, always exactly 1 column (G good, N none, B bad,
-	# U/X/Y/R good-but-suspect, E uncheckable) so it can sit mid-row without
-	# disturbing alignment. Needs gpg.ssh.allowedSignersFile set or every commit
-	# reports E. Pretty formats have no conditionals, so it cannot be coloured by
-	# verdict or hidden when good — an unsigned repo shows a column of N.
-	# E means "not in allowed_signers" (a teammate's key), not "bad signature".
+	# %G? is the signature verdict, always exactly 1 column, so it sits mid-row
+	# without disturbing alignment. Left raw and uncoloured here on purpose: the
+	# `lg` alias runs it through ~/.local/bin/git-lg, which turns the letter into
+	# a symbol and colours it by verdict — neither of which a pretty format can do,
+	# since git log has no conditionals. Using --pretty=tbl directly still works
+	# and just shows git's raw letter.
+	# Needs gpg.ssh.allowedSignersFile set or every commit reports E.
 	# ponytail: ~5ms per SIGNED commit, since each one shells out to verify;
 	# unsigned ones are free. Paged use only formats a screenful so it stays
 	# instant, but `git lg | grep` over a long signed history drags — drop %G?
 	# into a separate alias if that ever bites.
-	tbl = "%C(auto)%h%C(reset) %C(yellow)%G?%C(reset) %C(blue)%as%C(reset) %C(green)%<(14,trunc)%an%C(reset) %s%C(auto)%d"
+	tbl = "%C(auto)%h%C(reset) %G? %C(blue)%as%C(reset) %C(green)%<(14,trunc)%an%C(reset) %s%C(auto)%d"
 	# Free-flowing, for when topology matters more than scanning.
 	# Never add -p to the graph aliases: the graph prefix on diff lines defeats
 	# delta's parser and it silently falls back to git's own colours.
 	gph = "%C(auto)%h %C(blue)%as%C(reset) %C(green)%an%C(reset) %s%C(auto)%d"
+[pager]
+	# `!` aliases are not paged by default; this restores it, and tells git-lg it
+	# may still emit colour even though its stdout is now a pipe.
+	lg = true
 [alias]
-	lg = log --pretty=tbl
+	lg = "!git-lg"
 	lgg = log --graph --pretty=gph
 	lga = log --graph --pretty=gph --all
 	last = log -1 --stat

@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# git-lg — `git log --pretty=tbl` with the signature verdict rendered as a symbol.
+#
+# This lives in a script rather than a gitconfig alias because it needs work done
+# AFTER git has written each line. git log's pretty formats have no conditionals
+# (%(if) exists for for-each-ref and `git branch --format`, not for log), so %G?
+# can only ever emit its raw letter, and the format string cannot colour it by
+# verdict either. Both have to be done here.
+#
+#   ✓  good signature
+#   ✗  BAD signature, or good signature made by a REVOKED key — both mean stop
+#   !  signed but suspect: unknown validity, expired signature, or expired key
+#   ?  unverifiable — signer is absent from gpg.ssh.allowedSignersFile, which is
+#      the normal state for a teammate's key, not an accusation
+#   ·  unsigned
+#
+# The verdict letter is anchored to the hash at the start of the line. Anchoring it
+# to the date that FOLLOWS it is not enough: sed applies every expression to every
+# line, so on a commit whose verdict is N the G expression finds no verdict to match
+# and happily rewrites a " G 2020-01-01" sitting in the subject instead.
+
+set -euo pipefail
+
+# Match git's own rule: colour when writing to a terminal, or when git has already
+# handed us off to its pager (`pager.lg = true` sets GIT_PAGER_IN_USE).
+if [ -t 1 ] || [ -n "${GIT_PAGER_IN_USE:-}" ]; then
+	colour=always
+else
+	colour=never
+fi
+
+# The abbreviated hash, wrapped in however many escape sequences colour mode adds.
+# Nothing else can match at the start of a line, so only the real verdict is ever
+# rewritten.
+hash_anchor='^((\x1b\[[0-9;]*m)*[0-9a-f]+(\x1b\[[0-9;]*m)*)'
+
+render() {
+	if [ "$colour" = always ]; then
+		printf '\x1b[%sm%s\x1b[m' "$2" "$1"
+	else
+		printf '%s' "$1"
+	fi
+}
+
+sed_args=()
+while IFS=: read -r letter symbol code; do
+	sed_args+=(-e "s/$hash_anchor $letter /\1 $(render "$symbol" "$code") /")
+done <<-'MAP'
+	G:✓:32
+	B:✗:1;31
+	R:✗:1;31
+	U:!:33
+	X:!:33
+	Y:!:33
+	E:?:2
+	N:·:2
+MAP
+
+git log --color=$colour --pretty=tbl "$@" | sed -E "${sed_args[@]}"
