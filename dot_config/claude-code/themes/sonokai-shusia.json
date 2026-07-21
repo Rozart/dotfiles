@@ -2,9 +2,11 @@
   "name": "sonokai-shusia",
   "base": "dark-ansi",
   "overrides": {
-    "claude": "#ab9df2",
+    "claude": "#78dce8",
     "diffAdded": "#394634",
     "diffRemoved": "#55393d",
+    "diffAddedWord": "#5c7549",
+    "diffRemovedWord": "#8e4656",
     "diffAddedDimmed": "#37343a",
     "diffRemovedDimmed": "#37343a"
   }

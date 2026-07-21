@@ -2,9 +2,11 @@
   "name": "rose-pine-dawn",
   "base": "light-ansi",
   "overrides": {
-    "claude": "#907aa9",
-    "diffAdded": "#dfe8e6",
-    "diffRemoved": "#f5e0e2",
+    "claude": "#286983",
+    "diffAdded": "#dfeae8",
+    "diffRemoved": "#f2dfdd",
+    "diffAddedWord": "#c2dbd9",
+    "diffRemovedWord": "#e8c4c4",
     "diffAddedDimmed": "#f4ede8",
     "diffRemovedDimmed": "#f4ede8"
   }
