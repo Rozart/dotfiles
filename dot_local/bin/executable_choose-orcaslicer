@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ORCA_DIR="$HOME/.local/orcaslicer"
+ACTIVE_LINK="/Applications/OrcaSlicer.app"
+
+# Detect currently active channel
+current=""
+if [ -L "$ACTIVE_LINK" ]; then
+	target=$(readlink "$ACTIVE_LINK")
+	if [[ "$target" == *"/nightly/"* ]]; then
+		current="nightly"
+	elif [[ "$target" == *"/stable/"* ]]; then
+		current="stable"
+	fi
+fi
+
+# Discover installed versions
+installed=()
+for channel in nightly stable; do
+	if [ -d "$ORCA_DIR/$channel/OrcaSlicer.app" ]; then
+		installed+=("$channel")
+	fi
+done
+
+if [ ${#installed[@]} -eq 0 ]; then
+	echo "No OrcaSlicer versions installed. Run 'update-orcaslicer' first." >&2
+	exit 1
+fi
+
+CHANNEL="${1:-}"
+
+if [ -z "$CHANNEL" ]; then
+	echo "Installed OrcaSlicer versions:"
+	i=1
+	for ch in "${installed[@]}"; do
+		version=$(defaults read "$ORCA_DIR/$ch/OrcaSlicer.app/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "unknown")
+		marker=""
+		if [ "$ch" = "$current" ]; then
+			marker=" (active)"
+		fi
+		echo "  $i) $ch — $version$marker"
+		i=$((i + 1))
+	done
+
+	printf "Choice: "
+	read -r choice
+
+	if ! [[ "$choice" =~ ^[0-9]+$ ]] || [ "$choice" -lt 1 ] || [ "$choice" -gt ${#installed[@]} ]; then
+		echo "Invalid choice" >&2
+		exit 1
+	fi
+	CHANNEL="${installed[$((choice - 1))]}"
+fi
+
+if [ ! -d "$ORCA_DIR/$CHANNEL/OrcaSlicer.app" ]; then
+	echo "OrcaSlicer $CHANNEL is not installed. Run 'update-orcaslicer $CHANNEL' first." >&2
+	exit 1
+fi
+
+# Replace any existing non-symlink install at the active path
+if [ -e "$ACTIVE_LINK" ] && [ ! -L "$ACTIVE_LINK" ]; then
+	echo "Removing existing $ACTIVE_LINK (regular install)..."
+	rm -rf "$ACTIVE_LINK"
+fi
+
+ln -sfn "$ORCA_DIR/$CHANNEL/OrcaSlicer.app" "$ACTIVE_LINK"
+
+echo "Activated: $CHANNEL"
+defaults read "$ACTIVE_LINK/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || true

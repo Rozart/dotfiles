@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ORCA_DIR="$HOME/.local/orcaslicer"
+RELEASES_URL="https://github.com/OrcaSlicer/OrcaSlicer/releases"
+CHANNEL="${1:-}"
+
+if [ -z "$CHANNEL" ]; then
+	echo "Select OrcaSlicer version to update:"
+	echo "  1) nightly"
+	echo "  2) stable"
+	printf "Choice [1]: "
+	read -r choice
+	case "${choice:-1}" in
+	1) CHANNEL="nightly" ;;
+	2) CHANNEL="stable" ;;
+	*)
+		echo "Invalid choice" >&2
+		exit 1
+		;;
+	esac
+fi
+
+case "$CHANNEL" in
+nightly | stable) ;;
+*)
+	echo "Usage: update-orcaslicer [nightly|stable]" >&2
+	exit 1
+	;;
+esac
+
+if [ "$CHANNEL" = "nightly" ]; then
+	DMG_URL="$RELEASES_URL/download/nightly-builds/OrcaSlicer_Mac_universal_nightly.dmg"
+else
+	echo "Resolving latest stable tag..."
+	EFFECTIVE_URL=$(curl -fsSLI -o /dev/null -w '%{url_effective}' "$RELEASES_URL/latest")
+	TAG=${EFFECTIVE_URL##*/}
+	if [ -z "$TAG" ] || [ "$TAG" = "latest" ]; then
+		echo "Failed to resolve latest stable tag" >&2
+		exit 1
+	fi
+	VERSION=${TAG#v}
+	DMG_URL="$RELEASES_URL/download/$TAG/OrcaSlicer_Mac_universal_V${VERSION}.dmg"
+fi
+
+INSTALL_DIR="$ORCA_DIR/$CHANNEL"
+
+echo "Updating OrcaSlicer $CHANNEL..."
+
+TMPDIR=$(mktemp -d)
+MOUNT_POINT=""
+cleanup() {
+	if [ -n "$MOUNT_POINT" ] && [ -d "$MOUNT_POINT" ]; then
+		hdiutil detach "$MOUNT_POINT" -quiet -force >/dev/null 2>&1 || true
+	fi
+	rm -rf "$TMPDIR"
+}
+trap cleanup EXIT
+
+DMG_PATH="$TMPDIR/OrcaSlicer.dmg"
+echo "Downloading $(basename "$DMG_URL")..."
+curl -fL --progress-bar -o "$DMG_PATH" "$DMG_URL"
+
+echo "Mounting DMG..."
+MOUNT_POINT="$TMPDIR/mnt"
+mkdir -p "$MOUNT_POINT"
+hdiutil attach "$DMG_PATH" -nobrowse -readonly -quiet -mountpoint "$MOUNT_POINT"
+
+APP_PATH="$MOUNT_POINT/OrcaSlicer.app"
+if [ ! -d "$APP_PATH" ]; then
+	echo "Error: OrcaSlicer.app not found in DMG" >&2
+	exit 1
+fi
+
+echo "Installing to $INSTALL_DIR..."
+rm -rf "$INSTALL_DIR"
+mkdir -p "$INSTALL_DIR"
+cp -R "$APP_PATH" "$INSTALL_DIR/"
+
+echo ""
+echo "Done! Installed $CHANNEL:"
+defaults read "$INSTALL_DIR/OrcaSlicer.app/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "(version unknown)"
+
+# If no version is currently active, activate this one
+ACTIVE_LINK="/Applications/OrcaSlicer.app"
+if [ ! -L "$ACTIVE_LINK" ]; then
+	echo "No active symlink found — activating $CHANNEL."
+	choose-orcaslicer "$CHANNEL"
+fi
