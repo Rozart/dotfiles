@@ -8,12 +8,19 @@
 #   agent-state busy  claude    # working
 #   agent-state wait  claude    # needs the human (permission prompt / idle)
 #   agent-state done  claude    # finished; badge persists until the window is viewed
+#   agent-state sub+  claude    # a subagent started
+#   agent-state sub-  claude    # a subagent finished
 #   agent-state clear           # remove the badge
 #
-# Sets two per-window tmux options on the window owning $TMUX_PANE:
-#   @agent_state  raw state, for tmux hooks to key off (see tmux.conf)
-#   @agent_badge  pre-rendered status fragment, so window-status-format stays
-#                 a single conditional instead of nested per-state ones
+# Sets these per-window tmux options on the window owning $TMUX_PANE:
+#   @agent_state         raw state, for tmux hooks to key off (see tmux.conf)
+#   @agent_badge         pre-rendered status fragment, so window-status-format stays
+#                        a single conditional instead of nested per-state ones
+#   @agent_subs          count of in-flight subagents, rendered as a ×N suffix
+#   @agent_done_pending  set when the main loop finished while subagents were still
+#                        running — the badge stays busy until the last one lands,
+#                        otherwise a green checkmark would claim work was over
+#                        while background agents were still going.
 #
 # Colours are tmux palette names, not hex, so the badge follows whichever
 # terminal theme is active without needing a per-theme entry.
@@ -26,39 +33,118 @@ set -euo pipefail
 state=${1:-clear}
 tool=${2:-agent}
 
-unset_badge() {
-	tmux set-option -w -t "$TMUX_PANE" -u @agent_state 2>/dev/null || true
-	tmux set-option -w -t "$TMUX_PANE" -u @agent_badge 2>/dev/null || true
+opt_get() { tmux show-option -qvw -t "$TMUX_PANE" "$1" 2>/dev/null || true; }
+opt_set() { tmux set-option -w -t "$TMUX_PANE" "$1" "$2" 2>/dev/null || true; }
+opt_del() { tmux set-option -w -t "$TMUX_PANE" -u "$1" 2>/dev/null || true; }
+
+subs() {
+	local n
+	n=$(opt_get @agent_subs)
+	echo "${n:-0}"
+}
+
+# Paints @agent_state + @agent_badge for the given state, appending the subagent
+# count when any are live. Every path goes through here so the ×N suffix can
+# never drift out of sync with the counter.
+render() {
+	local icon colour n suffix=''
+	case $1 in
+	busy)
+		icon='󰔟'
+		colour=yellow
+		;;
+	wait)
+		icon='󰀦'
+		colour=red
+		;;
+	done)
+		icon='󰄬'
+		colour=green
+		;;
+	esac
+
+	n=$(subs)
+	[ "$n" -gt 0 ] && suffix=" ×$n"
+
+	opt_set @agent_state "$1"
+	# Only fg is set: bg carries over from the surrounding window-status segment, and
+	# the template re-asserts the full style afterwards. Emitting #[default] here would
+	# reset bg to window-status-style and break the *current* window's highlight.
+	opt_set @agent_badge "#[fg=$colour]$icon $tool$suffix"
+	# Options alone don't always trigger a repaint; force one so the badge is immediate.
+	tmux refresh-client -S 2>/dev/null || true
+}
+
+# Parallel subagent spawns fire their hooks near-simultaneously, so the counter's
+# read-modify-write genuinely races. A lost increment means the counter never
+# reaches 0 again and the badge never goes green, so this is worth a lock.
+# ponytail: no flock (macOS, minimal containers) degrades to the racy path rather
+# than failing — a miscounted badge beats a hook that errors out.
+lock_id=$(tmux display-message -p -t "$TMUX_PANE" '#{session_id}#{window_id}' 2>/dev/null || echo "$TMUX_PANE")
+lockfile="${TMPDIR:-/tmp}/agent-state.$(id -u).${lock_id//[^a-zA-Z0-9]/_}.lock"
+
+with_lock() {
+	if command -v flock >/dev/null 2>&1; then
+		exec 9>"$lockfile"
+		flock 9
+	fi
+	"$@"
+}
+
+sub_inc() {
+	opt_set @agent_subs "$(($(subs) + 1))"
+	render busy
+}
+
+sub_dec() {
+	local n
+	n=$(subs)
+	[ "$n" -gt 0 ] && n=$((n - 1))
+	opt_set @agent_subs "$n"
+
+	# Last subagent home and the main loop already stopped: now it's really done.
+	if [ "$n" -eq 0 ] && [ -n "$(opt_get @agent_done_pending)" ]; then
+		opt_del @agent_done_pending
+		render done
+	else
+		render busy
+	fi
 }
 
 case $state in
 busy)
-	icon='󰔟'
-	colour=yellow
+	# A fresh user turn is the self-heal: whatever the counter drifted to during
+	# the last turn, it starts from zero here.
+	opt_set @agent_subs 0
+	opt_del @agent_done_pending
+	render busy
 	;;
 wait)
-	icon='󰀦'
-	colour=red
+	render wait
 	;;
 done)
-	icon='󰄬'
-	colour=green
+	if [ "$(subs)" -gt 0 ]; then
+		opt_set @agent_done_pending 1
+		render busy
+	else
+		render done
+	fi
+	;;
+sub+)
+	with_lock sub_inc
+	;;
+sub-)
+	with_lock sub_dec
 	;;
 clear)
-	unset_badge
+	opt_del @agent_state
+	opt_del @agent_badge
+	opt_del @agent_subs
+	opt_del @agent_done_pending
 	tmux refresh-client -S 2>/dev/null || true
-	exit 0
 	;;
 *)
-	echo "agent-state: unknown state '$state' (busy|wait|done|clear)" >&2
+	echo "agent-state: unknown state '$state' (busy|wait|done|sub+|sub-|clear)" >&2
 	exit 1
 	;;
 esac
-
-tmux set-option -w -t "$TMUX_PANE" @agent_state "$state"
-# Only fg is set: bg carries over from the surrounding window-status segment, and
-# the template re-asserts the full style afterwards. Emitting #[default] here would
-# reset bg to window-status-style and break the *current* window's highlight.
-tmux set-option -w -t "$TMUX_PANE" @agent_badge "#[fg=$colour]$icon $tool"
-# Options alone don't always trigger a repaint; force one so the badge is immediate.
-tmux refresh-client -S 2>/dev/null || true
