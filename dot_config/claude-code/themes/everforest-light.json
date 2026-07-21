@@ -1,0 +1,11 @@
+{
+  "name": "everforest-light",
+  "base": "light-ansi",
+  "overrides": {
+    "claude": "#df69ba",
+    "diffAdded": "#f3f5d9",
+    "diffRemoved": "#ffe7de",
+    "diffAddedDimmed": "#f4f0d9",
+    "diffRemovedDimmed": "#f4f0d9"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "tokyonight-day",
+  "base": "light-ansi",
+  "overrides": {
+    "claude": "#9854f1",
+    "diffAdded": "#cfdcc8",
+    "diffRemoved": "#e5cad4",
+    "diffAddedDimmed": "#dcdde3",
+    "diffRemovedDimmed": "#dcdde3"
+  }
+}

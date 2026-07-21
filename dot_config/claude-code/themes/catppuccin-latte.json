@@ -1,0 +1,11 @@
+{
+  "name": "catppuccin-latte",
+  "base": "light-ansi",
+  "overrides": {
+    "claude": "#8839ef",
+    "diffAdded": "#dfeddb",
+    "diffRemoved": "#f5dce1",
+    "diffAddedDimmed": "#e6e9ef",
+    "diffRemovedDimmed": "#e6e9ef"
+  }
+}

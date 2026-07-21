@@ -1,4 +1,4 @@
-function theme --description "Switch the shared nvim/tmux/ghostty colour theme"
+function theme --description "Switch the shared nvim/tmux/ghostty/claude colour theme"
     # All index-matched to $slugs.
     #   ghostty_names -> theme file under ~/.config/ghostty/themes/
     #   bat_themes    -> delta's syntax-theme; must be a theme bat knows about
@@ -39,6 +39,11 @@ function theme --description "Switch the shared nvim/tmux/ghostty colour theme"
     printf '[delta]\n  features = %s\n  syntax-theme = "%s"\n' \
         $slug $bat_themes[$i] >~/.config/delta/active.gitconfig
 
+    # claude code is pinned to `theme = "custom:system"`, so only the file
+    # contents change. It watches ~/.claude/themes/ and reloads live.
+    mkdir -p ~/.claude/themes
+    cp ~/.config/claude-code/themes/$slug.json ~/.claude/themes/system.json
+
     set_color --bold
     echo "$slug"
     set_color normal
@@ -52,6 +57,7 @@ function theme --description "Switch the shared nvim/tmux/ghostty colour theme"
 
     echo "  nvim     next launch"
     echo "  git      delta follows immediately"
+    echo "  claude   reloaded"
 
     # No CLI reloads ghostty's config; it's the reload_config keybind or restart.
     if test (uname) = Darwin
