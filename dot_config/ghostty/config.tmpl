@@ -1,5 +1,5 @@
 working-directory = "home"
-command = fish
+command = {{ lookPath "fish" | default "fish" }}
 
 theme = "Sonokai Shusia"
 # Active theme override, written by the `theme` fish function. Optional (?) so a
