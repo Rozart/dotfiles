@@ -10,6 +10,13 @@ Host workgit
 	IdentityFile ~/.ssh/id_github_auth.pub
 	IdentitiesOnly yes
 
+Host programiumgit
+	HostName git.programium.dev
+	Port 22222
+	User git
+	IdentityFile ~/.ssh/id_forgejo_programium_auth.pub
+	IdentitiesOnly yes
+
 {{- if eq .chezmoi.os "darwin" }}
 Host home-nas
 	HostName 192.168.0.36
