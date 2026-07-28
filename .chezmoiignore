@@ -1,3 +1,8 @@
+# Machine-local state fish rewrites on its own (init counter, and the
+# key-binding var it migrated out of universal scope in 4.3). The plugin list
+# it also holds is tracked declaratively in fish_plugins.
+.config/fish/fish_variables
+
 # Ignore Mac-specific SSH keys on non-darwin systems
 {{- if ne .chezmoi.os "darwin" }}
 Library
