@@ -22,6 +22,11 @@ set -g mouse on
 set -g renumber-windows on
 {{- if eq .chezmoi.os "darwin" }}
 set -s copy-command 'pbcopy'
+{{- else }}
+# ssh-forwarded tunnel to the Mac's pbcopy server (see ~/.ssh/config on the
+# Mac). If the tunnel is down the pipe fails silently, but set-clipboard's
+# OSC 52 emission still covers the copy.
+set -s copy-command 'nc -N -w 1 127.0.0.1 2490'
 {{- end }}
 
 bind h select-pane -L
@@ -38,7 +43,7 @@ unbind-key -T vi-copy v
 
 bind -T copy-mode-vi v send-keys -X begin-selection
 bind -T copy-mode-vi C-v send-keys -X rectangle-toggle \; send -X begin-selection
-bind -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel
 
 # Use R to reload the config
 unbind r

@@ -1,0 +1,18 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+
+# pbpaste-server.plist hash: {{ include "Library/LaunchAgents/dev.rozart.pbpaste-server.plist" | sha256sum }}
+# pbcopy-server.plist hash: {{ include "Library/LaunchAgents/dev.rozart.pbcopy-server.plist" | sha256sum }}
+
+if [ ! -x /opt/homebrew/bin/socat ]; then
+	echo "socat not installed (brew bundle), skipping clipboard server setup"
+	exit 0
+fi
+
+for name in pbpaste-server pbcopy-server; do
+	launchctl bootout "gui/$(id -u)/dev.rozart.$name" 2>/dev/null
+	launchctl bootstrap "gui/$(id -u)" "$HOME/Library/LaunchAgents/dev.rozart.$name.plist"
+done
+
+echo "clipboard launchd agents loaded (pbpaste 127.0.0.1:2489, pbcopy 127.0.0.1:2490)"
+{{ end -}}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>dev.rozart.pbcopy-server</string>
+	<!-- Writes anything sent to localhost:2490 into the Mac clipboard. SSH
+	     RemoteForward (see ~/.ssh/config) exposes it on remote hosts so
+	     copies arrive deterministically instead of via OSC 52 escape
+	     sequences (size limits, per-hop terminal handling). -->
+	<key>ProgramArguments</key>
+	<array>
+		<string>/opt/homebrew/bin/socat</string>
+		<string>TCP-LISTEN:2490,bind=127.0.0.1,fork,reuseaddr</string>
+		<string>EXEC:/usr/bin/pbcopy</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<true/>
+</dict>
+</plist>

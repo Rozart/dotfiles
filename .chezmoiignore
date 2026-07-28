@@ -1,5 +1,6 @@
 # Ignore Mac-specific SSH keys on non-darwin systems
 {{- if ne .chezmoi.os "darwin" }}
+Library
 .ssh/proxmox.pub
 .ssh/dev-station.pub
 .ssh/docker-host.pub
@@ -10,4 +11,7 @@
 # Ignore systemd-related files on macOS
 {{- if eq .chezmoi.os "darwin" }}
 .config/glances/glances.service
+# native pbcopy/pbpaste exist on macOS; the shims are for Linux servers
+.config/fish/functions/pbcopy.fish
+.config/fish/functions/pbpaste.fish
 {{- end }}

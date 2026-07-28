@@ -52,6 +52,8 @@ Host dev-station
 	LocalForward 5173 localhost:5173
 	LocalForward 8100 100.85.168.15:8000
 	LocalForward 3001 100.85.168.15:3000
+	RemoteForward 2489 127.0.0.1:2489
+	RemoteForward 2490 127.0.0.1:2490
 	RequestTTY yes
 	RemoteCommand tmux new-session -A -s dev-station
 	LogLevel QUIET
@@ -61,6 +63,8 @@ Host docker-host
 	User rozart
 	IdentityFile ~/.ssh/docker-host.pub
 	IdentitiesOnly yes
+	RemoteForward 2489 127.0.0.1:2489
+	RemoteForward 2490 127.0.0.1:2490
 	RequestTTY yes
 	RemoteCommand tmux new-session -A -s docker-host
 	LogLevel QUIET
@@ -70,6 +74,8 @@ Host media-host
 	User rozart
 	IdentityFile ~/.ssh/media-host.pub
 	IdentitiesOnly yes
+	RemoteForward 2489 127.0.0.1:2489
+	RemoteForward 2490 127.0.0.1:2490
 	RequestTTY yes
 	RemoteCommand tmux new-session -A -s media-host
 	LogLevel QUIET
