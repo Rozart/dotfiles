@@ -56,8 +56,14 @@ return {
         obsidian_base = "{{ .obsidian_base }}",
       })
       require("rozart.tasks").setup({
-        obsidian_base = "{{ .obsidian_base }}",
         display = "float",
+        vaults = {
+          -- One backend per vault: this dir is watched by the wiki-app, so
+          -- file edits sync automatically — do NOT also add it as an api
+          -- vault or every task shows twice.
+          { name = "obsidian", path = "{{ .obsidian_base }}" },
+          -- { name = "wiki", url = "http://localhost:3000", token = vim.env.WIKI_TOKEN },
+        },
       })
       vim.keymap.set("n", "<leader>aT", "<Cmd>AddTodo<CR>", { desc = "Add TODO In Daily Note" })
       vim.keymap.set("n", "<leader>aB", "<Cmd>AddBraindump<CR>", { desc = "Add Braidump In Daily Note" })

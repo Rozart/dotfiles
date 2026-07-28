@@ -208,6 +208,66 @@ local function ask_due_date(cb)
   end)
 end
 
+local function ask_estimate(cb)
+  local choices = { "skip" }
+  vim.list_extend(choices, require("rozart.tasks").ESTIMATES)
+  vim.ui.select(choices, {
+    prompt = "Estimate? (⏱)",
+  }, function(choice)
+    if choice == nil then
+      return
+    end
+    cb(choice ~= "skip" and choice or nil)
+  end)
+end
+
+local function ask_tags(cb)
+  Snacks.input({
+    prompt = "Tags (space-separated, empty = none)",
+  }, function(value)
+    if value == nil then
+      return
+    end
+    local tags = {}
+    for t in value:gmatch("%S+") do
+      tags[#tags + 1] = t:gsub("^#", ""):lower()
+    end
+    cb(tags)
+  end)
+end
+
+local function ask_assignee(cb)
+  Snacks.input({
+    prompt = "Assignee (@name, empty = none)",
+  }, function(value)
+    if value == nil then
+      return
+    end
+    value = value:gsub("^@", "")
+    cb(value ~= "" and value or nil)
+  end)
+end
+
+-- Pick a target vault when tasks.lua has more than one configured; with a
+-- single vault (or tasks.lua not set up) the picker never appears.
+local function ask_vault(cb)
+  local vaults = require("rozart.tasks").vaults()
+  if #vaults <= 1 then
+    cb(vaults[1])
+    return
+  end
+  local names = {}
+  for _, b in ipairs(vaults) do
+    names[#names + 1] = b.name
+  end
+  vim.ui.select(names, { prompt = "Vault" }, function(choice, idx)
+    if not choice then
+      return
+    end
+    cb(vaults[idx])
+  end)
+end
+
 function M.open_todo_input()
   Snacks.input({
     prompt = "Add TODO entry for today",
@@ -217,15 +277,43 @@ function M.open_todo_input()
     end
     ask_importance(function(is_important)
       ask_due_date(function(due)
-        local parts = { value }
-        if is_important then
-          table.insert(parts, "#p1")
-        end
-        table.insert(parts, "➕ " .. format_date(os.time()))
-        if due then
-          table.insert(parts, "📅 " .. due)
-        end
-        M.add_todos_entry(table.concat(parts, " "))
+        ask_estimate(function(estimate)
+          ask_tags(function(tags)
+            ask_assignee(function(assignee)
+              ask_vault(function(target)
+                local tasks = require("rozart.tasks")
+                if target and target.kind == "api" then
+                  -- POST /tasks has no tags field — fold them into the text
+                  local text = value
+                  for _, t in ipairs(tags) do
+                    text = text .. " #" .. t
+                  end
+                  if
+                    tasks.api_add(target, {
+                      text = text,
+                      important = is_important or nil,
+                      due = due,
+                      estimate = estimate,
+                      assignee = assignee,
+                    })
+                  then
+                    vim.notify("✓ Added to " .. target.name, vim.log.levels.INFO)
+                  end
+                  return
+                end
+                -- files vault: always today's daily under config.obsidian_base
+                M.add_todos_entry(tasks.format_task_line(value, {
+                  assignee = assignee,
+                  important = is_important,
+                  due = due,
+                  estimate = estimate,
+                  tags = tags,
+                  created = format_date(os.time()),
+                }))
+              end)
+            end)
+          end)
+        end)
       end)
     end)
   end)
