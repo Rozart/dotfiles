@@ -63,7 +63,17 @@ window-vsync = true
 bold-is-bright = true
 
 # Clipboard settings
-clipboard-read = allow
+#
+# OSC 52 clipboard *reads* are denied. A remote program that queries with
+# ESC]52;c;? gets the base64 answer written into the pty, and anything that
+# doesn't consume it in time (config-less nvim over ssh: 1s+9s then it gives up)
+# leaves the blob as typed junk at the next prompt. Ghostty also re-fires reads on
+# focus loss (ghostty-org/ghostty discussion #10077), so a Cmd+C elsewhere keeps
+# retriggering it. Paste comes from the socat tunnel instead (ssh RemoteForward
+# 2489 -> nvim init.lua / pbpaste.fish), so nothing here needs reads.
+clipboard-read = deny
+# Writes must stay allowed — the OSC 52 copy fallback in pbcopy.fish, nvim
+# init.lua, and tmux's set-clipboard all depend on them.
 clipboard-write = allow
 clipboard-paste-protection = true
 clipboard-paste-bracketed-safe = true
