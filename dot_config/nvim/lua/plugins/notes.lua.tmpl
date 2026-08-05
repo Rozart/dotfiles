@@ -1,74 +1,91 @@
-local base_path = vim.fn.expand("{{ .obsidian_base }}/data")
+-- Notes and tasks, both from the programium wiki-app via wikitui.nvim.
+-- Supersedes telekasten (notes) and rozart.tasks (tasks); both kept at the bottom,
+-- disabled, as a fallback.
 
-local dailies_path = base_path .. "/00_dailies"
-local templates_path = base_path .. "/99_templates"
-
-local images_dir = "98_images"
+local wiki_nvim = vim.fn.expand("~/Dev/wiki-app/apps/nvim")
+-- This config is shared across machines; the wiki-app checkout is not.
+local wiki_available = vim.fn.isdirectory(wiki_nvim .. "/lua/wikitui") == 1
 
 return {
   {
     "folke/which-key.nvim",
+    optional = true,
     opts = {
-      spec = {
-        { "<leader>z", group = "+zettelkasten" },
+      spec = wiki_available and {
+        { "<leader>z", group = "+wiki notes" },
+        { "<leader>k", group = "+wiki tasks" },
+      } or {},
+    },
+  },
+
+  {
+    dir = wiki_nvim,
+    name = "wikitui.nvim",
+    enabled = wiki_available,
+    cmd = "Wiki",
+    ft = "markdown",
+    opts = {
+      local_vault = { name = "private", path = "{{ .obsidian_base }}" },
+      -- Notes created by following a [[link]] that doesn't exist yet.
+      notes = { new_note_dir = "data/05_inbox" },
+    },
+    keys = {
+      { "<leader>zf", "<cmd>Wiki find<cr>", desc = "Find notes" },
+      { "<leader>zg", "<cmd>Wiki grep<cr>", desc = "Grep notes" },
+      { "<leader>zd", "<cmd>Wiki today<cr>", desc = "Go to today" },
+      { "<leader>zz", "<cmd>Wiki follow<cr>", desc = "Follow link" },
+      { "<leader>zb", "<cmd>Wiki backlinks<cr>", desc = "Show backlinks" },
+      { "<leader>zt", "<cmd>Wiki tags<cr>", desc = "Show tags" },
+      { "<leader>zy", "<cmd>Wiki yank-link<cr>", desc = "Copy current note link" },
+      { "<leader>zs", "<cmd>Wiki search<cr>", desc = "Search every vault" },
+      { "<leader>zF", "<cmd>Wiki files<cr>", desc = "Browse server vault files" },
+
+      { "<leader>kd", "<cmd>Wiki board<cr>", desc = "Task Dashboard (Eisenhower)" },
+      { "<leader>kn", "<cmd>Wiki next<cr>", desc = "Do next" },
+      { "<leader>kk", "<cmd>Wiki kanban<cr>", desc = "Team board" },
+      { "<leader>ka", "<cmd>Wiki capture<cr>", desc = "Capture task" },
+      { "<leader>kb", "<cmd>Wiki braindump<cr>", desc = "Capture braindump" },
+      { "<leader>kj", "<cmd>Wiki journal<cr>", desc = "Capture journal" },
+      { "<leader>ki", "<cmd>Wiki inbox<cr>", desc = "Braindump inbox" },
+      { "<leader>ku", "<cmd>Wiki undo<cr>", desc = "Undo last task change" },
+    },
+  },
+
+  -- [[note]], #tag and @name completion. The source's own enabled() is false outside
+  -- vault notes, so it costs nothing in every other markdown buffer. Guarded inside the
+  -- opts fn rather than with `enabled`, which would switch off blink itself.
+  {
+    "saghen/blink.cmp",
+    optional = true,
+    opts = function(_, opts)
+      if not wiki_available then
+        return
+      end
+      table.insert(opts.sources.default, "wiki")
+      opts.sources.providers.wiki = {
+        score_offset = 8,
+        module = "wikitui.blink",
+        name = "Wiki",
+        async = true,
+      }
+    end,
+  },
+
+  -- The app uses two checkbox states beyond GFM.
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    opts = {
+      checkbox = {
+        custom = {
+          in_progress = { raw = "[/]", rendered = "◐ ", highlight = "RenderMarkdownInfo" },
+          cancelled = { raw = "[-]", rendered = "✘ ", highlight = "RenderMarkdownError" },
+        },
       },
     },
   },
-  -- Telekasten.nvim
-  {
-    "nvim-telekasten/telekasten.nvim",
-    dependencies = { "nvim-telescope/telescope.nvim" },
-    keys = {
-      { "<leader>zf", "<cmd>Telekasten find_notes<CR>", desc = "Find notes" },
-      { "<leader>zg", "<cmd>Telekasten search_notes<CR>", desc = "Grep notes" },
-      { "<leader>zd", "<cmd>Telekasten goto_today<CR>", desc = "Go to today" },
-      { "<leader>zz", "<cmd>Telekasten follow_link<CR>", desc = "Follow link" },
-      { "<leader>zi", "<cmd>Telekasten insert_link<CR>", desc = "Insert link" },
-      { "<leader>zy", "<cmd>Telekasten yank_notelink<CR>", desc = "Copy current note link" },
-      { "<leader>zn", "<cmd>Telekasten new_note<CR>", desc = "New note" },
-      { "<leader>zb", "<cmd>Telekasten show_backlinks<CR>", desc = "Show backlinks" },
-      { "<leader>zI", "<cmd>Telekasten insert_img_link<CR>", desc = "Insert image link" },
-      { "<leader>zr", "<cmd>Telekasten rename_note<CR>", desc = "Rename note" },
-      { "<leader>zp", "<cmd>Telekasten preview_img<CR>", desc = "Preview image" },
-      { "<leader>zm", "<cmd>Telekasten browse_media<CR>", desc = "Browse media" },
-      { "<leader>za", "<cmd>Telekasten show_tags<CR>", desc = "Show tags" },
-      { "<leader>zt", "<cmd>Telekasten toggle_todo({ i=true })<CR>", desc = "Toggle todo" },
-    },
-    opts = {
-      extension = ".md",
-      install_syntax = true,
-      home = base_path,
-      dailies = dailies_path,
-      image_subdir = images_dir,
-      templates = templates_path,
-      template_new_daily = templates_path .. "/daily.md",
-      template_new_note = templates_path .. "/note.md",
-      journal_auto_open = true,
-      auto_set_filepath = false,
-      auto_set_filetype = false,
-    },
-  },
-  -- Braindump plugin
-  {
-    dir = vim.fn.expand("~/.config/nvim/lua/rozart"),
-    config = function()
-      require("rozart.braindump").setup({
-        obsidian_base = "{{ .obsidian_base }}",
-      })
-      require("rozart.tasks").setup({
-        display = "float",
-        vaults = {
-          -- One backend per vault: this dir is watched by the wiki-app, so
-          -- file edits sync automatically — do NOT also add it as an api
-          -- vault or every task shows twice.
-          { name = "obsidian", path = "{{ .obsidian_base }}" },
-          -- { name = "wiki", url = "http://localhost:3000", token = vim.env.WIKI_TOKEN },
-        },
-      })
-      vim.keymap.set("n", "<leader>aT", "<Cmd>AddTodo<CR>", { desc = "Add TODO In Daily Note" })
-      vim.keymap.set("n", "<leader>aB", "<Cmd>AddBraindump<CR>", { desc = "Add Braidump In Daily Note" })
-      vim.keymap.set("n", "<leader>aJ", "<Cmd>AddJournal<CR>", { desc = "Add Journal In Daily Note" })
-      vim.keymap.set("n", "<leader>ad", "<Cmd>TaskDashboard<CR>", { desc = "Task Dashboard (Eisenhower)" })
-    end,
-  },
+
+  -- Replaced by wikitui.nvim. Left here to re-enable if it misbehaves; the rozart
+  -- modules stay requireable either way, since lua/ is already on the runtimepath.
+  { "nvim-telekasten/telekasten.nvim", enabled = false },
+  { dir = vim.fn.expand("~/.config/nvim/lua/rozart"), enabled = false },
 }
