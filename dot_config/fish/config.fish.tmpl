@@ -62,6 +62,8 @@ set -gx PKG_CONFIG_PATH \
 
 set -gx STARSHIP_CONFIG ~/.config/starship/starship.toml
 set -gx OBSIDIAN_VAULT $HOME/obsidian/roz-obsidian
+# private functions live in the vault (Syncthing), not in this repo
+set -p fish_function_path $OBSIDIAN_VAULT/.emdr/fish
 set fish_greeting
 set -gx GITCONFIG_WORK ~/.config/git/.gitconfig_work
 set -gx GITCONFIG_PRIVATE ~/.config/git/.gitconfig_private
