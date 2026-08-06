@@ -1,0 +1,57 @@
+{{ if and (eq .chezmoi.os "linux") (or .is_dev_station .is_docker_host .is_media_host) -}}
+#!/bin/bash
+set -euo pipefail
+
+# Shares /home/rozart over SMB so macOS clients can mount it in Finder.
+#
+# The share is named after the host rather than using samba's [homes]: every
+# server would otherwise serve it as "rozart", and macOS mounts a share at
+# /Volumes/<sharename>, so all three would collide on one name.
+#
+# Writes a small smb.conf wholesale instead of patching Ubuntu's ~250-line
+# default. Consequence: dpkg will ask about the modified conffile on upgrade.
+
+if ! command -v smbd &>/dev/null; then
+	sudo apt update
+	sudo DEBIAN_FRONTEND=noninteractive apt install -y samba
+fi
+
+sudo tee /etc/samba/smb.conf >/dev/null <<'EOF'
+[global]
+	workgroup = WORKGROUP
+	server string = %h
+	server min protocol = SMB3
+	hosts allow = 192.168.0.0/24
+	map to guest = never
+	load printers = no
+
+	# macOS interop. fruit must come before streams_xattr, which it defers
+	# every non-Apple stream to. nfs_aces=no is the one that actually
+	# matters: left at its default of yes, Finder's Get Info rewrites the
+	# UNIX mode through NFS ACEs and can chmod your own files to 000.
+	vfs objects = fruit streams_xattr
+	fruit:metadata = stream
+	fruit:nfs_aces = no
+
+[{{ .chezmoi.hostname | trimPrefix "roz-" }}]
+	path = /home/rozart
+	valid users = rozart
+	read only = no
+	create mask = 0644
+	directory mask = 0755
+EOF
+
+# Fail the apply on a typo rather than leaving smbd dead.
+sudo testparm -s >/dev/null
+
+sudo systemctl enable --now smbd
+sudo systemctl restart smbd
+
+# pdbedit prints "user:uid:Full Name", so match the first field exactly.
+if ! sudo pdbedit -L 2>/dev/null | cut -d: -f1 | grep -qx rozart; then
+	echo
+	echo ">>> No samba password set for rozart. Run: sudo smbpasswd -a rozart <<<"
+	echo ">>> Password: 1Password / Homelab / 'samba @ home.rozart.dev' <<<"
+	echo
+fi
+{{ end -}}
