@@ -1,0 +1,37 @@
+#!/bin/bash
+# Mounts each server's home directory as an SMB volume in /Volumes.
+#
+# Credentials come from the login Keychain. That is the whole reason this runs
+# as a user agent instead of through autofs: automountd runs as root and has no
+# Keychain access at all (Apple's mount_smbfs contains zero Keychain code), so
+# the autofs route would require the password in plaintext in /etc/auto_smb.
+# `mount volume` goes through NetFS, which does read the Keychain.
+#
+# Seed the Keychain once per host with Finder's Connect to Server (Cmd-K),
+# ticking "Remember this password in my keychain". After that this is silent.
+#
+# Run at login and on network change by dev.rozart.smb-mounts; safe to run by
+# hand any time.
+
+status=0
+
+for entry in dev-station:192.168.0.41 docker-host:192.168.0.46 media-host:192.168.0.49; do
+	name=${entry%%:*}
+	ip=${entry##*:}
+
+	mount | grep -q " on /Volumes/$name " && continue
+
+	# A leftover empty mountpoint would push the real mount to
+	# "/Volumes/<name> 1". Only succeeds when the directory is empty.
+	rmdir "/Volumes/$name" 2>/dev/null
+
+	# Off the LAN, or host down: skip quietly rather than stack up dialogs.
+	nc -z -G 2 "$ip" 445 2>/dev/null || continue
+
+	if ! osascript -e "mount volume \"smb://rozart@$ip/$name\"" >/dev/null 2>&1; then
+		echo "mount-servers: failed to mount $name ($ip)" >&2
+		status=1
+	fi
+done
+
+exit $status

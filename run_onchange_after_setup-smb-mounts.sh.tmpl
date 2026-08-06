@@ -1,0 +1,11 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+
+# smb-mounts.plist hash: {{ include "Library/LaunchAgents/dev.rozart.smb-mounts.plist" | sha256sum }}
+# mount-servers hash: {{ include "dot_local/bin/executable_mount-servers" | sha256sum }}
+
+launchctl bootout "gui/$(id -u)/dev.rozart.smb-mounts" 2>/dev/null
+launchctl bootstrap "gui/$(id -u)" "$HOME/Library/LaunchAgents/dev.rozart.smb-mounts.plist"
+
+echo "smb mount agent loaded (/Volumes/{dev-station,docker-host,media-host})"
+{{ end -}}

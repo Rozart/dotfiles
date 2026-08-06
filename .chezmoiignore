@@ -6,6 +6,8 @@
 # Ignore Mac-specific SSH keys on non-darwin systems
 {{- if ne .chezmoi.os "darwin" }}
 Library
+# mounts the servers' SMB shares; only ever runs on a Mac client
+.local/bin/mount-servers
 .ssh/proxmox.pub
 .ssh/dev-station.pub
 .ssh/docker-host.pub
