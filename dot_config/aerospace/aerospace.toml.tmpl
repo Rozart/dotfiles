@@ -7,6 +7,13 @@
 # Start AeroSpace at login
 start-at-login = true
 
+# Required for persistent-workspaces (below). See:
+# https://nikitabobko.github.io/AeroSpace/guide#config-version
+config-version = 2
+
+# Auto-reload config on save (edit + save applies immediately, no service mode).
+auto-reload-config = true
+
 after-startup-command = [
     'exec-and-forget borders active_color=0x9ed072e4 inactive_color=0x7f849064 width=5.0',
 ]
@@ -32,7 +39,7 @@ default-root-container-orientation = 'auto'
 # See https://nikitabobko.github.io/AeroSpace/guide#on-focus-changed-callbacks
 # See https://nikitabobko.github.io/AeroSpace/commands#move-mouse
 # Fallback value (if you omit the key): on-focused-monitor-changed = []
-#on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 #on-focus-changed = ['move-mouse window-lazy-center']
 
 # You can effectively turn off macOS "Hide application" (cmd-h) feature by toggling this flag
@@ -82,6 +89,9 @@ outer.right = 10
 9 = 1
 
 12 = 3
+
+# Keep monitor-assigned workspaces present even when empty (needs config-version = 2).
+persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "12"]
 
 [[on-window-detected]]
 if.app-id = "it.bloop.airmail2"
@@ -180,6 +190,7 @@ alt-6 = 'workspace 6'
 alt-7 = 'workspace 7'
 alt-8 = 'workspace 8'
 alt-9 = 'workspace 9'
+alt-0 = 'workspace 12' # Slack / Spotify / Beeper
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
 alt-shift-1 = 'move-node-to-workspace 1'
@@ -191,6 +202,7 @@ alt-shift-6 = 'move-node-to-workspace 6'
 alt-shift-7 = 'move-node-to-workspace 7'
 alt-shift-8 = 'move-node-to-workspace 8'
 alt-shift-9 = 'move-node-to-workspace 9'
+alt-shift-0 = 'move-node-to-workspace 12'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
 alt-tab = 'workspace-back-and-forth'
