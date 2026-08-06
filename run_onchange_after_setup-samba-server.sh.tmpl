@@ -1,4 +1,9 @@
-{{ if and (eq .chezmoi.os "linux") (or .is_dev_station .is_docker_host .is_media_host) -}}
+{{- /* Tested against .chezmoi.hostname rather than the is_* data vars: those are
+       baked into ~/.config/chezmoi/chezmoi.toml at `chezmoi init` time and go
+       stale if a host is renamed (media-host still reports is_media_host=false).
+       .chezmoi.hostname is evaluated on every apply. */ -}}
+{{- $smbHosts := list "roz-dev-station" "roz-docker-host" "roz-media-host" -}}
+{{ if and (eq .chezmoi.os "linux") (has .chezmoi.hostname $smbHosts) -}}
 #!/bin/bash
 set -euo pipefail
 
