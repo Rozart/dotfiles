@@ -59,13 +59,17 @@ function zvm_after_init() {
 
 source $ZSH/oh-my-zsh.sh
 
+# The git*/gitconfig aliases interpolate these at definition time (double
+# quotes), so they must be exported before ~/.aliases is sourced.
+export GITCONFIG_WORK=$HOME/.config/git/.gitconfig_work
+export GITCONFIG_PRIVATE=$HOME/.config/git/.gitconfig_private
+export GITCONFIG_PROGRAMIUM=$HOME/.config/git/.gitconfig_programium
+export GITCONFIG_HOMELAB=$HOME/.config/git/.gitconfig_homelab
+
 # Additional imports
 [ -f ~/.api_keys ] && source ~/.api_keys
 [ -f ~/.completions ] && source ~/.completions
 [ -f ~/.aliases ] && source ~/.aliases
-
-export GITCONFIG_WORK=$HOME/.config/git/.gitconfig_work
-export GITCONFIG_PRIVATE=$HOME/.config/git/.gitconfig_private
 
 
 
