@@ -1,6 +1,7 @@
 {{- $privateKey := joinPath .chezmoi.homeDir ".ssh/id_git_private_signing.pub" -}}
 {{- $workKey := joinPath .chezmoi.homeDir ".ssh/id_git_work_signing.pub" -}}
 {{- $programiumKey := joinPath .chezmoi.homeDir ".ssh/id_git_programium_signing.pub" -}}
+{{- $homelabKey := joinPath .chezmoi.homeDir ".ssh/id_git_homelab_signing.pub" -}}
 {{- if stat $privateKey -}}
 rozart@gmail.com {{ include $privateKey | trim }}
 {{ end -}}
@@ -9,4 +10,7 @@ artur.rozalski@programium.com {{ include $workKey | trim }}
 {{ end -}}
 {{- if stat $programiumKey -}}
 artur.rozalski@programium.com {{ include $programiumKey | trim }}
+{{ end -}}
+{{- if stat $homelabKey -}}
+rozart@gmail.com {{ include $homelabKey | trim }}
 {{ end -}}
