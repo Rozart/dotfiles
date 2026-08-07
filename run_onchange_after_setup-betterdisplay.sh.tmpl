@@ -1,0 +1,57 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+
+# Declaratively restore intentful BetterDisplay settings.
+#
+# BetterDisplay has no export/import, and its CLI can only drive runtime
+# controls (brightness/ddc/resolution) — it can't set these preference keys.
+# They live only in the app's plist, so we write them with `defaults`. Keys use
+# the stable @v<vendor>m<model> identifier, which survives reboots and display
+# renumbering (unlike the volatile @Display:N keys the app also stores).
+#
+# ponytail: only settings that are both valuable AND cleanly reproducible.
+# Menu layout, resolution favourites and live DDC/brightness values are left to
+# the UI — they're either volatile or one-click to redo. Add a key here only
+# when recreating it by hand is genuinely annoying.
+
+domain="pro.betterdisplay.BetterDisplay"
+
+if [ ! -d "/Applications/BetterDisplay.app" ]; then
+	echo "BetterDisplay not installed (brew bundle), skipping settings"
+	exit 0
+fi
+
+# The app flushes its in-memory prefs on quit, which would clobber our writes.
+# Quit it first, write while it's dead, then relaunch if it had been running.
+was_running=false
+if pgrep -xq BetterDisplay; then
+	was_running=true
+	osascript -e 'quit app "BetterDisplay"' 2>/dev/null || killall BetterDisplay 2>/dev/null
+	for _ in $(seq 1 20); do pgrep -xq BetterDisplay || break; sleep 0.2; done
+fi
+
+# --- global preferences ---
+defaults write "$domain" disconnectBuiltInOnExternal -bool true   # blank built-in when an external is connected
+defaults write "$domain" videoMediaKeyDisabled -bool true
+defaults write "$domain" "value@blueLight-BlueLightController" -float 0.5
+
+{{ if eq .chezmoi.hostname "laptop" -}}
+# --- desk displays: ROG PG27AQN (v1715m10169), Gigabyte M32U (v7252m12804),
+#     BenQ PD3200U (v2513m32805) ---
+# Smooth scaling + EDID/resolution overrides on all three.
+for id in v1715m10169 v7252m12804 v2513m32805; do
+	defaults write "$domain" "smoothScaling@$id" -bool true
+	defaults write "$domain" "overridesEnabled@$id" -bool true
+done
+
+# Gigabyte M32U: custom 3360x1890 HiDPI resolution (tedious to recreate by hand).
+defaults write "$domain" "manualResolutions@v7252m12804" -bool true
+defaults write "$domain" "manualResolutionList@v7252m12804" -string '[[3360,1890,3],[null,null,4]]'
+{{ end -}}
+
+if [ "$was_running" = true ]; then
+	open -a BetterDisplay
+fi
+
+echo "BetterDisplay settings applied"
+{{ end -}}
