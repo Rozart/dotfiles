@@ -17,6 +17,13 @@ Host programiumgit
 	IdentityFile ~/.ssh/id_forgejo_programium_auth.pub
 	IdentitiesOnly yes
 
+Host homelabgit
+	HostName git.home.rozart.dev
+	Port 2222
+	User git
+	IdentityFile ~/.ssh/id_forgejo_homelab_auth.pub
+	IdentitiesOnly yes
+
 {{- if eq .chezmoi.os "darwin" }}
 Host home-nas
 	HostName 192.168.0.36
