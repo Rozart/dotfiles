@@ -7,5 +7,5 @@
 launchctl bootout "gui/$(id -u)/dev.rozart.smb-mounts" 2>/dev/null
 launchctl bootstrap "gui/$(id -u)" "$HOME/Library/LaunchAgents/dev.rozart.smb-mounts.plist"
 
-echo "smb mount agent loaded (/Volumes/{dev-station,docker-host,media-host})"
+echo "smb mount agent loaded (/Volumes/roz-{dev-station,docker-host,media-host})"
 {{ end -}}

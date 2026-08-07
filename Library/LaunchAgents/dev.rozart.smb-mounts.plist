@@ -4,9 +4,10 @@
 <dict>
 	<key>Label</key>
 	<string>dev.rozart.smb-mounts</string>
-	<!-- Mounts /home/rozart from dev-station, docker-host and media-host as
-	     SMB volumes in /Volumes. Runs as the user so NetFS can read the
-	     login Keychain for credentials; see ~/.local/bin/mount-servers.
+	<!-- Mounts /home/rozart from roz-dev-station, roz-docker-host and
+	     roz-media-host as SMB volumes in /Volumes. Runs as the user so
+	     NetFS can read the login Keychain for credentials; see
+	     ~/.local/bin/mount-servers.
 	     The network-change trigger is what re-mounts them after rejoining
 	     the LAN without needing to log out and back in.
 

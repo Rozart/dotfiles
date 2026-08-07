@@ -11,7 +11,8 @@ set -euo pipefail
 #
 # The share is named after the host rather than using samba's [homes]: every
 # server would otherwise serve it as "rozart", and macOS mounts a share at
-# /Volumes/<sharename>, so all three would collide on one name.
+# /Volumes/<sharename>, so all three would collide on one name. The full
+# hostname is used, so Finder shows roz-dev-station rather than dev-station.
 #
 # Writes a small smb.conf wholesale instead of patching Ubuntu's ~250-line
 # default. Consequence: dpkg will ask about the modified conffile on upgrade.
@@ -38,7 +39,7 @@ sudo tee /etc/samba/smb.conf >/dev/null <<'EOF'
 	fruit:metadata = stream
 	fruit:nfs_aces = no
 
-[{{ .chezmoi.hostname | trimPrefix "roz-" }}]
+[{{ .chezmoi.hostname }}]
 	path = /home/rozart
 	valid users = rozart
 	read only = no
