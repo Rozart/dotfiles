@@ -88,9 +88,14 @@
 	conflictStyle = zdiff3
 [rerere]
 	enabled = true
-[includeIf "hasconfig:remote.*.url:workgit:*"]
+# The host prefix is an ~/.ssh/config alias, so the remote reads
+# `<alias>:owner/repo.git`. Pattern must be `:*/**`, not `:*` — this glob is
+# pathname-style, so a bare `*` stops at the first `/` and never matches a real
+# remote. `**` is only special as a whole path component, so `:**` fails too:
+# `*` takes the owner, `/**` takes the rest at any depth.
+[includeIf "hasconfig:remote.*.url:workgit:*/**"]
 	path = "~/.config/git/.gitconfig_work"
-[includeIf "hasconfig:remote.*.url:personalgit:*"]
+[includeIf "hasconfig:remote.*.url:personalgit:*/**"]
 	path = "~/.config/git/.gitconfig_private"
-[includeIf "hasconfig:remote.*.url:programiumgit:*"]
+[includeIf "hasconfig:remote.*.url:programiumgit:*/**"]
 	path = "~/.config/git/.gitconfig_programium"
