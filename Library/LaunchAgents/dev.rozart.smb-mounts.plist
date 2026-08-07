@@ -8,13 +8,21 @@
 	     SMB volumes in /Volumes. Runs as the user so NetFS can read the
 	     login Keychain for credentials; see ~/.local/bin/mount-servers.
 	     The network-change trigger is what re-mounts them after rejoining
-	     the LAN without needing to log out and back in. -->
+	     the LAN without needing to log out and back in.
+
+	     StartInterval is the safety net under it: sleep tears down the SMB
+	     sessions and macOS unmounts the volumes, but waking onto the same
+	     Wi-Fi changes no network config, so network_change never posts and
+	     nothing re-mounts them. The script is idempotent and skips
+	     already-mounted and unreachable hosts, so a tick is nearly free. -->
 	<key>ProgramArguments</key>
 	<array>
 		<string>/Users/rozart/.local/bin/mount-servers</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>
+	<key>StartInterval</key>
+	<integer>120</integer>
 	<key>LaunchEvents</key>
 	<dict>
 		<key>com.apple.notifyd.matching</key>
