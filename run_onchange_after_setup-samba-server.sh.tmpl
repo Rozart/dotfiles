@@ -27,7 +27,9 @@ sudo tee /etc/samba/smb.conf >/dev/null <<'EOF'
 	workgroup = WORKGROUP
 	server string = %h
 	server min protocol = SMB3
-	hosts allow = 192.168.0.0/24
+	# The LAN is a /23 (192.168.0.1-192.168.1.254), not a /24: clients that
+	# get a lease in the upper half are refused by a /24 mask.
+	hosts allow = 192.168.0.0/23
 	map to guest = never
 	load printers = no
 
