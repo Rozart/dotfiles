@@ -3,6 +3,14 @@
 # it also holds is tracked declaratively in fish_plugins.
 .config/fish/fish_variables
 
+# Karabiner rewrites this file on every UI change (and adds machine-specific
+# device ids). Keep a versioned snapshot in git, but never let apply clobber
+# the live file. Because it's ignored, `chezmoi add`/`re-add` won't update the
+# snapshot — re-snapshot after edits with a plain copy, then commit:
+#   cp ~/.config/karabiner/karabiner.json \
+#      ~/.local/share/chezmoi/dot_config/karabiner/private_karabiner.json
+.config/karabiner/karabiner.json
+
 # Ignore Mac-specific SSH keys on non-darwin systems
 {{- if ne .chezmoi.os "darwin" }}
 Library
