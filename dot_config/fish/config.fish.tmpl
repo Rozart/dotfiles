@@ -113,6 +113,17 @@ if status is-interactive
     if not string match -q -- $PNPM_HOME $PATH
         set -gx PATH "$PNPM_HOME" $PATH
     end
+
+    # Refreshes the sync-status cache the starship prompt reads, at most every
+    # 30 minutes. `path mtime -R` is a builtin, so a throttled prompt forks
+    # nothing at all.
+    function __sync_status_auto_refresh --on-event fish_prompt
+        set -l age (path mtime -R ~/.cache/sync-status 2>/dev/null)
+        if test -z "$age"; or test "$age" -ge 1800
+            sync-status-refresh >/dev/null 2>&1 &
+            disown
+        end
+    end
 end
 
 {{ if (or (eq .chezmoi.hostname "roz-dev-station") (eq .chezmoi.hostname "roz-docker-host") (eq .chezmoi.hostname "roz-media-host")) }}
