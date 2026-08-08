@@ -18,6 +18,8 @@ $git_commit\
 $git_state\
 $git_metrics\
 $git_status\
+${custom.sync_ok}\
+${custom.sync_stale}\
 $hg_branch\
 $pijul_channel\
 $docker_context\
