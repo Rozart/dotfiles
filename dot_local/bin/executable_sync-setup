@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "==> chezmoi: pull + apply"
+chezmoi update
+
+ai_repo=""
+for candidate in "$HOME/dev/ai-cli-configs" "$HOME/Dev/ai-cli-configs"; do
+    if [ -d "$candidate/.git" ]; then
+        ai_repo=$candidate
+        break
+    fi
+done
+
+if [ -z "$ai_repo" ]; then
+    echo "==> ai-cli-configs: repo not found, skipping" >&2
+    exit 0
+fi
+
+echo "==> ai-cli-configs: pull + restow ($ai_repo)"
+git -C "$ai_repo" pull --ff-only
+for pkg in "$ai_repo"/*/; do
+    [ -d "$pkg" ] || continue
+    stow -R -d "$ai_repo" -t "$HOME" "$(basename "$pkg")"
+done
