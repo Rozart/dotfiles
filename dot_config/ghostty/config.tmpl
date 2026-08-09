@@ -1,5 +1,10 @@
 working-directory = "home"
 command = {{ lookPath "fish" | default "fish" }}
+{{ if eq .chezmoi.os "darwin" -}}
+# First surface at startup only — later tabs/windows fall back to `command`
+# above. hosts-tabs asks before opening the ssh tabs; `n` (or Esc) declines.
+initial-command = {{ lookPath "fish" | default "fish" }} -C "hosts-tabs --prompt"
+{{ end }}
 
 theme = "Sonokai Shusia"
 # Active theme override, written by the `theme` fish function. Optional (?) so a

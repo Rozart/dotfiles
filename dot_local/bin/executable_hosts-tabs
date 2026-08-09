@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# Opens one Ghostty tab per LAN homelab host, each ssh'd in and labelled.
+#
+# Ghostty has no startup session/layout config: `initial-command` covers a single
+# surface and the `new_tab` keybind action takes no argument. The scripting
+# dictionary (Ghostty.app/Contents/Resources/Ghostty.sdef) does have `new tab ...
+# with configuration {command:...}`, so the tabs get built from AppleScript.
+#
+# Deliberately no local tmux — every server starts tmux on connect, and wrapping
+# that in a local session just nests it.
+#
+# Run bare any time for a fresh set. `--prompt` is the startup path (see
+# initial-command in ~/.config/ghostty/config): same thing, but asks first.
+
+set -euo pipefail
+
+hosts=(dev-station docker-host media-host)
+
+self=$(command -v "$0" || echo "$HOME/.local/bin/hosts-tabs")
+shell=$(command -v fish || echo /bin/sh)
+
+# Each tab runs this script again, so the wrapper that keeps the tab alive after
+# ssh exits lives in bash rather than nested inside AppleScript quoting.
+if [ "${1:-}" = "--connect" ]; then
+	status=0
+	ssh "$2" || status=$?
+	printf '\n[%s exited: %s]\n\n' "$2" "$status"
+	exec "$shell"
+fi
+
+if [ "${1:-}" = "--prompt" ]; then
+	reply=""
+	read -rsn1 -t 5 -p "open host tabs? [Y/n] " reply || true
+	printf '\n'
+	case $reply in
+	[nN] | $'\e' | $'\003') exit 0 ;;
+	esac
+fi
+
+# `new tab` needs an explicit `in` (bare `new tab` errors -1708), and the command
+# string is parsed with shell-like quoting but never implicitly shell-wrapped —
+# hence a plain argv here. set_tab_title is a real override, so it survives the
+# title the remote shell sets over ssh.
+osascript - "$self" "${hosts[@]}" <<'APPLESCRIPT'
+on run argv
+	set selfPath to item 1 of argv
+	tell application "Ghostty"
+		set w to front window
+		set origIdx to index of (selected tab of w)
+		repeat with i from 2 to (count of argv)
+			set h to item i of argv
+			set t to new tab in w with configuration ¬
+				{command:(selfPath & " --connect " & h)}
+			perform action ("set_tab_title:" & h) on focused terminal of t
+		end repeat
+		select tab (item origIdx of tabs of w)
+	end tell
+end run
+APPLESCRIPT
