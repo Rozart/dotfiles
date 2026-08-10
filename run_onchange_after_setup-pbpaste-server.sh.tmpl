@@ -4,9 +4,12 @@
 # pbpaste-server.plist hash: {{ include "Library/LaunchAgents/dev.rozart.pbpaste-server.plist" | sha256sum }}
 # pbcopy-server.plist hash: {{ include "Library/LaunchAgents/dev.rozart.pbcopy-server.plist" | sha256sum }}
 
+# Exit non-zero so chezmoi does not record this script as run: a plain skip
+# here (socat arriving later via brew bundle) leaves the agents unloaded
+# forever, and the clipboard tunnel then fails silently.
 if [ ! -x /opt/homebrew/bin/socat ]; then
-	echo "socat not installed (brew bundle), skipping clipboard server setup"
-	exit 0
+	echo "socat not installed (brew bundle), clipboard server setup deferred"
+	exit 1
 fi
 
 for name in pbpaste-server pbcopy-server; do
