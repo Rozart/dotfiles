@@ -25,7 +25,10 @@ local function apply_highlights()
     set_hl("Comment", palette.grey, nil, "italic")
     set_hl("@comment", palette.grey, nil)
     set_hl("LineNr", palette.grey, nil)
-    set_hl("NormalFloat", palette.fg, nil)
+    -- Floats keep a solid surface even though the buffer behind them is
+    -- transparent, so popups read as a layer above the text rather than through
+    -- it. bg1 for every float surface: NormalFloat, BlinkCmpMenu, NamuNormal.
+    set_hl("NormalFloat", palette.fg, palette.bg1)
     set_hl("FloatBorder", palette.grey, nil)
     set_hl("FloatTitle", palette.red, palette.bg0, "bold")
 
@@ -34,6 +37,11 @@ local function apply_highlights()
     set_hl("Visual", nil, palette.bg3)
 
     -- Custom highlights for Snacks
+    -- Every picker window chains off SnacksPicker
+    -- (SnacksPickerList/Box/Input/Preview -> SnacksPicker -> NormalFloat), so one
+    -- definition keeps the explorer and the pickers see-through without touching
+    -- NormalFloat, which the built-in LSP floats and blink still want solid.
+    set_hl("SnacksPicker", palette.fg, nil)
     set_hl("SnacksPickerListCursorLine", nil, palette.bg2, "bold")
     set_hl("SnacksPickerListCursorLineNC", nil, palette.bg_red, "bold")
     set_hl("SnacksPickerPreviewCursorLine", nil, palette.bg1)
@@ -75,7 +83,7 @@ local function apply_highlights()
     set_hl("TinyInlineDiagnosticVirtualTextArrow", palette.grey, nil, "bold")
 
     -- Custom highlight for blink.cmp
-    set_hl("BlinkCmpMenu", nil, palette.bg0)
+    set_hl("BlinkCmpMenu", nil, palette.bg1)
     set_hl("BlinkCmpMenuBorder", palette.green, nil)
     set_hl("BlinkCmpMenuSelection", palette.bg0, palette.yellow, "bold")
     set_hl("BlinkCmpDocBorder", palette.green, nil)
@@ -113,7 +121,7 @@ local function apply_highlights()
     set_hl("DiffviewDiffText", palette.bg0, palette.green)
 
     -- Custom highlights for namu.nvim
-    set_hl("NamuNormal", palette.fg, palette.bg0)
+    set_hl("NamuNormal", palette.fg, palette.bg1)
     set_hl("NamuBorder", palette.green, nil)
     set_hl("NamuCursorLine", nil, palette.bg2, "bold")
     set_hl("NamuPreview", nil, palette.bg2)

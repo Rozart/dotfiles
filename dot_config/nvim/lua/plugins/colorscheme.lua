@@ -40,9 +40,29 @@ return {
     end,
   },
 
-  { "rose-pine/neovim", name = "rose-pine", lazy = true },
-  { "catppuccin/nvim", name = "catppuccin", lazy = true },
-  { "folke/tokyonight.nvim", lazy = true },
+  -- opts, not init: lazy.nvim's ColorSchemePre handler loads the plugin (running
+  -- setup()) before `:colorscheme` executes, so opts land in time. Only the
+  -- Vimscript themes below need init to beat their own colors/ file.
+  {
+    "rose-pine/neovim",
+    name = "rose-pine",
+    lazy = true,
+    opts = { styles = { transparency = true } },
+  },
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    lazy = true,
+    opts = { transparent_background = true },
+  },
+  {
+    "folke/tokyonight.nvim",
+    lazy = true,
+    opts = {
+      transparent = true,
+      styles = { sidebars = "transparent", floats = "transparent" },
+    },
+  },
 
   {
     "sainnhe/everforest",
@@ -50,6 +70,10 @@ return {
     init = function()
       vim.g.everforest_background = "medium"
       vim.g.everforest_enable_italic = 1
+      vim.g.everforest_transparent_background = 1
+      -- Must be explicit: everforest defaults current_word to plain 'bold' as
+      -- soon as transparent_background is set (autoload/everforest.vim).
+      vim.g.everforest_current_word = "high contrast background"
       vim.g.everforest_diagnostic_line_highlight = 1
       vim.g.everforest_diagnostic_text_highlight = 1
     end,
