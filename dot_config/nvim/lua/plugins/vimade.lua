@@ -29,7 +29,12 @@ return {
       recipe = { "default", { animate = false } },
       ncmode = "windows",
       fadelevel = 0.4, -- any value between 0 and 1. 0 is hidden and 1 is opaque.
-      basebg = "",
+      -- Every colourscheme here is transparent, so Normal has no background for
+      -- vimade to fade against. Resolved per window, so it tracks theme switches.
+      basebg = function()
+        local palette = require("config.palettes").get()
+        return palette and palette.bg0 or nil
+      end,
     },
     config = function(_, opts)
       require("vimade").setup(opts)
