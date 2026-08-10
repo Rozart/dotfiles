@@ -33,7 +33,6 @@ return {
       vim.g.sonokai_enable_italic = 1
       vim.g.sonokai_transparent_background = vim.g.neovide and 0 or 1
       vim.g.sonokai_current_word = "high contrast background"
-      vim.g.sonokai_diagnostic_line_highlight = 1
       vim.g.sonokai_diagnostic_text_highlight = 1
       vim.g.sonokai_menu_selection_background = "red"
       vim.g.sonokai_style = "shusia"
@@ -74,7 +73,6 @@ return {
       -- Must be explicit: everforest defaults current_word to plain 'bold' as
       -- soon as transparent_background is set (autoload/everforest.vim).
       vim.g.everforest_current_word = "high contrast background"
-      vim.g.everforest_diagnostic_line_highlight = 1
       vim.g.everforest_diagnostic_text_highlight = 1
     end,
   },

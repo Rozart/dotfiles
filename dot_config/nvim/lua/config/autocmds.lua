@@ -34,7 +34,7 @@ local function apply_highlights()
 
     set_hl("Italic", palette.fg, nil, "italic")
     set_hl("Bold", palette.fg, nil, "bold")
-    set_hl("Visual", nil, palette.bg3)
+    set_hl("Visual", nil, palette.bg4)
 
     -- Custom highlights for Snacks
     -- Every picker window chains off SnacksPicker
@@ -45,8 +45,10 @@ local function apply_highlights()
     set_hl("SnacksPickerListCursorLine", nil, palette.bg2, "bold")
     set_hl("SnacksPickerListCursorLineNC", nil, palette.bg_red, "bold")
     set_hl("SnacksPickerPreviewCursorLine", nil, palette.bg1)
-    set_hl("SnacksPickerMatch", nil, palette.grey_dim)
-    set_hl("SnacksPickerSearch", nil, palette.grey_dim)
+    -- Attributes, not a background: fg on grey_dim measured 2.4-3.1:1 on these
+    -- palettes, and the matched characters are the one thing you read here.
+    set_hl("SnacksPickerMatch", palette.fg, nil, "bold,underline")
+    set_hl("SnacksPickerSearch", palette.fg, nil, "bold,underline")
 
     set_hl("SnacksPickerGitDetached", palette.orange, nil)
     set_hl("SnacksPickerGitStatusUnmerged", palette.red, nil)
@@ -60,14 +62,17 @@ local function apply_highlights()
     set_hl("SnacksNotifierBorderInfo", palette.blue, nil)
 
     -- Custom highlights for diagnostics
+    -- The Underline* groups carry undercurl only. The span already gets a tint
+    -- from *_diagnostic_text_highlight, so a background here was a third copy of
+    -- the same signal on the same characters.
     set_hl("DiagnosticError", palette.red, palette.diff_red)
-    set_hl("DiagnosticUnderlineError", nil, palette.diff_red, "undercurl", palette.red)
+    set_hl("DiagnosticUnderlineError", nil, nil, "undercurl", palette.red)
     set_hl("DiagnosticWarn", palette.orange, palette.diff_orange)
-    set_hl("DiagnosticUnderlineWarn", nil, palette.diff_orange, "undercurl", palette.orange)
+    set_hl("DiagnosticUnderlineWarn", nil, nil, "undercurl", palette.orange)
     set_hl("DiagnosticInfo", palette.blue, palette.diff_blue)
-    set_hl("DiagnosticUnderlineInfo", nil, palette.diff_blue, "undercurl", palette.blue)
+    set_hl("DiagnosticUnderlineInfo", nil, nil, "undercurl", palette.blue)
     set_hl("DiagnosticHint", palette.green, palette.diff_green)
-    set_hl("DiagnosticUnderlineHint", nil, palette.diff_green, "undercurl", palette.green)
+    set_hl("DiagnosticUnderlineHint", nil, nil, "undercurl", palette.green)
 
     -- Custom highlight for tiny-inline-diagnostic.nvim
     set_hl("TinyInlineDiagnosticVirtualTextWarn", palette.orange, palette.diff_orange, "italic")
