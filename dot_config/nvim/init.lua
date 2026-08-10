@@ -13,6 +13,10 @@ end
 -- handling. OSC 52 remains the copy fallback when no tunnel is up. Never OSC
 -- 52 paste — its queries can't reach the real clipboard through tmux and
 -- block nvim waiting for a reply.
+-- ponytail: nc exits 0 even when the Mac end of the RemoteForward refuses
+-- (sshd accepts first), so a dead pbcopy-server drops copies silently instead
+-- of hitting the OSC 52 fallback. Probe port 2489 before copying if it bites
+-- again.
 -- Local sessions: no override, nvim autodetects pbcopy/pbpaste.
 if vim.env.SSH_TTY or vim.env.SSH_CONNECTION then
   local osc52 = require("vim.ui.clipboard.osc52")
