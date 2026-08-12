@@ -1,0 +1,7 @@
+# bat reads this path, not bat.conf — which is what it was called until now, so
+# nothing in here had ever applied.
+#
+# No --theme line on purpose: the `theme` function exports BAT_THEME, and an
+# unset --theme keeps env-vs-config precedence out of the picture. config.fish
+# seeds BAT_THEME for a machine that has never run `theme`.
+--italic-text=always
