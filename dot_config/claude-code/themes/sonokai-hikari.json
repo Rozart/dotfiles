@@ -1,0 +1,16 @@
+{
+  "name": "sonokai-hikari",
+  "base": "light",
+  "overrides": {
+    "claude": "#0d7f9b",
+    "permission": "#005c72",
+    "inactive": "#6c5f6a",
+    "subtle": "#6c5f6a",
+    "diffAdded": "#e3ead5",
+    "diffRemoved": "#f7d6e2",
+    "diffAddedWord": "#cae9b0",
+    "diffRemovedWord": "#f6b4c9",
+    "diffAddedDimmed": "#efdfe9",
+    "diffRemovedDimmed": "#efdfe9"
+  }
+}

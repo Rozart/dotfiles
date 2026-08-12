@@ -9,23 +9,25 @@
 --   diff_*     muted tinted surfaces for diffs and diagnostic backgrounds
 --   grey       comments; grey_dim  fainter still
 --
--- Sonokai is derived at runtime from its own API so Shusia stays pixel-identical
--- to what it was before this file existed. The light themes are literal, taken
--- from each theme's published palette.
+-- Both sonokai styles are derived at runtime from the plugin's own API, so
+-- Shusia stays pixel-identical to what it was before this file existed and
+-- Hikari picks up the colours_override set in plugins/colorscheme.lua. The rest
+-- are literal, taken from each theme's published palette.
 --
--- Caveat: only Everforest publishes diff_* surfaces. For the other three light
--- themes the diff_*/bg_red values are hand-mixed tints of that theme's own
--- accent against its base — they are the one set of values here with no upstream
+-- Keyed by the slug in ~/.config/theme, not by vim.g.colors_name: the plugins
+-- report a name they choose, and it collides — "sonokai" for both shusia and
+-- hikari, "gruvbox-material" for both backgrounds, "rose-pine" for every variant.
+--
+-- Caveat: only Everforest publishes diff_* surfaces. For the other light themes
+-- the diff_*/bg_red values are hand-mixed tints of that theme's own accent
+-- against its base — they are the one set of values here with no upstream
 -- source. Adjust to taste.
 
 local M = {}
 
 M.palettes = {
   -- https://rosepinetheme.com/palette/ingredients/ (dawn)
-  -- Keyed "rose-pine": the plugin sets colors_name to the family, not the
-  -- variant, even when loaded via `:colorscheme rose-pine-dawn`. We only ever
-  -- load dawn (see plugins/colorscheme.lua), so this is unambiguous.
-  ["rose-pine"] = {
+  ["rose-pine-dawn"] = {
     fg = "#575279", -- text
     grey = "#716d8b", -- subtle (darkened to WCAG AA ≥4.5:1 on bg0)
     grey_dim = "#9893a5", -- muted
@@ -73,7 +75,7 @@ M.palettes = {
   },
 
   -- sainnhe/everforest, light / medium. Ships bg_* surfaces directly.
-  ["everforest"] = {
+  ["everforest-light"] = {
     fg = "#5c6a72",
     grey = "#687566", -- grey1 (darkened to WCAG AA ≥4.5:1 on bg0)
     grey_dim = "#a6b0a0", -- grey0
@@ -119,6 +121,64 @@ M.palettes = {
     diff_yellow = "#e5dcc4",
     diff_orange = "#e8d8c4",
   },
+
+  -- sainnhe/gruvbox-material, dark / medium. Literal rather than derived from
+  -- gruvbox_material#get_palette(): its role names diverge far enough
+  -- (fg0/fg1, grey0..2, aqua, bg1..bg9, no diff_*) that reuse becomes a
+  -- mapping table.
+  ["gruvbox-material-dark"] = {
+    fg = "#d4be98", -- fg0
+    grey = "#a89984", -- grey2
+    grey_dim = "#7c6f64", -- grey1
+    red = "#ea6962",
+    orange = "#e78a4e",
+    yellow = "#d8a657",
+    green = "#a9b665",
+    blue = "#7daea3",
+    purple = "#d3869b",
+    bg0 = "#282828",
+    bg1 = "#32302f",
+    bg2 = "#3c3836",
+    bg3 = "#45403d",
+    bg4 = "#5a524c",
+    bg_red = "#4c3432",
+    diff_red = "#3c2f2c",
+    diff_green = "#34381b",
+    diff_blue = "#0e363e",
+    diff_yellow = "#4a3a1d",
+    diff_orange = "#432e1e",
+  },
+
+  -- sainnhe/gruvbox-material, light / medium.
+  ["gruvbox-material-light"] = {
+    fg = "#654735", -- fg0
+    grey = "#7c6f64", -- grey2 (darkened to WCAG AA ≥4.5:1 on bg0)
+    grey_dim = "#a89984", -- grey1
+    red = "#c14a4a",
+    orange = "#c35e0a",
+    yellow = "#b47109",
+    green = "#6c782e",
+    blue = "#45707a",
+    purple = "#945e80",
+    bg0 = "#fbf1c7",
+    bg1 = "#f4e8be",
+    bg2 = "#eee0b7",
+    bg3 = "#e6d8ad",
+    bg4 = "#ddccab",
+    bg_red = "#f4d3c8",
+    diff_red = "#f7dcc4",
+    diff_green = "#e8e3bc",
+    diff_blue = "#e0e7c4",
+    diff_yellow = "#f7e3b4",
+    diff_orange = "#f7dfc0",
+  },
+}
+
+-- Sonokai has no diff_orange role, so the ColorScheme overrides need one mixed
+-- against each style's own base.
+local sonokai_diffs = {
+  ["sonokai-shusia"] = { diff_orange = "#604139" },
+  ["sonokai-hikari"] = { diff_orange = "#f7d5d1" },
 }
 
 -- Sonokai's API hands back { hex, term256 } pairs; we only want the hex.
@@ -154,18 +214,25 @@ local function sonokai_palette()
       out[role] = p[role][1]
     end
   end
-  -- Sonokai has no diff_orange; this was a local in autocmds.lua before.
-  out.diff_orange = "#604139"
   return out
 end
 
---- Palette for the active colourscheme, or nil if we have no tuning for it.
+--- Active theme slug, from the file the `theme` fish function writes.
+function M.slug()
+  local ok, lines = pcall(vim.fn.readfile, vim.fn.expand("~/.config/theme"))
+  local slug = ok and vim.trim(lines[1] or "") or ""
+  return slug ~= "" and slug or "sonokai-shusia"
+end
+
+--- Palette for the active theme, or nil if we have no tuning for it.
 function M.get()
-  local name = vim.g.colors_name
-  if name == "sonokai" then
-    return sonokai_palette()
+  local slug = M.slug()
+  local diffs = sonokai_diffs[slug]
+  if diffs then
+    local p = sonokai_palette()
+    return p and vim.tbl_extend("force", p, diffs)
   end
-  return M.palettes[name]
+  return M.palettes[slug]
 end
 
 return M

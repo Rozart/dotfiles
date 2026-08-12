@@ -1,0 +1,13 @@
+{
+  "name": "gruvbox-material-dark",
+  "base": "dark-ansi",
+  "overrides": {
+    "claude": "#7daea3",
+    "diffAdded": "#34381b",
+    "diffRemoved": "#3c2f2c",
+    "diffAddedWord": "#4a4b23",
+    "diffRemovedWord": "#4c3432",
+    "diffAddedDimmed": "#32302f",
+    "diffRemovedDimmed": "#32302f"
+  }
+}

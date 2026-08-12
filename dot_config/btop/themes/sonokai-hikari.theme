@@ -1,0 +1,87 @@
+# Sonokai Hikari theme for btop
+# Role-for-role substitution of the Sonokai Shusia theme against the Hikari
+# palette, so the two read as the same layout in opposite polarities.
+
+# Colors should be in 6 or 2 character hexadecimal or single spaced rgb decimal: "#RRGGBB", "#BW" or "0-255 0-255 0-255"
+
+# Main background, empty for terminal default, need to be empty if you want transparent background
+theme[main_bg]="#f7ebf2"
+
+# Main text color
+theme[main_fg]="#4a3f48"
+
+# Title color for boxes
+theme[title]="#4a3f48"
+
+# Highlight color for keyboard shortcuts
+theme[hi_fg]="#ef2e62"
+
+# Background color of selected item in processes box
+theme[selected_bg]="#ccb3c4"
+
+# Foreground color of selected item in processes box
+theme[selected_fg]="#4a3f48"
+
+# Color of inactive/disabled text
+theme[inactive_fg]="#9d8d9a"
+
+# Color of text appearing on top of graphs, i.e uptime and current network graph scaling
+theme[graph_text]="#7754e8"
+
+# Misc colors for processes box including mini CPU graphs, details memory graph, and details status text
+theme[proc_misc]="#4ea919"
+
+# CPU box outline color
+theme[cpu_box]="#6c5f6a"
+
+# Memory/disks box outline color
+theme[mem_box]="#6c5f6a"
+
+# Net up/down box outline color
+theme[net_box]="#6c5f6a"
+
+# Processes box outline color
+theme[proc_box]="#6c5f6a"
+
+# Box divider line and small boxes line color
+theme[div_line]="#ccb3c4"
+
+# Temperature graph colors
+theme[temp_start]="#7754e8"
+theme[temp_mid]="#d08d06"
+theme[temp_end]="#ef2e62"
+
+# CPU graph colors
+theme[cpu_start]="#4ea919"
+theme[cpu_mid]="#4a3f48"
+theme[cpu_end]="#ef2e62"
+
+# Mem/Disk free meter
+theme[free_start]="#6c5f6a"
+theme[free_mid]="#4ea919"
+theme[free_end]="#d08d06"
+
+# Mem/Disk cached meter
+theme[cached_start]="#6c5f6a"
+theme[cached_mid]="#0d7f9b"
+theme[cached_end]="#7754e8"
+
+# Mem/Disk available meter
+theme[available_start]="#6c5f6a"
+theme[available_mid]="#d08d06"
+theme[available_end]="#eb510f"
+
+# Mem/Disk used meter
+theme[used_start]="#6c5f6a"
+theme[used_mid]="#ef2e62"
+theme[used_end]="#eb510f"
+
+# Download graph colors
+theme[download_start]="#f7ebf2"
+theme[download_mid]="#0d7f9b"
+theme[download_end]="#7754e8"
+
+# Upload graph colors
+theme[upload_start]="#ef2e62"
+theme[upload_mid]="#eb510f"
+theme[upload_end]="#d08d06"

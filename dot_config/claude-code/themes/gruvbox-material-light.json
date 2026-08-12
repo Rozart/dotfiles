@@ -1,0 +1,16 @@
+{
+  "name": "gruvbox-material-light",
+  "base": "light",
+  "overrides": {
+    "claude": "#45707a",
+    "permission": "#295c67",
+    "inactive": "#7c6f64",
+    "subtle": "#7c6f64",
+    "diffAdded": "#e8e3bc",
+    "diffRemoved": "#f7dcc4",
+    "diffAddedWord": "#dcdc9e",
+    "diffRemovedWord": "#f0c7ae",
+    "diffAddedDimmed": "#f4e8be",
+    "diffRemovedDimmed": "#f4e8be"
+  }
+}
