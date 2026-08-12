@@ -47,6 +47,13 @@ set XDG_CURRENT_DESKTOP XFCE
 set -gx FZF_DEFAULT_COMMAND 'fd --type file'
 set -gx FZF_CTRL_T_COMMAND $FZF_DEFAULT_COMMAND
 
+# Seed for a machine that has never run `theme`. Universal, not global, and that
+# matters: global wins over universal in fish, so a global fallback here would
+# permanently shadow the value `theme` writes.
+# ponytail: fish-only. A bare zsh login won't see the universal variable — put a
+# --theme line back in ~/.config/bat/config if that ever matters, but not both.
+set -q BAT_THEME; or set -Ux BAT_THEME sonokai-shusia
+
 {{ if eq .chezmoi.os "darwin" }}
 set -gx HOMEBREW_PREFIX /opt/homebrew
 set -gx LDFLAGS "$LDFLAGS -L/usr/local/opt/zlib/lib"
@@ -79,7 +86,7 @@ if test -f ~/.aliases
 end
 
 if status is-interactive
-    fish_config theme choose sonokai_shusia
+    fish_config theme choose ansi
 
     fish_vi_key_bindings
 

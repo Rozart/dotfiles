@@ -1,0 +1,9 @@
+# Targets whose source file was renamed, so chezmoi no longer manages them and
+# would otherwise leave the old copy behind on every host.
+#
+#   bat.conf                -> config       (bat only ever reads ~/.config/bat/config)
+#   sonokai_shusia.theme    -> ansi.theme   (the file was never Sonokai-specific)
+#
+# Safe to delete this file once every machine has applied once.
+.config/bat/bat.conf
+.config/fish/themes/sonokai_shusia.theme
