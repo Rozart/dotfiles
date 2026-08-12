@@ -264,14 +264,19 @@ function theme --description "Switch the shared colour theme across every app th
         wait
         for h in $remote_hosts
             set -l rc (cat $fanout/$h.rc)
+            # Grep the whole file, not just line one: ssh prints key warnings
+            # ahead of the verdict, and misreading a rejected key as "offline"
+            # sends you debugging the wrong machine.
+            set -l denied (grep -m1 'Permission denied' $fanout/$h.err)
             # Trailing element only exists so index 1 stays valid when a failure
             # wrote nothing to stderr at all.
             set -l why (head -n 1 $fanout/$h.err) "exit status $rc"
             if test $rc -eq 0
                 set why ok
-            else if test $rc -eq 255; and not string match -q '*Permission denied*' -- $why[1]
-                # Off the LAN, powered down, sshd dead: the quiet skip. A rejected
-                # key is also 255 but has a different fix, so it stays verbatim.
+            else if test -n "$denied"
+                set why $denied
+            else if test $rc -eq 255
+                # Off the LAN, powered down, sshd dead: the quiet skip.
                 set why offline
             end
             printf '  %-12s %s\n' $h $why[1]

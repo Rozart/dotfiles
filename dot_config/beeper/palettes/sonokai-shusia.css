@@ -17,5 +17,5 @@
   --th-green: #9ecd6f;
   --th-blue: #7accd7;
   --th-purple: #ab9df2;
-  --th-accent: #7accd7;
+  --th-accent: #78dce8; /* cyan, matching the tmuxline and claude-code accents */
 }
