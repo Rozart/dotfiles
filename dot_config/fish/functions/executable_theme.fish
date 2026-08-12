@@ -12,7 +12,9 @@ function theme --description "Switch the shared colour theme across every app th
     #   bat_themes    -> BAT_THEME and delta's syntax-theme; must be a theme bat
     #                    knows about (`bat --list-themes`).
     #   dark          -> 1 for a dark theme. Drives macOS system appearance, which
-    #                    is the only lever Brave/Slack/Beeper/Spotify respond to.
+    #                    is the only lever Brave/Slack/Beeper/Spotify respond to,
+    #                    and the polarity handed to eM Client's renderer, which
+    #                    needs it for icon inversion and not just for shade.
     #   accents       -> the theme's accent, same value the tmuxline manifest and
     #                    the claude-code json carry. Window borders.
     #   cursors       -> ghostty's cursor and its smear-trail shader. A locator,
@@ -109,10 +111,13 @@ function theme --description "Switch the shared colour theme across every app th
 
     set -l required ~/.config/tmux/tmuxline/$slug.tmux.conf ~/.config/delta/themes/$slug.gitconfig \
         ~/.config/claude-code/themes/$slug.json ~/.config/btop/themes/$slug.theme
-    # Beeper and Slack are Mac-only apps; the Linux boxes must not fail a switch
-    # over assets they have no use for.
+    # Beeper, Slack and eM Client are Mac-only apps; the Linux boxes must not fail
+    # a switch over assets they have no use for. The eM Client pair is not
+    # per-slug — one template rendered per switch — but a missing one fails the
+    # render, so it belongs in the same up-front check.
     if test (uname) = Darwin
-        set -a required ~/.config/beeper/palettes/$slug.css ~/.config/slack/themes/$slug.txt
+        set -a required ~/.config/beeper/palettes/$slug.css ~/.config/slack/themes/$slug.txt \
+            ~/.config/emclient/theme.emtheme.template ~/.config/emclient/render-theme.py
     end
     for f in $required
         if not test -f $f
@@ -211,12 +216,46 @@ function theme --description "Switch the shared colour theme across every app th
         borders $border_args >/dev/null 2>&1
     end
 
+    # Declared out here so the report block at the bottom can read it; a `set -l`
+    # inside the Darwin block below would not survive it.
+    set -l emclient_status
+
     if test (uname) = Darwin
         # Beeper injects this file as a <style> tag. The palette must come first:
         # base.css consumes the --th-* roles it defines.
         set -l beeper ~/Library/Application\ Support/BeeperTexts
         if test -d $beeper
             cat ~/.config/beeper/palettes/$slug.css ~/.config/beeper/base.css >$beeper/custom.css
+        end
+
+        # eM Client is the one app here that cannot be driven by a file alone. Its
+        # settings live in a SQLite database that it reads once at launch and
+        # rewrites wholesale on exit, so ThemeStyle cannot be set from here, and
+        # its AppleScript dictionary has nothing for appearance. What it does
+        # re-read on every launch is the .emtheme at ThemePath. Point it there
+        # once by hand (~/.config/emclient/README.md), and from then on this is
+        # just a file write plus a restart.
+        set -l polarity light
+        test $dark[$i] -eq 1; and set polarity dark
+        python3 ~/.config/emclient/render-theme.py \
+            ~/.config/beeper/palettes/$slug.css ~/.config/emclient/active.emtheme $polarity
+        set emclient_status "rendered, applies on next launch"
+        if pgrep -qx "eM Client"
+            # Graceful quit only. A mail client killed mid-write is not worth a
+            # colour, and an open modal — a composer, the Quick Tag bar — makes
+            # quit return -128, in which case the theme waits for the next launch.
+            if osascript -e 'tell application "eM Client" to quit' >/dev/null 2>&1
+                for _ in (seq 1 20)
+                    pgrep -qx "eM Client"; or break
+                    sleep 0.5
+                end
+            end
+            if pgrep -qx "eM Client"
+                set emclient_status "busy, close it to apply"
+            else
+                open -a "eM Client"
+                set emclient_status restarted
+            end
         end
 
         # osascript, not `defaults write`: only this posts the change
@@ -275,6 +314,7 @@ function theme --description "Switch the shared colour theme across every app th
     if test (uname) = Darwin
         command -q borders; and echo "  borders  reloaded"
         test -d ~/Library/Application\ Support/BeeperTexts; and echo "  beeper   custom.css written"
+        echo "  emclient $emclient_status"
         echo "  macos    appearance set"
         echo "  slack    theme --slack to copy"
     end
