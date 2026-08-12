@@ -14,8 +14,15 @@ config-version = 2
 # Auto-reload config on save (edit + save applies immediately, no service mode).
 auto-reload-config = true
 
+# Started with no arguments so it reads ~/.config/borders/bordersrc, which the
+# `theme` fish function writes — that way the border colour survives a reboot
+# instead of showing whatever was hardcoded here until the next `theme` call.
+#
+# Colours in bordersrc are 0xAARRGGBB, alpha FIRST (`man borders`). The inline
+# values this replaced had it backwards: 0x9ed072e4 meant to be sonokai green
+# #9ed072 was parsed as alpha 9e over #d072e4, i.e. magenta on olive.
 after-startup-command = [
-    'exec-and-forget borders active_color=0x9ed072e4 inactive_color=0x7f849064 width=5.0',
+    'exec-and-forget borders',
 ]
 # Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
 enable-normalization-flatten-containers = true

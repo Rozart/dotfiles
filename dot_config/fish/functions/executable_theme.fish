@@ -1,26 +1,50 @@
-function theme --description "Switch the shared nvim/tmux/ghostty/bat/btop/delta/claude colour theme"
-    # ponytail: three index-matched lists plus per-app files found by name. A new
-    # theme means re-typing the same palette in six incompatible formats (~85 hex
-    # values) with nothing checking they agree. Upgrade path when that starts
-    # hurting: one .chezmoidata/themes.toml palette per slug plus chezmoi
-    # templates generating every consumer — .chezmoitemplates/tmuxline.tmux.conf
-    # already proves the pattern. Not before.
+function theme --description "Switch the shared colour theme across every app that follows it"
+    # ponytail: five index-matched lists plus per-app files found by name. The
+    # accent hex now lives in three places per slug — the tmuxline manifest, the
+    # claude-code json, and $accents here — with nothing checking they agree.
+    # That, not the file count, is what will break first. Upgrade path unchanged:
+    # one .chezmoidata/themes.toml per slug plus chezmoi templates generating
+    # every consumer, which .chezmoitemplates/tmuxline.tmux.conf already proves.
+    # Do it when a switch first shows mismatched colours, not before.
     #
     # All index-matched to $slugs.
     #   ghostty_names -> theme file under ~/.config/ghostty/themes/, or a builtin
     #   bat_themes    -> BAT_THEME and delta's syntax-theme; must be a theme bat
     #                    knows about (`bat --list-themes`).
+    #   dark          -> 1 for a dark theme. Drives macOS system appearance, which
+    #                    is the only lever Brave/Slack/Beeper/Spotify respond to.
+    #   accents       -> the theme's accent, same value the tmuxline manifest and
+    #                    the claude-code json carry. Window borders.
     set -l slugs sonokai-shusia sonokai-hikari rose-pine-dawn catppuccin-latte \
         everforest-light tokyonight-day gruvbox-material-dark gruvbox-material-light
     set -l ghostty_names "Sonokai Shusia" "Sonokai Hikari" "Rose Pine Dawn" "Catppuccin Latte" \
         "Everforest Light" "Tokyo Night Day" "Gruvbox Material Dark" "Gruvbox Material Light"
     set -l bat_themes sonokai-shusia "Monokai Extended Light" GitHub GitHub \
         gruvbox-light OneHalfLight gruvbox-dark gruvbox-light
+    set -l dark 1 0 0 0 0 0 1 0
+    set -l accents "#78dce8" "#0d7f9b" "#286983" "#1e66f5" \
+        "#3a94c5" "#2e7de9" "#7daea3" "#45707a"
 
     set -l state ~/.config/theme
 
     if contains -- --list $argv
         printf '%s\n' $slugs
+        return 0
+    end
+
+    if contains -- --slack $argv
+        # Slack's sidebar theme is a server-side account preference — see
+        # ~/.config/slack/themes/README.md for why it can't be written to disk.
+        # Its own subcommand rather than part of a switch: pasting into Slack is
+        # a manual step anyway, and hijacking the clipboard on every `theme` call
+        # to save one command would be rude.
+        set -l cur (theme)
+        if not test -f ~/.config/slack/themes/$cur.txt
+            echo "theme: no slack payload for '$cur'" >&2
+            return 1
+        end
+        pbcopy <~/.config/slack/themes/$cur.txt
+        echo "$cur copied — paste into Slack → Preferences → Themes → Create a custom theme"
         return 0
     end
 
@@ -47,13 +71,22 @@ function theme --description "Switch the shared nvim/tmux/ghostty/bat/btop/delta
     # theme after it, and a missing asset leaves tmux on one theme and delta on
     # another. ghostty and bat take builtin names that can't be stat'd, so a typo
     # there still falls back quietly — the gap we keep.
-    if test (count $ghostty_names) -ne (count $slugs) -o (count $bat_themes) -ne (count $slugs)
+    if test (count $ghostty_names) -ne (count $slugs) \
+            -o (count $bat_themes) -ne (count $slugs) \
+            -o (count $dark) -ne (count $slugs) \
+            -o (count $accents) -ne (count $slugs)
         echo "theme: list length mismatch in theme.fish" >&2
         return 1
     end
 
-    for f in ~/.config/tmux/tmuxline/$slug.tmux.conf ~/.config/delta/themes/$slug.gitconfig \
+    set -l required ~/.config/tmux/tmuxline/$slug.tmux.conf ~/.config/delta/themes/$slug.gitconfig \
         ~/.config/claude-code/themes/$slug.json ~/.config/btop/themes/$slug.theme
+    # Beeper and Slack are Mac-only apps; the Linux boxes must not fail a switch
+    # over assets they have no use for.
+    if test (uname) = Darwin
+        set -a required ~/.config/beeper/palettes/$slug.css ~/.config/slack/themes/$slug.txt
+    end
+    for f in $required
         if not test -f $f
             echo "theme: $slug is missing $f" >&2
             return 1
@@ -85,6 +118,39 @@ function theme --description "Switch the shared nvim/tmux/ghostty/bat/btop/delta
     mkdir -p ~/.claude/themes
     cp ~/.config/claude-code/themes/$slug.json ~/.claude/themes/system.json
 
+    # borders reads bordersrc on a cold start; a running instance takes the same
+    # args directly. 0xAARRGGBB — alpha FIRST (`man borders`). One neutral grey
+    # for inactive across every theme: it is deliberately low-contrast and reads
+    # on both polarities.
+    # ponytail: one grey. Per-theme inactive if a light theme ever looks wrong.
+    if command -q borders
+        set -l border_args "active_color=0xe4"(string sub -s 2 $accents[$i]) \
+            inactive_color=0x647f8490 width=5.0
+        mkdir -p ~/.config/borders
+        printf '#!/bin/sh\nborders %s\n' "$border_args" >~/.config/borders/bordersrc
+        chmod +x ~/.config/borders/bordersrc
+        borders $border_args >/dev/null 2>&1
+    end
+
+    if test (uname) = Darwin
+        # Beeper injects this file as a <style> tag. The palette must come first:
+        # base.css consumes the --th-* roles it defines.
+        set -l beeper ~/Library/Application\ Support/BeeperTexts
+        if test -d $beeper
+            cat ~/.config/beeper/palettes/$slug.css ~/.config/beeper/base.css >$beeper/custom.css
+        end
+
+        # osascript, not `defaults write`: only this posts the change
+        # notification that makes running apps actually repaint. Backgrounded
+        # because it can take a moment, and the first ever call raises a TCC
+        # prompt that must be accepted once.
+        set -l mode false
+        test $dark[$i] -eq 1; and set mode true
+        osascript -e "tell application \"System Events\" to tell appearance preferences to set dark mode to $mode" \
+            >/dev/null 2>&1 &
+        disown
+    end
+
     set_color --bold
     echo "$slug"
     set_color normal
@@ -96,18 +162,50 @@ function theme --description "Switch the shared nvim/tmux/ghostty/bat/btop/delta
         echo "  tmux     no server running"
     end
 
-    echo "  nvim     next launch"
+    # Every live nvim, over its own socket. Stale sockets outlive their processes,
+    # so filter by liveness. An instance sitting at a hit-enter prompt blocks the
+    # RPC forever and macOS ships no timeout(1), so every call is backgrounded.
+    set -l reloaded 0
+    for sock in (find $TMPDIR/nvim.$USER -maxdepth 2 -name 'nvim.*.0' 2>/dev/null)
+        set -l pid (string replace -rf '.*/nvim\.(\d+)\.0$' '$1' $sock)
+        kill -0 $pid 2>/dev/null; or continue
+        command nvim --server $sock --remote-expr 'luaeval("require\"config.palettes\".apply()")' \
+            >/dev/null 2>&1 &
+        disown
+        set reloaded (math $reloaded + 1)
+    end
+    if test $reloaded -gt 0
+        echo "  nvim     $reloaded instance(s) reloaded"
+    else
+        echo "  nvim     none running"
+    end
+
     echo "  git      delta follows immediately"
     echo "  bat      follows immediately"
-    echo "  btop     next launch"
     echo "  claude   reloaded"
     # fish needs no line here: it queries the terminal background itself and
     # picks the matching variant of ~/.config/fish/themes/ansi.theme.
 
-    # No CLI reloads ghostty's config; it's the reload_config keybind or restart.
-    if test (uname) = Darwin
-        echo "  ghostty  press cmd+shift+, to reload"
+    # btop hot-reloads its config on SIGUSR2 (documented in its CHANGELOG).
+    if pkill -USR2 -x btop 2>/dev/null
+        echo "  btop     reloaded"
     else
-        echo "  ghostty  press ctrl+shift+, to reload"
+        echo "  btop     not running"
+    end
+
+    if test (uname) = Darwin
+        command -q borders; and echo "  borders  reloaded"
+        test -d ~/Library/Application\ Support/BeeperTexts; and echo "  beeper   custom.css written"
+        echo "  macos    appearance set"
+        echo "  slack    theme --slack to copy"
+    end
+
+    # ghostty reloads config on SIGUSR2. Undocumented — the binary carries
+    # "reloading configuration in response to SIGUSR2" — and there is no
+    # +reload-config among the actions `ghostty +help` lists.
+    if pkill -USR2 -x ghostty 2>/dev/null
+        echo "  ghostty  reloaded"
+    else
+        echo "  ghostty  not running"
     end
 end
