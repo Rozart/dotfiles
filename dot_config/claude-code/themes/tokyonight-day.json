@@ -3,6 +3,7 @@
   "base": "light",
   "overrides": {
     "claude": "#2e7de9",
+    "permission": "#0348a6",
     "inactive": "#586293",
     "subtle": "#586293",
     "diffAdded": "#d9e4d3",
