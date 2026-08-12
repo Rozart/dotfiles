@@ -7,13 +7,18 @@ initial-command = {{ lookPath "fish" | default "fish" }} -C "hosts-tabs --prompt
 {{ end }}
 
 theme = "Sonokai Shusia"
-# Active theme override, written by the `theme` fish function. Optional (?) so a
-# machine that has never run `theme` still gets Sonokai Shusia above.
+# Fallbacks for a machine that has never run `theme`. Both are overridden by
+# theme.conf below — later keys win in ghostty, and that include is generated
+# with its own theme, cursor-color and custom-shader lines.
+cursor-color = "#03fc07"
+{{ if eq .chezmoi.os "darwin" -}}
+custom-shader = shaders/cursor_smear_fade.glsl
+{{ end }}
+# Active theme, written by the `theme` fish function. Optional (?) so the
+# fallbacks above still apply before the first `theme` call.
 #
-# MUST stay here, directly under the default theme. Later keys win in ghostty —
-# that is why cursor-color below beats the theme's own cursor-color. Move this
-# include to the bottom of the file and the theme's cursor-color would land
-# after ours and eat the bright green cursor.
+# MUST stay below the three keys it overrides. Anything here that also wants to
+# beat the theme has to come after this line, not before.
 config-file = ?theme.conf
 
 font-family = ""
@@ -33,8 +38,6 @@ font-size = 11
 font-size = 8.5
 {{ end }}
 
-# I want the cursor-color to be as bright and visible as possible
-cursor-color = "#03fc07"
 adjust-underline-position = 4
 adjust-underline-thickness = -1
 #adjust-cell-height = 5%
@@ -53,8 +56,6 @@ macos-option-as-alt = left
 macos-titlebar-style = transparent
 
 window-colorspace = "display-p3"
-
-custom-shader = shaders/cursor_smear_fade.glsl
 {{ end }}
 
 background-opacity = 0.93

@@ -15,6 +15,13 @@ function theme --description "Switch the shared colour theme across every app th
     #                    is the only lever Brave/Slack/Beeper/Spotify respond to.
     #   accents       -> the theme's accent, same value the tmuxline manifest and
     #                    the claude-code json carry. Window borders.
+    #   cursors       -> ghostty's cursor and its smear-trail shader. A locator,
+    #                    not a palette colour: picked for maximum luminance
+    #                    distance from the paper (all >=7:1) in a hue that theme
+    #                    has no accent near, so it reads as the cursor rather
+    #                    than as syntax. Light papers can only hold a saturated
+    #                    colour that dark in the blue-violet-magenta arc, which
+    #                    is why six of them live there.
     set -l slugs sonokai-shusia sonokai-hikari rose-pine-dawn catppuccin-latte \
         everforest-light tokyonight-day gruvbox-material-dark gruvbox-material-light
     set -l ghostty_names "Sonokai Shusia" "Sonokai Hikari" "Rose Pine Dawn" "Catppuccin Latte" \
@@ -24,6 +31,8 @@ function theme --description "Switch the shared colour theme across every app th
     set -l dark 1 0 0 0 0 0 1 0
     set -l accents "#78dce8" "#0d7f9b" "#286983" "#1e66f5" \
         "#3a94c5" "#2e7de9" "#7daea3" "#45707a"
+    set -l cursors "#03fc07" "#8a00a4" "#1b1bd0" "#84009e" \
+        "#5606c4" "#7c008f" "#00ffff" "#1c1ccf"
 
     set -l state ~/.config/theme
 
@@ -92,7 +101,8 @@ function theme --description "Switch the shared colour theme across every app th
     if test (count $ghostty_names) -ne (count $slugs) \
             -o (count $bat_themes) -ne (count $slugs) \
             -o (count $dark) -ne (count $slugs) \
-            -o (count $accents) -ne (count $slugs)
+            -o (count $accents) -ne (count $slugs) \
+            -o (count $cursors) -ne (count $slugs)
         echo "theme: list length mismatch in theme.fish" >&2
         return 1
     end
@@ -148,8 +158,26 @@ function theme --description "Switch the shared colour theme across every app th
     echo $slug >$state
 
     # ghostty can't read an indirection at runtime, so it gets a generated
-    # include (pulled in by `config-file = ?theme.conf`).
-    echo "theme = \"$ghostty_names[$i]\"" >~/.config/ghostty/theme.conf
+    # include (pulled in by `config-file = ?theme.conf`). It carries the cursor
+    # too: the cursor is a locator, so it wants the opposite of the theme's own
+    # low-contrast cursor-color.
+    printf 'theme = "%s"\ncursor-color = "%s"\n' \
+        $ghostty_names[$i] $cursors[$i] >~/.config/ghostty/theme.conf
+
+    # The smear-trail shader bakes its colour in as a GLSL constant rather than
+    # reading cursor-color, so the active shader is generated per theme. Only
+    # that one line differs from the source.
+    if test (uname) = Darwin
+        set -l shader_src ~/.config/ghostty/shaders/cursor_smear_fade.glsl
+        set -l hex (string sub -s 2 $cursors[$i])
+        set -l r (printf '%.3f' (math 0x(string sub -s 1 -l 2 $hex)/255))
+        set -l g (printf '%.3f' (math 0x(string sub -s 3 -l 2 $hex)/255))
+        set -l b (printf '%.3f' (math 0x(string sub -s 5 -l 2 $hex)/255))
+        string replace -r '^const vec4 TRAIL_COLOR = vec4\(.*\);' \
+            "const vec4 TRAIL_COLOR = vec4($r, $g, $b, 1.0);" \
+            <$shader_src >~/.config/ghostty/shaders/active.glsl
+        echo "custom-shader = shaders/active.glsl" >>~/.config/ghostty/theme.conf
+    end
 
     # delta reads git config fresh on every invocation, so no reload needed.
     printf '[delta]\n  features = %s\n  syntax-theme = "%s"\n' \
