@@ -27,6 +27,24 @@ function theme --description "Switch the shared colour theme across every app th
 
     set -l state ~/.config/theme
 
+    # LAN boxes that follow this Mac. These are ssh aliases, not hostnames — the
+    # machines call themselves roz-*.
+    # ponytail: hardcoded in two files now (hosts-tabs has the same three). A
+    # third copy earns a .chezmoitemplates entry.
+    set -l remote_hosts dev-station docker-host media-host
+
+    # Loop prevention, and the flag is the weakest of the three layers. The
+    # load-bearing one is this uname test: a remote run is Linux, so it empties
+    # the list before it ever looks at argv. Backstop: the LAN block in
+    # private_dot_ssh/config.tmpl is wrapped in `if eq .chezmoi.os "darwin"`, so
+    # `ssh dev-station` on a box resolves to nothing at all.
+    test (uname) = Darwin; or set remote_hosts
+    set -l local_flag (contains -i -- --local $argv)
+    if test -n "$local_flag"
+        set -e argv[$local_flag]
+        set remote_hosts
+    end
+
     if contains -- --list $argv
         printf '%s\n' $slugs
         return 0
@@ -90,6 +108,39 @@ function theme --description "Switch the shared colour theme across every app th
         if not test -f $f
             echo "theme: $slug is missing $f" >&2
             return 1
+        end
+    end
+
+    # Fired before the local writes so three round-trips overlap them and each
+    # other. Output goes to files, never the terminal: jobs finish out of order
+    # and the report below wants one line per host in list order.
+    #
+    # None of these -o flags are optional. All three Host blocks set
+    # `RemoteCommand tmux new-session -A -s <host>`, and ssh refuses to run a
+    # command line alongside a RemoteCommand ("Cannot execute command-line and
+    # remote command.", exit 255) — RemoteCommand=none is what makes this
+    # possible at all. -T undoes their `RequestTTY yes`. ClearAllForwardings
+    # drops eleven LocalForwards and the two RemoteForwards that the live
+    # interactive sessions own, so a switch can't disturb the clipboard tunnel.
+    # LogLevel=ERROR undoes their `LogLevel QUIET`, or a rejected key says
+    # nothing. ConnectTimeout has no default and macOS ships no timeout(1), so
+    # without it a dead host hangs forever.
+    set -l fanout
+    if set -q remote_hosts[1]
+        set fanout (mktemp -d)
+        for h in $remote_hosts
+            begin
+                ssh -n -T -a \
+                    -o RemoteCommand=none \
+                    -o ClearAllForwardings=yes \
+                    -o BatchMode=yes \
+                    -o ConnectTimeout=3 \
+                    -o ServerAliveInterval=3 \
+                    -o ServerAliveCountMax=2 \
+                    -o LogLevel=ERROR \
+                    $h "fish -c 'theme $slug --local'" >/dev/null 2>$fanout/$h.err
+                echo $status >$fanout/$h.rc
+            end &
         end
     end
 
@@ -207,5 +258,24 @@ function theme --description "Switch the shared colour theme across every app th
         echo "  ghostty  reloaded"
     else
         echo "  ghostty  not running"
+    end
+
+    if set -q fanout[1]
+        wait
+        for h in $remote_hosts
+            set -l rc (cat $fanout/$h.rc)
+            # Trailing element only exists so index 1 stays valid when a failure
+            # wrote nothing to stderr at all.
+            set -l why (head -n 1 $fanout/$h.err) "exit status $rc"
+            if test $rc -eq 0
+                set why ok
+            else if test $rc -eq 255; and not string match -q '*Permission denied*' -- $why[1]
+                # Off the LAN, powered down, sshd dead: the quiet skip. A rejected
+                # key is also 255 but has a different fix, so it stays verbatim.
+                set why offline
+            end
+            printf '  %-12s %s\n' $h $why[1]
+        end
+        rm -rf $fanout
     end
 end
