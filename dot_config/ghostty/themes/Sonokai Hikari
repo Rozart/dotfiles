@@ -1,17 +1,22 @@
+# ANSI slots are tuned for readability on this paper, not for syntax:
+# 0 is ink (~9:1), 1-6 and 8 clear 4.5:1, 7 and 15 are surfaces. The vivid
+# accents live in 9-14, which `bold-is-bright` picks up. Claude Code's
+# light-ansi base resolves its UI colours through these.
+
 background = #f9f2e9
 foreground = #4a3f48
 cursor-color = #4a3f48
 selection-background = #d1c2ad
 selection-foreground = #4a3f48
 
-palette = 0=#f9f2e9
-palette = 1=#ef2e62
-palette = 2=#4ea919
-palette = 3=#d08d06
-palette = 4=#0d7f9b
+palette = 0=#4a3f48
+palette = 1=#db1147
+palette = 2=#3a7e13
+palette = 3=#966604
+palette = 4=#0c7994
 palette = 5=#5624ed
-palette = 6=#eb510f
-palette = 7=#4a3f48
+palette = 6=#c4440d
+palette = 7=#ebe0d1
 palette = 8=#6c5f6a
 palette = 9=#ef2e62
 palette = 10=#4ea919
@@ -19,4 +24,4 @@ palette = 11=#d08d06
 palette = 12=#0d7f9b
 palette = 13=#5624ed
 palette = 14=#eb510f
-palette = 15=#4a3f48
+palette = 15=#f3eadd

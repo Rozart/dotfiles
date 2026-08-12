@@ -1,6 +1,6 @@
 {
   "name": "catppuccin-latte",
-  "base": "light",
+  "base": "light-ansi",
   "overrides": {
     "claude": "#1e66f5",
     "permission": "#0047d4",

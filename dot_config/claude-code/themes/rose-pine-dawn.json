@@ -1,6 +1,6 @@
 {
   "name": "rose-pine-dawn",
-  "base": "light",
+  "base": "light-ansi",
   "overrides": {
     "claude": "#286983",
     "permission": "#175e7a",

@@ -1,6 +1,6 @@
 {
   "name": "sonokai-hikari",
-  "base": "light",
+  "base": "light-ansi",
   "overrides": {
     "claude": "#0d7f9b",
     "permission": "#005c72",

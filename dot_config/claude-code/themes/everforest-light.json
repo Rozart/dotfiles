@@ -1,6 +1,6 @@
 {
   "name": "everforest-light",
-  "base": "light",
+  "base": "light-ansi",
   "overrides": {
     "claude": "#3a94c5",
     "permission": "#185d83",

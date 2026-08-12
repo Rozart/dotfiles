@@ -1,6 +1,6 @@
 {
   "name": "tokyonight-day",
-  "base": "light",
+  "base": "light-ansi",
   "overrides": {
     "claude": "#2e7de9",
     "permission": "#0348a6",

@@ -1,6 +1,6 @@
 {
   "name": "gruvbox-material-light",
-  "base": "light",
+  "base": "light-ansi",
   "overrides": {
     "claude": "#45707a",
     "permission": "#295c67",
