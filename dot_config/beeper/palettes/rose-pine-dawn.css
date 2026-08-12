@@ -1,0 +1,20 @@
+/* https://rosepinetheme.com/palette/ingredients/ (dawn). Roles mirror
+   nvim's config/palettes.lua. Accent is pine rather than foam. */
+:root {
+  --th-bg0: #faf4ed; /* base */
+  --th-bg1: #f4ede8; /* highlight-low */
+  --th-bg2: #f2e9e1; /* overlay */
+  --th-bg3: #dfdad9; /* highlight-med */
+  --th-bg4: #cecacd; /* highlight-high */
+  --th-bg-red: #eee0e2;
+  --th-fg: #575279; /* text */
+  --th-grey: #716d8b; /* subtle, darkened to AA on bg0 */
+  --th-grey-dim: #9893a5; /* muted */
+  --th-red: #b4637a; /* love */
+  --th-orange: #d7827e; /* rose */
+  --th-yellow: #ea9d34; /* gold */
+  --th-green: #286983; /* pine */
+  --th-blue: #56949f; /* foam */
+  --th-purple: #907aa9; /* iris */
+  --th-accent: #286983; /* pine */
+}

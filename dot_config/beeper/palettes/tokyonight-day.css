@@ -1,0 +1,20 @@
+/* folke/tokyonight.nvim, day variant. Roles mirror nvim's
+   config/palettes.lua. */
+:root {
+  --th-bg0: #e1e2e7;
+  --th-bg1: #dcdde3;
+  --th-bg2: #d0d5e3; /* bg_dark */
+  --th-bg3: #c4c8da; /* bg_highlight */
+  --th-bg4: #b7c1e3; /* bg_visual */
+  --th-bg-red: #e5cad4;
+  --th-fg: #3760bf;
+  --th-grey: #586293; /* comment, darkened to AA on bg0 */
+  --th-grey-dim: #a8aecb;
+  --th-red: #f52a65;
+  --th-orange: #b15c00;
+  --th-yellow: #8c6c3e;
+  --th-green: #587539;
+  --th-blue: #2e7de9;
+  --th-purple: #9854f1;
+  --th-accent: #2e7de9;
+}

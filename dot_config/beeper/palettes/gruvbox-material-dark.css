@@ -1,0 +1,20 @@
+/* sainnhe/gruvbox-material, dark / medium. Roles mirror nvim's
+   config/palettes.lua. Dark theme: bg1..bg4 step lighter. */
+:root {
+  --th-bg0: #282828;
+  --th-bg1: #32302f;
+  --th-bg2: #3c3836;
+  --th-bg3: #45403d;
+  --th-bg4: #5a524c;
+  --th-bg-red: #4c3432;
+  --th-fg: #d4be98; /* fg0 */
+  --th-grey: #a89984; /* grey2 */
+  --th-grey-dim: #7c6f64; /* grey1 */
+  --th-red: #ea6962;
+  --th-orange: #e78a4e;
+  --th-yellow: #d8a657;
+  --th-green: #a9b665;
+  --th-blue: #7daea3;
+  --th-purple: #d3869b;
+  --th-accent: #7daea3;
+}

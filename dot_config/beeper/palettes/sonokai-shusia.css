@@ -1,0 +1,21 @@
+/* sainnhe/sonokai, shusia style. Values lifted from the plugin's own
+   palette (autoload/sonokai.vim) since it has no published hex table.
+   The only dark theme in the set; bg1..bg4 step lighter, not darker. */
+:root {
+  --th-bg0: #2d2a2e;
+  --th-bg1: #37343a;
+  --th-bg2: #3b383e;
+  --th-bg3: #423f46;
+  --th-bg4: #49464e;
+  --th-bg-red: #55393d;
+  --th-fg: #e3e1e4;
+  --th-grey: #848089;
+  --th-grey-dim: #605d68;
+  --th-red: #f85e84;
+  --th-orange: #ef9062;
+  --th-yellow: #e5c463;
+  --th-green: #9ecd6f;
+  --th-blue: #7accd7;
+  --th-purple: #ab9df2;
+  --th-accent: #7accd7;
+}

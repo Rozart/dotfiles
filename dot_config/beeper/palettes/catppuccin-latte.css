@@ -1,0 +1,20 @@
+/* https://catppuccin.com/palette (latte). Roles mirror nvim's
+   config/palettes.lua. */
+:root {
+  --th-bg0: #eff1f5; /* base */
+  --th-bg1: #e6e9ef; /* mantle */
+  --th-bg2: #dce0e8; /* crust */
+  --th-bg3: #ccd0da; /* surface0 */
+  --th-bg4: #bcc0cc; /* surface1 */
+  --th-bg-red: #f2dde1;
+  --th-fg: #4c4f69; /* text */
+  --th-grey: #6a6d82; /* subtext0, darkened to AA on bg0 */
+  --th-grey-dim: #9ca0b0; /* overlay0 */
+  --th-red: #d20f39;
+  --th-orange: #fe640b; /* peach */
+  --th-yellow: #df8e1d;
+  --th-green: #40a02b;
+  --th-blue: #1e66f5;
+  --th-purple: #8839ef; /* mauve */
+  --th-accent: #1e66f5;
+}

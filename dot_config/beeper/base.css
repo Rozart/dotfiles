@@ -1,0 +1,71 @@
+/*
+Shared Beeper token map. `theme` concatenates palettes/<slug>.css in front of
+this file and writes the result to the path Beeper injects as a <style> tag:
+  ~/Library/Application Support/BeeperTexts/custom.css
+
+Beeper derives every semantic token from a --color-base-* primitive ramp, so
+remapping the ramp recolours the whole app. Roles come from the palette file
+and match nvim's config/palettes.lua: bg0 is the base surface, bg1..bg4 step
+away from it (darker on light themes, lighter on dark ones), grey_dim/grey/fg
+are the three text weights.
+
+Selector list, not a bare :root. Beeper defines the ramp three times over:
+  :root                                  standard mode
+  body.theme-monochrome                  0,2,0 — beats :root
+  body.theme-rich[data-theme-color=X]    0,2,1 — beats both, also sets accent
+Matching each specificity here (and winning on source order, since this file is
+injected last) covers every theme mode with one copy of the map.
+*/
+
+:root,
+body.theme-monochrome,
+body.theme-rich[data-theme-color] {
+  --color-base-white: var(--th-bg0);
+  --color-base-black: var(--th-fg);
+
+  --color-base-gray-10: var(--th-bg0);
+  --color-base-gray-20: var(--th-bg0);
+  --color-base-gray-30: var(--th-bg1);
+  --color-base-gray-40: var(--th-bg1);
+  --color-base-gray-50: var(--th-bg2);
+  --color-base-gray-60: var(--th-bg3);
+  --color-base-gray-70: var(--th-bg3);
+  --color-base-gray-80: var(--th-bg4);
+  --color-base-gray-85: var(--th-grey-dim);
+  --color-base-gray-90: var(--th-grey-dim);
+  --color-base-gray-100: var(--th-grey-dim);
+  --color-base-gray-110: var(--th-grey);
+  --color-base-gray-120: var(--th-fg);
+  --color-base-gray-130: var(--th-fg);
+
+  --color-base-red-110: var(--th-red);
+  --color-base-system-blue-90: var(--th-blue);
+  --color-base-system-blue-100: var(--th-accent);
+  --color-base-system-blue-110: var(--th-accent);
+
+  --color-primary: var(--th-accent);
+  --color-bg: var(--th-bg1);
+  --color-surface-dim: var(--th-bg2);
+  --color-secondary-container: var(--th-bg2);
+  --color-tertiary-container: var(--th-bg1);
+  --color-container-inside-secondary-container: var(--th-bg3);
+  --color-container-content-base-1: var(--th-grey-dim);
+  --color-outline: var(--th-bg4);
+  --color-outline-variant: var(--th-blue);
+
+  --color-text-primary: var(--th-fg);
+  --color-text-secondary: var(--th-grey);
+  --color-text-tertiary: var(--th-grey-dim);
+}
+
+/* Window gradient behind the panes; only its edges are visible. */
+body.theme-rich[data-theme-color] {
+  --color-from: var(--th-bg2);
+  --color-to: var(--th-bg3);
+  --linked-message-bg: var(--th-bg-red);
+}
+
+body.theme-monochrome {
+  --theme-background-gradient: linear-gradient(135deg, var(--th-bg1), var(--th-bg2));
+  --color-on-surface: var(--th-fg);
+}
