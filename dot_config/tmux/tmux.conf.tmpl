@@ -1,6 +1,9 @@
 set -g default-terminal "xterm-ghostty"
 set -as terminal-overrides ',*:Setulc=\E[58::2::%p1%{65536}%/%d::%p1%{256}%/%{255}%&%d::%p1%{255}%&%d%;m'  # colored underscores
-set -as terminal-overrides ',*:RGB' # true-color support
+# true-color. terminal-FEATURES, not terminal-overrides: the overrides route is
+# the pre-3.2 mechanism and tmux 3.7 no longer honours `*:RGB` there, so this
+# silently did nothing and every colour fell back to the 256-colour cube.
+set -as terminal-features ',*:RGB'
 
 set -g prefix C-a
 # Statusline theme follows ~/.config/theme (written by the `theme` fish function).
@@ -49,7 +52,11 @@ bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel
 unbind r
 bind r source-file ~/.config/tmux/tmux.conf \; display "Reloaded tmux config!"
 set -sg escape-time 0
-set -g terminal-overrides '*:smcup@:rmcup@'
+# -as, not -g: `set -g` REPLACES the whole override list, which silently wiped
+# the RGB and Setulc entries set at the top of this file. Everything inside tmux
+# then fell back to the 256-colour cube, so every theme rendered as its nearest
+# xterm approximation rather than its actual hex.
+set -as terminal-overrides ',*:smcup@:rmcup@'
 setw -g aggressive-resize off
 
 
