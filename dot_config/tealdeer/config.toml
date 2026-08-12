@@ -1,2 +1,25 @@
 [updates]
 auto_update = true
+
+# Every colour is an ANSI name, so tldr follows whatever palette ghostty is
+# running — one block covers all eight theme slugs and `theme` never touches
+# this file. Same trick as fish/themes/ansi.theme.
+#
+# tealdeer 1.8 takes only the eight base names here: no bright variants, no
+# `ansi = N`. Anything else needs an explicit {rgb = {...}}, which would pin
+# the theme.
+[style.command_name]
+foreground = "cyan"
+
+[style.example_text]
+foreground = "green"
+
+[style.example_code]
+foreground = "blue"
+
+[style.example_variable]
+foreground = "blue"
+underline = true
+
+[style.description]
+foreground = "white"
