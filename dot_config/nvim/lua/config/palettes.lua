@@ -178,7 +178,7 @@ M.palettes = {
 -- against each style's own base.
 local sonokai_diffs = {
   ["sonokai-shusia"] = { diff_orange = "#604139" },
-  ["sonokai-hikari"] = { diff_orange = "#f7d5d1" },
+  ["sonokai-hikari"] = { diff_orange = "#f9dbc9" },
 }
 
 -- Sonokai's API hands back { hex, term256 } pairs; we only want the hex.
@@ -238,27 +238,27 @@ end
 -- Sonokai's own hikari style is unfinished upstream: its dict omits bg_purple
 -- and filled_red/green/blue, which colors/sonokai.vim dereferences, so loading
 -- it bare throws E716. This override supplies those keys and replaces the hues
--- with a light counterpart to Shusia — a mauve paper carrying Shusia's purple
--- cast, accents held at S74-94 so they stay vivid on it.
+-- with a light counterpart to Shusia — a warm sand paper, accents held at
+-- S74-94 so they stay vivid on it.
 -- sonokai#get_palette() ends in extend(palette, override), so sonokai_palette()
 -- above picks the result up without a second copy.
 local hikari = {
-  black = { "#bfa5b7", "249" },
-  bg_dim = { "#f1e3ec", "255" },
-  bg0 = { "#f7ebf2", "255" },
-  bg1 = { "#efdfe9", "254" },
-  bg2 = { "#e7d4e0", "253" },
-  bg3 = { "#dbc5d4", "252" },
-  bg4 = { "#ccb3c4", "250" },
-  bg_red = { "#f7c4d5", "224" },
-  bg_yellow = { "#f7ddc0", "223" },
-  bg_green = { "#d8eac5", "188" },
-  bg_blue = { "#cae4f2", "189" },
-  bg_purple = { "#dfcff1", "189" },
-  diff_red = { "#f7cedc", "224" },
-  diff_yellow = { "#f7e0c9", "224" },
-  diff_green = { "#deeacd", "253" },
-  diff_blue = { "#d3e5f2", "189" },
+  black = { "#c5b6a0", "181" },
+  bg_dim = { "#f4ece1", "255" },
+  bg0 = { "#f9f2e9", "255" },
+  bg1 = { "#f3eadd", "254" },
+  bg2 = { "#ebe0d1", "253" },
+  bg3 = { "#e0d4c2", "187" },
+  bg4 = { "#d1c2ad", "181" },
+  bg_red = { "#f8cacd", "224" },
+  bg_yellow = { "#f9e3b9", "223" },
+  bg_green = { "#daefbe", "193" },
+  bg_blue = { "#cce9eb", "254" },
+  bg_purple = { "#e1d5ea", "254" },
+  diff_red = { "#f8d4d4", "224" },
+  diff_yellow = { "#f9e5c2", "223" },
+  diff_green = { "#dff0c6", "194" },
+  diff_blue = { "#d5ebea", "254" },
   filled_red = { "#ef2e62", "197" },
   filled_green = { "#4ea919", "70" },
   filled_blue = { "#0d7f9b", "30" },

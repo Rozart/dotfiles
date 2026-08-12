@@ -5,7 +5,7 @@
 # Colors should be in 6 or 2 character hexadecimal or single spaced rgb decimal: "#RRGGBB", "#BW" or "0-255 0-255 0-255"
 
 # Main background, empty for terminal default, need to be empty if you want transparent background
-theme[main_bg]="#f7ebf2"
+theme[main_bg]="#f9f2e9"
 
 # Main text color
 theme[main_fg]="#4a3f48"
@@ -17,7 +17,7 @@ theme[title]="#4a3f48"
 theme[hi_fg]="#ef2e62"
 
 # Background color of selected item in processes box
-theme[selected_bg]="#ccb3c4"
+theme[selected_bg]="#d1c2ad"
 
 # Foreground color of selected item in processes box
 theme[selected_fg]="#4a3f48"
@@ -44,7 +44,7 @@ theme[net_box]="#6c5f6a"
 theme[proc_box]="#6c5f6a"
 
 # Box divider line and small boxes line color
-theme[div_line]="#ccb3c4"
+theme[div_line]="#d1c2ad"
 
 # Temperature graph colors
 theme[temp_start]="#7754e8"
@@ -77,7 +77,7 @@ theme[used_mid]="#ef2e62"
 theme[used_end]="#eb510f"
 
 # Download graph colors
-theme[download_start]="#f7ebf2"
+theme[download_start]="#f9f2e9"
 theme[download_mid]="#0d7f9b"
 theme[download_end]="#7754e8"
 

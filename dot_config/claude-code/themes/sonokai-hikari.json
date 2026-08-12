@@ -6,11 +6,11 @@
     "permission": "#005c72",
     "inactive": "#6c5f6a",
     "subtle": "#6c5f6a",
-    "diffAdded": "#e3ead5",
-    "diffRemoved": "#f7d6e2",
-    "diffAddedWord": "#cae9b0",
-    "diffRemovedWord": "#f6b4c9",
-    "diffAddedDimmed": "#efdfe9",
-    "diffRemovedDimmed": "#efdfe9"
+    "diffAdded": "#e5f0cd",
+    "diffRemoved": "#f9dcda",
+    "diffAddedWord": "#cceeaa",
+    "diffRemovedWord": "#f8b9c2",
+    "diffAddedDimmed": "#f3eadd",
+    "diffRemovedDimmed": "#f3eadd"
   }
 }

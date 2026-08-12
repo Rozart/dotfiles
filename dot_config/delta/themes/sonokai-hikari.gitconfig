@@ -1,5 +1,5 @@
 [delta "sonokai-hikari"]
- blame-palette = "#f7ebf2 #efdfe9 #e7d4e0 #dbc5d4 #ccb3c4"
+ blame-palette = "#f9f2e9 #f3eadd #ebe0d1 #e0d4c2 #d1c2ad"
  commit-decoration-style = "#6c5f6a" bold box ul
  light = true
  file-decoration-style = "#6c5f6a"
@@ -13,10 +13,10 @@
  line-numbers-plus-style = bold "#4ea919"
  line-numbers-right-style = "#6c5f6a"
  line-numbers-zero-style = "#6c5f6a"
- minus-emph-style = bold syntax "#f6b4c9"
- minus-style = syntax "#f7d6e2"
- plus-emph-style = bold syntax "#cae9b0"
- plus-style = syntax "#e3ead5"
+ minus-emph-style = bold syntax "#f8b9c2"
+ minus-style = syntax "#f9dcda"
+ plus-emph-style = bold syntax "#cceeaa"
+ plus-style = syntax "#e5f0cd"
  map-styles = \
  	bold purple => syntax "#7754e8", \
  	bold blue => syntax "#0d7f9b", \

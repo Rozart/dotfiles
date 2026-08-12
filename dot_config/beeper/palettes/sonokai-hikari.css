@@ -1,13 +1,13 @@
 /* Light counterpart to Sonokai Shusia, built here rather than upstream —
-   sonokai ships no light style. Values are the colors_override table in nvim's
-   plugins/colorscheme.lua. Light theme: bg1..bg4 step darker. */
+   sonokai ships no light style. Values are the hikari colors_override table in
+   nvim's config/palettes.lua. Light theme: bg1..bg4 step darker. */
 :root {
-  --th-bg0: #f7ebf2;
-  --th-bg1: #efdfe9;
-  --th-bg2: #e7d4e0;
-  --th-bg3: #dbc5d4;
-  --th-bg4: #ccb3c4;
-  --th-bg-red: #f7c4d5;
+  --th-bg0: #f9f2e9;
+  --th-bg1: #f3eadd;
+  --th-bg2: #ebe0d1;
+  --th-bg3: #e0d4c2;
+  --th-bg4: #d1c2ad;
+  --th-bg-red: #f8cacd;
   --th-fg: #4a3f48;
   --th-grey: #6c5f6a;
   --th-grey-dim: #9d8d9a;

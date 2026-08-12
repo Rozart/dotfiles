@@ -1,36 +1,36 @@
 {
   "manifest_version": 3,
-  "version": "1.0",
+  "version": "1.1",
   "name": "Sonokai Hikari",
-  "description": "Light counterpart to Sonokai Shusia — mauve paper, teal accent. Matches the sonokai-hikari slug of the `theme` switcher.",
+  "description": "Light counterpart to Sonokai Shusia — warm sand paper, teal accent. Matches the sonokai-hikari slug of the `theme` switcher.",
   "theme": {
     "colors": {
-      "frame": [231, 212, 224],
-      "frame_inactive": [219, 197, 212],
-      "frame_incognito": [231, 212, 224],
-      "frame_incognito_inactive": [219, 197, 212],
+      "frame": [235, 224, 209],
+      "frame_inactive": [224, 212, 194],
+      "frame_incognito": [235, 224, 209],
+      "frame_incognito_inactive": [224, 212, 194],
 
-      "toolbar": [247, 235, 242],
+      "toolbar": [249, 242, 233],
       "toolbar_text": [74, 63, 72],
       "toolbar_button_icon": [108, 95, 106],
-      "button_background": [231, 212, 224],
+      "button_background": [235, 224, 209],
       "bookmark_text": [74, 63, 72],
 
-      "background_tab": [231, 212, 224],
-      "background_tab_inactive": [219, 197, 212],
-      "background_tab_incognito": [231, 212, 224],
-      "background_tab_incognito_inactive": [219, 197, 212],
+      "background_tab": [235, 224, 209],
+      "background_tab_inactive": [224, 212, 194],
+      "background_tab_incognito": [235, 224, 209],
+      "background_tab_incognito_inactive": [224, 212, 194],
       "tab_text": [74, 63, 72],
       "tab_background_text": [74, 63, 72],
       "tab_background_text_inactive": [108, 95, 106],
       "tab_background_text_incognito": [74, 63, 72],
       "tab_background_text_incognito_inactive": [108, 95, 106],
 
-      "omnibox_background": [239, 223, 233],
+      "omnibox_background": [243, 234, 221],
       "omnibox_text": [74, 63, 72],
 
-      "ntp_background": [247, 235, 242],
-      "ntp_header": [231, 212, 224],
+      "ntp_background": [249, 242, 233],
+      "ntp_header": [235, 224, 209],
       "ntp_text": [74, 63, 72],
       "ntp_link": [13, 127, 155]
     }
