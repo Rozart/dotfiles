@@ -235,4 +235,81 @@ function M.get()
   return M.palettes[slug]
 end
 
+-- Sonokai's own hikari style is unfinished upstream: its dict omits bg_purple
+-- and filled_red/green/blue, which colors/sonokai.vim dereferences, so loading
+-- it bare throws E716. This override supplies those keys and replaces the hues
+-- with a light counterpart to Shusia — a mauve paper carrying Shusia's purple
+-- cast, accents held at S74-94 so they stay vivid on it.
+-- sonokai#get_palette() ends in extend(palette, override), so sonokai_palette()
+-- above picks the result up without a second copy.
+local hikari = {
+  black = { "#bfa5b7", "249" },
+  bg_dim = { "#f1e3ec", "255" },
+  bg0 = { "#f7ebf2", "255" },
+  bg1 = { "#efdfe9", "254" },
+  bg2 = { "#e7d4e0", "253" },
+  bg3 = { "#dbc5d4", "252" },
+  bg4 = { "#ccb3c4", "250" },
+  bg_red = { "#f7c4d5", "224" },
+  bg_yellow = { "#f7ddc0", "223" },
+  bg_green = { "#d8eac5", "188" },
+  bg_blue = { "#cae4f2", "189" },
+  bg_purple = { "#dfcff1", "189" },
+  diff_red = { "#f7cedc", "224" },
+  diff_yellow = { "#f7e0c9", "224" },
+  diff_green = { "#deeacd", "253" },
+  diff_blue = { "#d3e5f2", "189" },
+  filled_red = { "#ef2e62", "197" },
+  filled_green = { "#4ea919", "70" },
+  filled_blue = { "#0d7f9b", "30" },
+  fg = { "#4a3f48", "238" },
+  red = { "#ef2e62", "197" },
+  orange = { "#eb510f", "166" },
+  yellow = { "#d08d06", "172" },
+  green = { "#4ea919", "70" },
+  blue = { "#0d7f9b", "30" },
+  purple = { "#7754e8", "98" },
+  grey = { "#6c5f6a", "241" },
+  grey_dim = { "#9d8d9a", "246" },
+}
+
+--- Colourscheme, background and plugin style per slug. Lives here rather than in
+--- plugins/colorscheme.lua because that file returns a lazy.nvim spec array and
+--- nothing can require the table back out of it. Read at startup by the spec,
+--- and by M.apply() when the theme changes under a running instance.
+M.themes = {
+  ["sonokai-shusia"] = { colorscheme = "sonokai", background = "dark", style = "shusia" },
+  ["sonokai-hikari"] = { colorscheme = "sonokai", background = "light", style = "hikari", overrides = hikari },
+  ["rose-pine-dawn"] = { colorscheme = "rose-pine-dawn", background = "light" },
+  ["catppuccin-latte"] = { colorscheme = "catppuccin-latte", background = "light" },
+  ["everforest-light"] = { colorscheme = "everforest", background = "light" },
+  ["tokyonight-day"] = { colorscheme = "tokyonight-day", background = "light" },
+  ["gruvbox-material-dark"] = { colorscheme = "gruvbox-material", background = "dark" },
+  ["gruvbox-material-light"] = { colorscheme = "gruvbox-material", background = "light" },
+}
+
+--- Theme entry for the active slug, falling back to Shusia on an unknown one.
+function M.active()
+  return M.themes[M.slug()] or M.themes["sonokai-shusia"]
+end
+
+--- Re-read ~/.config/theme and switch this instance to it. Called over
+--- --remote-expr by the `theme` fish function, and by hand as
+---   :lua require("config.palettes").apply()
+---
+--- Only sonokai's style and override are slug-dependent — everforest's and
+--- gruvbox-material's globals are constants, so their init functions keep them
+--- and this never touches them. :colorscheme fires ColorScheme, which re-runs
+--- the highlight overrides in config/autocmds.lua; M.get() reads the slug file
+--- uncached, so those land on the new palette.
+function M.apply()
+  local t = M.active()
+  -- Before :colorscheme, not after: everforest and gruvbox-material read it
+  -- while loading.
+  vim.o.background = t.background
+  vim.g.sonokai_style = t.style
+  vim.g.sonokai_colors_override = t.overrides or vim.empty_dict()
+  vim.cmd.colorscheme(t.colorscheme)
+end
+
 return M
