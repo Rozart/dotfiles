@@ -1,0 +1,713 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SerializableColorTheme name="{{name}}" author="{{author}}">
+  <!--Form-->
+  <FormBackground description="Background color of all windows">{{bg0}}</FormBackground>
+  <FormForeground description="Color of texts in all windows">{{fg}}</FormForeground>
+  <FormCaptionButtonColors>
+    <ButtonBackColor description="Gets the background color of a button">{{bg3}}</ButtonBackColor>
+    <ButtonTextColor description="Gets the text color of a button">{{fg}}</ButtonTextColor>
+    <ButtonBorderColor description="Gets the border color of a button">Transparent</ButtonBorderColor>
+    <ButtonDropDownSplitLineColor description="Gets the color of line between text and a drop-down arrow on a button">{{bg0}}</ButtonDropDownSplitLineColor>
+    <ButtonHoverBackColor description="Gets the background color of a button if the mouse cursor is over the button">{{bg0}}</ButtonHoverBackColor>
+    <ButtonHoverTextColor description="Gets the text color of a button if the mouse cursor is over the button">{{fg}}</ButtonHoverTextColor>
+    <ButtonBorderHoverColor description="Gets the border color of a button if the mouse cursor is over the button">{{bg3}}</ButtonBorderHoverColor>
+    <ButtonDropDownSplitLineHoverColor description="Gets the color of line between text and a drop-down arrow on a button if the mouse cursor is over the button">{{bg3}}</ButtonDropDownSplitLineHoverColor>
+    <ButtonCheckedBackColor description="Gets the background color of a checked button">{{bg0}}</ButtonCheckedBackColor>
+    <ButtonCheckedTextColor description="Gets the text color of a checked button">{{fg}}</ButtonCheckedTextColor>
+    <ButtonBorderCheckedColor description="Gets the border color of a checked button">{{bg3}}</ButtonBorderCheckedColor>
+    <ButtonDropDownSplitLineCheckedColor description="Gets the color of line between text and a drop-down arrow on a pressed button">{{bg3}}</ButtonDropDownSplitLineCheckedColor>
+    <ButtonPressedBackColor description="Gets the background color of a pressed button">{{bg4}}</ButtonPressedBackColor>
+    <ButtonPressedTextColor description="Gets the text color of a pressed button">{{grey}}</ButtonPressedTextColor>
+    <ButtonBorderPressedColor description="Gets the border color of a pressed button">Transparent</ButtonBorderPressedColor>
+    <ButtonDropDownSplitLinePressedColor description="Gets the color of line between text and a drop-down arrow on a pressed button">{{fg}}</ButtonDropDownSplitLinePressedColor>
+    <ButtonDisabledBackColor description="Gets the background color of a disabled button">{{grey-dim}}</ButtonDisabledBackColor>
+    <ButtonDisabledTextColor description="Gets the text color of a disabled button">{{fg}}</ButtonDisabledTextColor>
+    <ButtonBorderDisabledColor description="Gets the border color of a disabled button">{{grey-dim}}</ButtonBorderDisabledColor>
+    <ButtonInvertImage description="Indicates if an image should have inverted colors if the button is in normal state">{{invert}}</ButtonInvertImage>
+    <ButtonCheckedInvertImage description="Indicates if an image should have inverted colors if the button is checked">{{invert}}</ButtonCheckedInvertImage>
+    <ButtonPressedInvertImage description="Indicates if an image should have inverted colors if the button is pressed">{{invert}}</ButtonPressedInvertImage>
+    <ButtonHoverInvertImage description="Indicates if an image should have inverted colors if the mouse cursor is over the button">{{invert}}</ButtonHoverInvertImage>
+    <ButtonInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is in normal state">{{invert}}</ButtonInvertDropDownArrow>
+    <ButtonCheckedInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is checked">{{invert}}</ButtonCheckedInvertDropDownArrow>
+    <ButtonPressedInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is pressed">{{invert}}</ButtonPressedInvertDropDownArrow>
+    <ButtonHoverInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the mouse cursor is over the button">{{invert}}</ButtonHoverInvertDropDownArrow>
+  </FormCaptionButtonColors>
+  <FormCaptionButtonBackgroundPressed description="Background for buttons in the right-top area of a form caption when the button is pressed">{{blue}}</FormCaptionButtonBackgroundPressed>
+  <FormCaptionButtonBackgroundOver description="Background for buttons in the right-top area of a form caption when mouse is over the button">{{bg3}}</FormCaptionButtonBackgroundOver>
+  <FormCaptionButtonBackgroundChecked description="Background for checked buttons in the right-top area of a form caption">{{bg3}}</FormCaptionButtonBackgroundChecked>
+  <FormHeader description="Header color of all windows">{{bg0}}</FormHeader>
+  <FormHeaderActive description="Header color of an active window">{{bg0}}</FormHeaderActive>
+  <FormHeaderForeground description="Color of a text in window header">{{fg}}</FormHeaderForeground>
+  <FormHeaderActiveForeground description="Color of a text in an active window header">{{fg}}</FormHeaderActiveForeground>
+  <ReadMailFormBackground description="Background color of a form used for reading emails">{{bg0}}</ReadMailFormBackground>
+  <SendMailFormBackground description="Background color of a form used for composing emails">{{bg0}}</SendMailFormBackground>
+  <MainFormBackgroundStart description="Starting color of the gradient used as the background for the main window">{{bg0}}</MainFormBackgroundStart>
+  <MainFormBackgroundEnd description="Ending color of the gradient used as the background for the main window">{{bg0}}</MainFormBackgroundEnd>
+  <MainFormHeader description="Header background color for main window">{{bg0}}</MainFormHeader>
+  <MainFormHeaderActive description="Header background color for active main window">{{bg0}}</MainFormHeaderActive>
+  <PlaceholderText description="Color of a text placeholder (in a text box control, for example)">{{grey-dim}}</PlaceholderText>
+  <Link description="Color of links">{{blue}}</Link>
+  <FocusedInputControlBorder description="Border color of a docused input control (e.g. textbox)">{{accent}}</FocusedInputControlBorder>
+  <BorderLine description="Color of form border">{{bg0}}</BorderLine>
+  <BorderLineActive description="Color of an active form border">{{bg0}}</BorderLineActive>
+  <DarkLine description="Color of darker lines used on forms">{{bg3}}</DarkLine>
+  <LightLine description="Color of lighter lines used on forms">{{bg3}}</LightLine>
+  <InformationBarBackground description="Background color of an information bar">{{blue}}</InformationBarBackground>
+  <InformationBarForeground description="Text color in an information bar">{{bg0}}</InformationBarForeground>
+  <MainFormInformationBarBackground description="Background color of an information bar">{{bg0}}</MainFormInformationBarBackground>
+  <MainFormInformationBarForeground description="Text color in an information bar">{{fg}}</MainFormInformationBarForeground>
+  <ShowMainFormVerticalSplitterLines description="Indicates if a vertical line should be displayed between the messages/contact/event/task list and left or right sidebar">True</ShowMainFormVerticalSplitterLines>
+  <ShowMainFormHorizontalTopLine description="Indicates if a horizontal line should be displayed above the message list">True</ShowMainFormHorizontalTopLine>
+  <GroupHeaderBackground description="Background color of group header">{{bg0}}</GroupHeaderBackground>
+  <GroupHeaderForeground description="Text color of group header">{{fg}}</GroupHeaderForeground>
+  <WizardHeaderBackground description="Background color of Wizard header">{{bg0}}</WizardHeaderBackground>
+  <WizardHeaderForeground description="Text color of Wizard header">{{fg}}</WizardHeaderForeground>
+  <!--Message list-->
+  <MainFormGridConversationCountBackground>{{bg3}}</MainFormGridConversationCountBackground>
+  <MainFormGridConversationCountForeground>{{fg}}</MainFormGridConversationCountForeground>
+  <MainFormGridSnoozeFontColor>{{green}}</MainFormGridSnoozeFontColor>
+  <MessagesMultilineFirstLineColor description="Color of a text shown on the first line for a multiline message list">{{fg}}</MessagesMultilineFirstLineColor>
+  <MessagesMultilineSecondLineColor description="Color of a text shown on the second line for a multiline message list">{{grey-dim}}</MessagesMultilineSecondLineColor>
+  <MessagesMultilineTimeColor description="Color of a date/time text shown on the first line for a multiline message list">{{grey-dim}}</MessagesMultilineTimeColor>
+  <MessagesUnreadMarkerColor description="Color of a marker indicating an unread message">{{yellow}}</MessagesUnreadMarkerColor>
+  <MessagesHoverFlagUnreadColor description="Color of a flag / unread marker when the mouse is over a message ">{{yellow}}</MessagesHoverFlagUnreadColor>
+  <!--Message detail/preview-->
+  <MailSubject description="Color of mail subject text">{{fg}}</MailSubject>
+  <MessagePanelBackground description="Background color of the message preview panel">{{bg0}}</MessagePanelBackground>
+  <MailBackground description="Preferred background color of an email">{{bg0}}</MailBackground>
+  <MailForeground description="Preferred text color of an email">{{fg}}</MailForeground>
+  <MailLink description="Color of links in an email">{{blue}}</MailLink>
+  <MailLinkVisited description="Color of visited links in an email">{{purple}}</MailLinkVisited>
+  <AntiphishingBarBackground description="Background color of an antiphishing bar shown when the mouse is over a link">{{bg0}}</AntiphishingBarBackground>
+  <!--Search box-->
+  <SearchBoxActiveBorderColor description="Border of a search box on the main form when search is currently active">{{bg3}}</SearchBoxActiveBorderColor>
+  <!--Mail header-->
+  <MailHeaderBackground description="Background color of a bar with a basic information about the email">{{bg0}}</MailHeaderBackground>
+  <MailHeaderLink description="Color of an email address shown in the bar with a basic information about the email">{{blue}}</MailHeaderLink>
+  <MailHeaderForeground description="Color of a text in the bar with a basic information about the email">{{fg}}</MailHeaderForeground>
+  <MailHeaderConversationLine description="Color of horizontal lines between emails of a conversation">{{bg3}}</MailHeaderConversationLine>
+  <MailHeaderConversationCountForeground description="Color of a text showing the number of emails in a conversation">{{fg}}</MailHeaderConversationCountForeground>
+  <MailHeaderConversationCountBackground description="Background color behind the number of emails in a conversation ">{{bg0}}</MailHeaderConversationCountBackground>
+  <MailHeaderConversationCountForegroundHover description="Color of a text showing the number of emails in a conversation when the mouse is over">{{fg}}</MailHeaderConversationCountForegroundHover>
+  <MailHeaderConversationCountBackgroundHover description="Background color behind the number of emails in a conversation when the mouse is over">{{bg3}}</MailHeaderConversationCountBackgroundHover>
+  <!--Grid-->
+  <DataGridColors>
+    <GroupsBackgroundStart description="Starting color of the gradient used as the background for groups shown in datagrid">{{bg0}}</GroupsBackgroundStart>
+    <GroupsBackgroundEnd description="Ending color of the gradient used as the background for groups shown in datagrid">{{bg0}}</GroupsBackgroundEnd>
+    <GroupsForeground description="Color of the text for a group shown in datagrid">{{fg}}</GroupsForeground>
+    <GroupsBorder description="Color of a border line for groups shown in datagrid">{{bg3}}</GroupsBorder>
+    <GroupsItemsCount description="Color of the items count text in a group shown in datagrid">{{fg}}</GroupsItemsCount>
+    <GroupsSelectedBackgroundStart description="Starting color of the gradient used as the background for selected groups shown in datagrid">{{bg3}}</GroupsSelectedBackgroundStart>
+    <GroupsSelectedBackgroundEnd description="Ending color of the gradient used as the background for selected groups shown in datagrid">{{bg3}}</GroupsSelectedBackgroundEnd>
+    <GroupsSelectedForeground description="Color of the text for a selected group shown in datagrid">{{fg}}</GroupsSelectedForeground>
+    <GroupsFocusedBackgroundStart description="Starting color of the gradient used as the background for a focused group shown in datagrid">{{bg3}}</GroupsFocusedBackgroundStart>
+    <GroupsFocusedBackgroundEnd description="Ending color of the gradient used as the background for a focused group shown in datagrid">{{bg3}}</GroupsFocusedBackgroundEnd>
+    <Background description="Background color of a datagrid">{{bg0}}</Background>
+    <FontColor description="Font color in a datagrid">{{fg}}</FontColor>
+    <OddItemBackground description="Alternating background color for the odd items in a datagrid">{{bg2}}</OddItemBackground>
+    <SelectedItemBackgroundStart description="Starting color of the gradient used as a background for the selected items in datagrid">{{bg3}}</SelectedItemBackgroundStart>
+    <SelectedItemBackgroundEnd description="Ending color of the gradient used as a background for the selected items in datagrid">{{bg3}}</SelectedItemBackgroundEnd>
+    <SelectedItemBackgroundInactiveStart description="Starting color of the gradient used as a background for the selected items in datagrid when the datagrid is not active">{{bg3}}</SelectedItemBackgroundInactiveStart>
+    <SelectedItemBackgroundInactiveEnd description="Ending color of the gradient used as a background for the selected items in datagrid when the datagrid is not active">{{bg2}}</SelectedItemBackgroundInactiveEnd>
+    <FocusedItemBackgroundStart description="Starting color of the gradient used as a background for the focused item in datagrid">{{bg3}}</FocusedItemBackgroundStart>
+    <FocusedItemBackgroundEnd description="Starting color of the gradient used as a background for the focused item in datagrid">{{bg3}}</FocusedItemBackgroundEnd>
+    <SelectedItemBorder description="Color of the border line for the selected items in datagrid">Transparent</SelectedItemBorder>
+    <DisabledItemBorder description="Color of the border line for the selected items in datagrid when the datagrid is not active">Transparent</DisabledItemBorder>
+    <SelectedItemFontColor description="Color of the text for the selected items in datagrid">{{fg}}</SelectedItemFontColor>
+    <GridColor description="Color of the grid lines">{{bg3}}</GridColor>
+    <AddItemLineColor description="Color of the line in datagrids that allow adding new items directly (contacts, events and tasks)">{{orange}}</AddItemLineColor>
+    <AddItemLineForeColor description="Color of text in the line in that allow adding new items directly (contacts, events and tasks)">{{grey}}</AddItemLineForeColor>
+    <UseRoundedCornersForDatagridSelection description="Specifies if a background for selected items in a datagrid should be drawn with rounded corners">False</UseRoundedCornersForDatagridSelection>
+  </DataGridColors>
+  <DataGridHeaderColors>
+    <GridHeaderBorder description="Color of the bottom border in the datagrid column headers">{{bg3}}</GridHeaderBorder>
+    <GridHeaderStart description="Starting color of the gradient used for the column headers in datagrid">{{bg0}}</GridHeaderStart>
+    <GridHeaderMiddle description="Middle color of the gradient used for the column headers in datagrid">{{bg0}}</GridHeaderMiddle>
+    <GridHeaderEnd description="Ending color of the gradient used for the column headers in datagrid">{{bg0}}</GridHeaderEnd>
+    <GridHeaderHoveredStart description="Starting color of the gradient used for the column headers in datagrid when the mouse is over">{{bg3}}</GridHeaderHoveredStart>
+    <GridHeaderHoveredMiddle description="Middle color of the gradient used for the column headers in datagrid when the mouse is over">{{bg3}}</GridHeaderHoveredMiddle>
+    <GridHeaderHoveredEnd description="Ending color of the gradient used for the column headers in datagrid when the mouse is over">{{bg3}}</GridHeaderHoveredEnd>
+    <GridHeaderPressedStart description="Starting color of the gradient used for the column headers in datagrid when the left mouse button is pressed on the column header">{{bg3}}</GridHeaderPressedStart>
+    <GridHeaderPressedMiddle description="Middle color of the gradient used for the column headers in datagrid when the left mouse button is pressed on the column header">{{bg3}}</GridHeaderPressedMiddle>
+    <GridHeaderPressedEnd description="Ending color of the gradient used for the column headers in datagrid when the left mouse button is pressed on the column header">{{bg3}}</GridHeaderPressedEnd>
+    <GridHeaderFontColor description="Color of the text shown in the datagrid column headers">{{fg}}</GridHeaderFontColor>
+    <GridMultilineHeaderSortFontColor description="Color of the sorted column name shown in the multiline mode datagrid header">{{fg}}</GridMultilineHeaderSortFontColor>
+    <GridMultilineHeaderSortHoveredFontColor description="Color of the sorted column name shown in the multiline mode datagrid header when mouse is over">{{fg}}</GridMultilineHeaderSortHoveredFontColor>
+    <GridMultilineHeaderSelectFontColor description="Color of the 'select' text shown in the multiline mode datagrid header">{{fg}}</GridMultilineHeaderSelectFontColor>
+    <GridMultilineHeaderSelectHoveredFontColor description="Color of the 'select' text in the multiline mode datagrid header when mouse is over">{{fg}}</GridMultilineHeaderSelectHoveredFontColor>
+  </DataGridHeaderColors>
+  <!--Grid in main window-->
+  <MainFormDataGridColors>
+    <GroupsBackgroundStart description="Starting color of the gradient used as the background for groups shown in datagrid">{{bg0}}</GroupsBackgroundStart>
+    <GroupsBackgroundEnd description="Ending color of the gradient used as the background for groups shown in datagrid">{{bg0}}</GroupsBackgroundEnd>
+    <GroupsForeground description="Color of the text for a group shown in datagrid">{{fg}}</GroupsForeground>
+    <GroupsBorder description="Color of a border line for groups shown in datagrid">{{bg3}}</GroupsBorder>
+    <GroupsItemsCount description="Color of the items count text in a group shown in datagrid">{{fg}}</GroupsItemsCount>
+    <GroupsSelectedBackgroundStart description="Starting color of the gradient used as the background for selected groups shown in datagrid">{{bg3}}</GroupsSelectedBackgroundStart>
+    <GroupsSelectedBackgroundEnd description="Ending color of the gradient used as the background for selected groups shown in datagrid">{{bg3}}</GroupsSelectedBackgroundEnd>
+    <GroupsSelectedForeground description="Color of the text for a selected group shown in datagrid">{{fg}}</GroupsSelectedForeground>
+    <GroupsFocusedBackgroundStart description="Starting color of the gradient used as the background for a focused group shown in datagrid">{{bg3}}</GroupsFocusedBackgroundStart>
+    <GroupsFocusedBackgroundEnd description="Ending color of the gradient used as the background for a focused group shown in datagrid">{{bg3}}</GroupsFocusedBackgroundEnd>
+    <Background description="Background color of a datagrid">{{bg0}}</Background>
+    <FontColor description="Font color in a datagrid">{{fg}}</FontColor>
+    <OddItemBackground description="Alternating background color for the odd items in a datagrid">{{bg0}}</OddItemBackground>
+    <SelectedItemBackgroundStart description="Starting color of the gradient used as a background for the selected items in datagrid">{{bg3}}</SelectedItemBackgroundStart>
+    <SelectedItemBackgroundEnd description="Ending color of the gradient used as a background for the selected items in datagrid">{{bg3}}</SelectedItemBackgroundEnd>
+    <SelectedItemBackgroundInactiveStart description="Starting color of the gradient used as a background for the selected items in datagrid when the datagrid is not active">{{bg3}}</SelectedItemBackgroundInactiveStart>
+    <SelectedItemBackgroundInactiveEnd description="Ending color of the gradient used as a background for the selected items in datagrid when the datagrid is not active">{{bg3}}</SelectedItemBackgroundInactiveEnd>
+    <FocusedItemBackgroundStart description="Starting color of the gradient used as a background for the focused item in datagrid">{{bg3}}</FocusedItemBackgroundStart>
+    <FocusedItemBackgroundEnd description="Starting color of the gradient used as a background for the focused item in datagrid">{{bg3}}</FocusedItemBackgroundEnd>
+    <SelectedItemBorder description="Color of the border line for the selected items in datagrid">{{bg3}}</SelectedItemBorder>
+    <DisabledItemBorder description="Color of the border line for the selected items in datagrid when the datagrid is not active">Transparent</DisabledItemBorder>
+    <SelectedItemFontColor description="Color of the text for the selected items in datagrid">{{fg}}</SelectedItemFontColor>
+    <GridColor description="Color of the grid lines">{{bg3}}</GridColor>
+    <AddItemLineColor description="Color of the line in datagrids that allow adding new items directly (contacts, events and tasks)">{{green}}</AddItemLineColor>
+    <AddItemLineForeColor description="Color of text in the line in that allow adding new items directly (contacts, events and tasks)">{{fg}}</AddItemLineForeColor>
+    <UseRoundedCornersForDatagridSelection description="Specifies if a background for selected items in a datagrid should be drawn with rounded corners">True</UseRoundedCornersForDatagridSelection>
+  </MainFormDataGridColors>
+  <MainFormDataGridHeaderColors>
+    <GridHeaderBorder description="Color of the bottom border in the datagrid column headers">{{bg0}}</GridHeaderBorder>
+    <GridHeaderStart description="Starting color of the gradient used for the column headers in datagrid">{{bg0}}</GridHeaderStart>
+    <GridHeaderMiddle description="Middle color of the gradient used for the column headers in datagrid">{{bg0}}</GridHeaderMiddle>
+    <GridHeaderEnd description="Ending color of the gradient used for the column headers in datagrid">{{bg0}}</GridHeaderEnd>
+    <GridHeaderHoveredStart description="Starting color of the gradient used for the column headers in datagrid when the mouse is over">{{bg3}}</GridHeaderHoveredStart>
+    <GridHeaderHoveredMiddle description="Middle color of the gradient used for the column headers in datagrid when the mouse is over">{{bg3}}</GridHeaderHoveredMiddle>
+    <GridHeaderHoveredEnd description="Ending color of the gradient used for the column headers in datagrid when the mouse is over">{{bg3}}</GridHeaderHoveredEnd>
+    <GridHeaderPressedStart description="Starting color of the gradient used for the column headers in datagrid when the left mouse button is pressed on the column header">{{bg3}}</GridHeaderPressedStart>
+    <GridHeaderPressedMiddle description="Middle color of the gradient used for the column headers in datagrid when the left mouse button is pressed on the column header">{{bg3}}</GridHeaderPressedMiddle>
+    <GridHeaderPressedEnd description="Ending color of the gradient used for the column headers in datagrid when the left mouse button is pressed on the column header">{{bg3}}</GridHeaderPressedEnd>
+    <GridHeaderFontColor description="Color of the text shown in the datagrid column headers">{{fg}}</GridHeaderFontColor>
+    <GridMultilineHeaderSortFontColor description="Color of the sorted column name shown in the multiline mode datagrid header">{{fg}}</GridMultilineHeaderSortFontColor>
+    <GridMultilineHeaderSortHoveredFontColor description="Color of the sorted column name shown in the multiline mode datagrid header when mouse is over">{{fg}}</GridMultilineHeaderSortHoveredFontColor>
+    <GridMultilineHeaderSelectFontColor description="Color of the 'select' text shown in the multiline mode datagrid header">{{fg}}</GridMultilineHeaderSelectFontColor>
+    <GridMultilineHeaderSelectHoveredFontColor description="Color of the 'select' text in the multiline mode datagrid header when mouse is over">{{bg3}}</GridMultilineHeaderSelectHoveredFontColor>
+  </MainFormDataGridHeaderColors>
+  <!--Grid in a sidebar box-->
+  <SidebarDataGridColors>
+    <GroupsBackgroundStart description="Starting color of the gradient used as the background for groups shown in datagrid">{{bg0}}</GroupsBackgroundStart>
+    <GroupsBackgroundEnd description="Ending color of the gradient used as the background for groups shown in datagrid">{{bg0}}</GroupsBackgroundEnd>
+    <GroupsForeground description="Color of the text for a group shown in datagrid">{{fg}}</GroupsForeground>
+    <GroupsBorder description="Color of a border line for groups shown in datagrid">{{bg3}}</GroupsBorder>
+    <GroupsItemsCount description="Color of the items count text in a group shown in datagrid">{{fg}}</GroupsItemsCount>
+    <GroupsSelectedBackgroundStart description="Starting color of the gradient used as the background for selected groups shown in datagrid">{{bg3}}</GroupsSelectedBackgroundStart>
+    <GroupsSelectedBackgroundEnd description="Ending color of the gradient used as the background for selected groups shown in datagrid">{{bg3}}</GroupsSelectedBackgroundEnd>
+    <GroupsSelectedForeground description="Color of the text for a selected group shown in datagrid">{{fg}}</GroupsSelectedForeground>
+    <GroupsFocusedBackgroundStart description="Starting color of the gradient used as the background for a focused group shown in datagrid">{{bg3}}</GroupsFocusedBackgroundStart>
+    <GroupsFocusedBackgroundEnd description="Ending color of the gradient used as the background for a focused group shown in datagrid">{{bg3}}</GroupsFocusedBackgroundEnd>
+    <Background description="Background color of a datagrid">{{bg0}}</Background>
+    <FontColor description="Font color in a datagrid">{{fg}}</FontColor>
+    <OddItemBackground description="Alternating background color for the odd items in a datagrid">{{bg0}}</OddItemBackground>
+    <SelectedItemBackgroundStart description="Starting color of the gradient used as a background for the selected items in datagrid">{{bg3}}</SelectedItemBackgroundStart>
+    <SelectedItemBackgroundEnd description="Ending color of the gradient used as a background for the selected items in datagrid">{{bg3}}</SelectedItemBackgroundEnd>
+    <SelectedItemBackgroundInactiveStart description="Starting color of the gradient used as a background for the selected items in datagrid when the datagrid is not active">{{bg3}}</SelectedItemBackgroundInactiveStart>
+    <SelectedItemBackgroundInactiveEnd description="Ending color of the gradient used as a background for the selected items in datagrid when the datagrid is not active">{{bg3}}</SelectedItemBackgroundInactiveEnd>
+    <FocusedItemBackgroundStart description="Starting color of the gradient used as a background for the focused item in datagrid">{{bg3}}</FocusedItemBackgroundStart>
+    <FocusedItemBackgroundEnd description="Starting color of the gradient used as a background for the focused item in datagrid">{{bg3}}</FocusedItemBackgroundEnd>
+    <SelectedItemBorder description="Color of the border line for the selected items in datagrid">Transparent</SelectedItemBorder>
+    <DisabledItemBorder description="Color of the border line for the selected items in datagrid when the datagrid is not active">Transparent</DisabledItemBorder>
+    <SelectedItemFontColor description="Color of the text for the selected items in datagrid">{{fg}}</SelectedItemFontColor>
+    <GridColor description="Color of the grid lines">{{bg3}}</GridColor>
+    <AddItemLineColor description="Color of the line in datagrids that allow adding new items directly (contacts, events and tasks)">{{accent}}</AddItemLineColor>
+    <AddItemLineForeColor description="Color of text in the line in that allow adding new items directly (contacts, events and tasks)">{{fg}}</AddItemLineForeColor>
+    <UseRoundedCornersForDatagridSelection description="Specifies if a background for selected items in a datagrid should be drawn with rounded corners">True</UseRoundedCornersForDatagridSelection>
+  </SidebarDataGridColors>
+  <SidebarGridFirstLineColor description="Color of a text shown on the first line for items in sidebar">{{fg}}</SidebarGridFirstLineColor>
+  <SidebarGridSecondLineColor description="Color of a text shown on the second line  for items in sidebar">{{grey-dim}}</SidebarGridSecondLineColor>
+  <SidebarGridTimeColor description="Color of a date/time text shown on the first line for items in sidebar">{{grey-dim}}</SidebarGridTimeColor>
+  <!--Sidebar-->
+  <SidebarMinimizedBackgroundStart description="Starting color of the gradient used for the background of sidebar when the sidebar is minimized">{{bg0}}</SidebarMinimizedBackgroundStart>
+  <SidebarMinimizedBackgroundEnd description="Ending color of the gradient used for the background of sidebar when the sidebar is minimized">{{bg0}}</SidebarMinimizedBackgroundEnd>
+  <SidebarMaximizedBackgroundStart description="Starting color of the gradient used as the background of sidebar when the sidebar is expanded">{{bg0}}</SidebarMaximizedBackgroundStart>
+  <SidebarMaximizedBackgroundEnd description="Ending color of the gradient used as the background of sidebar when the sidebar is expanded">{{bg0}}</SidebarMaximizedBackgroundEnd>
+  <SidebarCalendarUpperPanelAddNewEventForeColor description="Color of add new event link">{{green}}</SidebarCalendarUpperPanelAddNewEventForeColor>
+  <SidebarContactDetailsCaptionForeground description="Text color of the contact caption in right sidebar contact details">{{fg}}</SidebarContactDetailsCaptionForeground>
+  <!--Sidebar box-->
+  <SidebarBoxHeaderFontColor description="Color of the text used in the sidebar box header">{{accent}}</SidebarBoxHeaderFontColor>
+  <SidebarBoxExpandedHeaderStart description="Starting color of the gradient used as the background for header of expanded boxes in the sidebar">{{bg0}}</SidebarBoxExpandedHeaderStart>
+  <SidebarBoxExpandedHeaderEnd description="Ending color of the gradient used as the background for header of expanded boxes in the sidebar">{{bg0}}</SidebarBoxExpandedHeaderEnd>
+  <SidebarBoxSettingsIconOverColor description="Color of a settings icon shown in a sidebar box header when the mouse is over the icon">{{fg}}</SidebarBoxSettingsIconOverColor>
+  <SidebarBoxSettingsIconColor description="Color of a settings icon shown in a sidebar box header when the mouse is over the header">{{fg}}</SidebarBoxSettingsIconColor>
+  <SidebarBoxHeaderFontSize description="Font size of a text in sidebar box header when a modern theme is used">17</SidebarBoxHeaderFontSize>
+  <!--Popup windows-->
+  <PopupFormBackgroundStart description="Starting color of the gradient used as the background for popup windows">{{bg0}}</PopupFormBackgroundStart>
+  <PopupFormBackgroundEnd description="Ending color of the gradient used as the background for popup windows">{{bg0}}</PopupFormBackgroundEnd>
+  <PopupFormBorder description="Color of the border line for a popup window">{{bg3}}</PopupFormBorder>
+  <PopupFormForeground description="Color of the text in a popup window">{{fg}}</PopupFormForeground>
+  <!--Tree structure-->
+  <TreeViewColors>
+    <FirstLevelForeground description="Text color for the first-level text in a tree structure">{{fg}}</FirstLevelForeground>
+    <Foreground description="Text color of a tree structure">{{fg}}</Foreground>
+    <Background description="Background color of a tree structure">{{bg0}}</Background>
+    <SelectedInactiveItemForeground description="Text color for the selected item in a tree structure when it is not active">{{fg}}</SelectedInactiveItemForeground>
+    <SelectedItemForeground description="Text color for the selected item in a tree structure">{{fg}}</SelectedItemForeground>
+    <SelectedItemBackgroundStart description="Starting color of the gradient used as a background for the selected item in a tree structure">{{bg3}}</SelectedItemBackgroundStart>
+    <SelectedItemBackgroundEnd description="Ending color of the gradient used as a background for the selected item in a tree structure">{{bg3}}</SelectedItemBackgroundEnd>
+    <SelectedItemBorder description="Color of the border line for the selected item in a tree structure">Transparent</SelectedItemBorder>
+    <SelectedInactiveItemBackgroundStart description="Starting color of the gradient used as a background for the selected item in a tree structure when it is not active">{{bg3}}</SelectedInactiveItemBackgroundStart>
+    <SelectedInactiveItemBackgroundEnd description="Ending color of the gradient used as a background for the selected item in a tree structure when it is not active">{{bg3}}</SelectedInactiveItemBackgroundEnd>
+    <SelectedInactiveItemBorder description="Color of the border line for the selected item in a tree structure when it is not active">Transparent</SelectedInactiveItemBorder>
+    <UseRoundedCornersForSelection description="Specifies if a background for selected items in a tree structure should be drawn with rounded corners">True</UseRoundedCornersForSelection>
+    <NodeShowMoreForeground description="Text color for the 'More...' node in a tree structure">{{accent}}</NodeShowMoreForeground>
+    <ItemImageColor description="Color of images for items in a tree structure">{{green}}</ItemImageColor>
+    <SelectedItemImageColor description="Color of images for selected items in a tree structure">{{green}}</SelectedItemImageColor>
+    <SelectedInactiveItemImageColor description="Color of images for selected items in a tree structure when it is not active">{{bg0}}</SelectedInactiveItemImageColor>
+  </TreeViewColors>
+  <!--Textbox-->
+  <TextBoxBackground description="Background color of a text box control">{{bg0}}</TextBoxBackground>
+  <TextBoxForeground description="Color of a text in a text box control">{{fg}}</TextBoxForeground>
+  <TextBoxDisabledBackground description="Background color of a disabled text box control">{{bg3}}</TextBoxDisabledBackground>
+  <TextBoxDisabledForeground description="Color of a text in a disabled text box control">{{fg}}</TextBoxDisabledForeground>
+  <TextBoxReadOnlyBackground description="Background color of a read-only text box control">{{bg0}}</TextBoxReadOnlyBackground>
+  <TextBoxReadOnlyForeground description="Color of a text in a read-only text box control">{{grey-dim}}</TextBoxReadOnlyForeground>
+  <TextBoxContactForeground description="Color of a text for contacts in a box control">{{bg0}}</TextBoxContactForeground>
+  <TextBoxContactBackground description="Color of a background for contacts in a box control">{{green}}</TextBoxContactBackground>
+  <TextBoxContactBorder description="Color of contacts border in a text box control">Transparent</TextBoxContactBorder>
+  <TextBoxSelectedContactForeground description="Color of a text for selected contacts in a box control">{{fg}}</TextBoxSelectedContactForeground>
+  <TextBoxSelectedContactBackground description="Color of a background for selected contacts in a box control">{{bg0}}</TextBoxSelectedContactBackground>
+  <TextBoxSelectedContactBorder description="Color of selected contacts border in a text box control">{{green}}</TextBoxSelectedContactBorder>
+  <TextBoxHighlight description="Color of highlight background for selected text in a text box control">{{green}}</TextBoxHighlight>
+  <TextBoxHighlightText description="Color of selected text in a text box control">{{fg}}</TextBoxHighlightText>
+  <!--Tree structure in main window-->
+  <MainFormTreeViewColors>
+    <FirstLevelForeground description="Text color for the first-level text in a tree structure">{{fg}}</FirstLevelForeground>
+    <Foreground description="Text color of a tree structure">{{fg}}</Foreground>
+    <Background description="Background color of a tree structure">{{bg1}}</Background>
+    <SelectedInactiveItemForeground description="Text color for the selected item in a tree structure when it is not active">{{fg}}</SelectedInactiveItemForeground>
+    <SelectedItemForeground description="Text color for the selected item in a tree structure">{{fg}}</SelectedItemForeground>
+    <SelectedItemBackgroundStart description="Starting color of the gradient used as a background for the selected item in a tree structure">{{bg3}}</SelectedItemBackgroundStart>
+    <SelectedItemBackgroundEnd description="Ending color of the gradient used as a background for the selected item in a tree structure">{{bg3}}</SelectedItemBackgroundEnd>
+    <SelectedItemBorder description="Color of the border line for the selected item in a tree structure">Transparent</SelectedItemBorder>
+    <SelectedInactiveItemBackgroundStart description="Starting color of the gradient used as a background for the selected item in a tree structure when it is not active">{{bg3}}</SelectedInactiveItemBackgroundStart>
+    <SelectedInactiveItemBackgroundEnd description="Ending color of the gradient used as a background for the selected item in a tree structure when it is not active">{{bg3}}</SelectedInactiveItemBackgroundEnd>
+    <SelectedInactiveItemBorder description="Color of the border line for the selected item in a tree structure when it is not active">Transparent</SelectedInactiveItemBorder>
+    <UseRoundedCornersForSelection description="Specifies if a background for selected items in a tree structure should be drawn with rounded corners">True</UseRoundedCornersForSelection>
+    <NodeShowMoreForeground description="Text color for the 'More...' node in a tree structure">{{blue}}</NodeShowMoreForeground>
+    <ItemImageColor description="Color of images for items in a tree structure">{{grey-dim}}</ItemImageColor>
+    <SelectedItemImageColor description="Color of images for selected items in a tree structure">{{green}}</SelectedItemImageColor>
+    <SelectedInactiveItemImageColor description="Color of images for selected items in a tree structure when it is not active">{{bg0}}</SelectedInactiveItemImageColor>
+  </MainFormTreeViewColors>
+  <!--Unread counts-->
+  <UnreadCountBackground description="Background color for an information about unread messages count in a folder">{{yellow}}</UnreadCountBackground>
+  <UnreadCountWarningBackground description="Background color for an information about unread messages count in a folder if there is a warning">{{orange}}</UnreadCountWarningBackground>
+  <UnreadCountForeground description="Text color for an information about unread messages count in a folder">{{bg0}}</UnreadCountForeground>
+  <UnreadCountWarningForeground description="Text color for an information about unread messages count in a folder if there is a warning">{{bg0}}</UnreadCountWarningForeground>
+  <AccountWarning description="Color of warning symbol for accounts that cannot connect">{{red}}</AccountWarning>
+  <AccountWarningHover description="Color of warning symbol for accounts that cannot connect when mouse is hovered over it">{{bg3}}</AccountWarningHover>
+  <!--Attachments-->
+  <AttachmentCornerRadius description="Specifies if a background for an attachment in a bar with attachments should be drawn with rounded corners. Use '0' for rectangular attachments">100</AttachmentCornerRadius>
+  <AttachmentBackground description="Background color of attachments in a bar with attachments">{{bg0}}</AttachmentBackground>
+  <AttachmentBorder description="Border line color around an attachment in a bar with attachments">{{accent}}</AttachmentBorder>
+  <AttachmentSelectedBorder description="Border line color around a selected attachment in a bar with attachments">{{accent}}</AttachmentSelectedBorder>
+  <AttachmentSelectedBackground description="Background color of a selected attachment in a bar with attachments">{{accent}}</AttachmentSelectedBackground>
+  <AttachmentsInactiveArrows description="Color of a the arrows shown in a bar with attachments if there are more attachment to show">{{green}}</AttachmentsInactiveArrows>
+  <AttachmentText description="Text color of an attachment">{{fg}}</AttachmentText>
+  <AttachmentSelectedText description="Text color of a selected attachment">{{bg0}}</AttachmentSelectedText>
+  <!--Message detail attachments-->
+  <MessageDetailAttachmentCornerRadius description="Specifies if a background for attachment in a a message header should be drawn with rounded corners. Use '0' for rectangular attachments">100</MessageDetailAttachmentCornerRadius>
+  <MessageDetailAttachmentBorder description="Border line color around an attachment in a message header">{{accent}}</MessageDetailAttachmentBorder>
+  <MessageDetailAttachmentBackground description="Background color of attachments in a message header">{{bg0}}</MessageDetailAttachmentBackground>
+  <MessageDetailAttachmentSelectedBorder description="Border line color around a selected attachment in a message header">{{accent}}</MessageDetailAttachmentSelectedBorder>
+  <MessageDetailAttachmentSelectedBackground description="Background color of a selected attachment in a message header">{{accent}}</MessageDetailAttachmentSelectedBackground>
+  <MessageDetailAttachmentText description="Text color of an attachment in a message header">{{fg}}</MessageDetailAttachmentText>
+  <MessageDetailAttachmentSelectedText description="Text color of a selected attachment in a message header">{{bg0}}</MessageDetailAttachmentSelectedText>
+  <!--Categories-->
+  <CategoryCornerRadius description="Specifies if a background for a category in a bar with categories should be drawn with rounded corners. Use '0' for rectangular categories">100</CategoryCornerRadius>
+  <CategoryAddBorder description="Border line of the 'add tag' in the category row">{{grey-dim}}</CategoryAddBorder>
+  <CategoryAddBorderActive description="Border line of the 'add tag' in the category row when the mouse is over">{{bg3}}</CategoryAddBorderActive>
+  <!--Notification windows-->
+  <NotificationWindowHeaderIconColor description="Color of icons shown in notification header when the mouse is over the notification">{{fg}}</NotificationWindowHeaderIconColor>
+  <NotificationWindowHeaderIconOverColor description="Color of icons shown in notification header when the mouse is over the icon">{{fg}}</NotificationWindowHeaderIconOverColor>
+  <NotificationWindowHeaderForeground description="Color of the header text in a notification window">{{bg0}}</NotificationWindowHeaderForeground>
+  <NotificationWindowForeground description="Color of the text in a notification window">{{fg}}</NotificationWindowForeground>
+  <NotificationWindowGrayText description="Color of the grayed text in a notification window">{{fg}}</NotificationWindowGrayText>
+  <NotificationWindowBackgroundStart description="Starting color of the gradient used as the background for notification windows">{{bg0}}</NotificationWindowBackgroundStart>
+  <NotificationWindowBackgroundEnd description="Ending color of the gradient used as the background for notification windows">{{bg0}}</NotificationWindowBackgroundEnd>
+  <NotificationWindowHeaderStart description="Starting color of the gradient used as the background for header of notification windows">{{blue}}</NotificationWindowHeaderStart>
+  <NotificationWindowHeaderEnd description="Ending color of the gradient used as the background for header of notification windows">{{blue}}</NotificationWindowHeaderEnd>
+  <NotificationWindowHeaderBorder description="Color of the border line around notification windows header">{{bg3}}</NotificationWindowHeaderBorder>
+  <NotificationWindowBorder description="Border line color around a notification window">{{blue}}</NotificationWindowBorder>
+  <NotificationWindowBackgroundGradientAngle description="An angle in which the gradient used as a background for a notification window will be shown">0</NotificationWindowBackgroundGradientAngle>
+  <NotificationWindowUseRoundedCorners description="Specifies if the notification windows should have rounded corners">True</NotificationWindowUseRoundedCorners>
+  <!--Calendar-->
+  <CalendarColors>
+    <AllDayBackground description="Color of the background for all-day text in a calendar on the left-side bar in a week or day view">{{bg0}}</AllDayBackground>
+    <HeaderBackgroundStart description="Starting color of the gradient used as the background for header with days in a calendar">{{bg0}}</HeaderBackgroundStart>
+    <HeaderBackgroundEnd description="Ending color of the gradient used as the background for header with days in a calendar">{{bg0}}</HeaderBackgroundEnd>
+    <TodayHeaderBackgroundStart description="Starting color of the gradient used as the background for header for a current day">{{bg0}}</TodayHeaderBackgroundStart>
+    <TodayHeaderBackgroundEnd description="Ending color of the gradient used as the background for header for a current day">{{bg0}}</TodayHeaderBackgroundEnd>
+    <HoursBackground description="Background color of a left-side bar with hours in a week or day view">{{bg0}}</HoursBackground>
+    <MainNavigationBackground description="Background color of the topmost space of the calendar where date and navigation arrows are present">{{bg0}}</MainNavigationBackground>
+    <MainNavigationForeground description="Font color of the topmost space of the calendar where date and navigation arrows are present">{{fg}}</MainNavigationForeground>
+    <HeaderFontColor description="Color of the text in a header with days in a calendar">{{fg}}</HeaderFontColor>
+    <TodayHeaderFontColor description="Color of the text for a current day in a header with days in a calendar">{{fg}}</TodayHeaderFontColor>
+    <MonthViewHeaderWeekNumbersColor description="Color of week numbers in a month calendar view">{{fg}}</MonthViewHeaderWeekNumbersColor>
+    <SubheaderBackground description="Background color of a space between the header with days and the main calendar view (week or day calendar view)">{{bg0}}</SubheaderBackground>
+    <Background description="Background color of a calendar">{{bg0}}</Background>
+    <WorkingHoursBackground description="Background color of a calendar for the time which is inside the working time (week or day view)">{{bg0}}</WorkingHoursBackground>
+    <NonWorkingHoursBackground description="Background color of a calendar for the time which is outside the working time (week or day view)">{{bg0}}</NonWorkingHoursBackground>
+    <AllDayFontColor description="Color of the all-day text in a calendar on the left-side bar in a week or day view">{{fg}}</AllDayFontColor>
+    <HoursFontColor description="Color of the text a left-side bar with hours in a week or day view">{{fg}}</HoursFontColor>
+    <SelectedDayBackground description="Background color of an currently selected day in a calendar">{{bg3}}</SelectedDayBackground>
+    <GridStrongLine description="Color of vertical lines in a month view">{{grey-dim}}</GridStrongLine>
+    <GridLightLine description="Color of horizontal lines in a week view">{{bg3}}</GridLightLine>
+    <GridVeryLightLine description="Color of a top line in a week view">{{fg}}</GridVeryLightLine>
+    <GridDarkLine description="Color of vertical lines and several horizontal lines in a week view">{{bg3}}</GridDarkLine>
+    <MonthViewTodayBorder description="Color of a border arround current day in month calendar view">{{bg2}}</MonthViewTodayBorder>
+    <MonthViewDayHeaderFontColor description="Color of the text for each day (day number) in month calendar view">{{fg}}</MonthViewDayHeaderFontColor>
+    <MonthViewDayHeaderEvenFontColor description="Color of the text for each day (day number, month name) in not current month calendar view">{{fg}}</MonthViewDayHeaderEvenFontColor>
+    <MonthViewDayHeaderStart description="Starting color of the gradient used as the background for header for each day in a month calendar view">{{bg0}}</MonthViewDayHeaderStart>
+    <MonthViewDayHeaderEnd description="Ending color of the gradient used as the background for header for each day in a month calendar view">{{bg0}}</MonthViewDayHeaderEnd>
+    <EvenMonthBackground description="Alternating background color for even months in a calendar (month view)">{{bg0}}</EvenMonthBackground>
+    <HeaderBorder description="Border line color around calendar header">{{bg0}}</HeaderBorder>
+    <CurrentTimeLine description="Color of a line displaying current time in a week view">{{green}}</CurrentTimeLine>
+    <SelectedEventBorder description="Color of a border line for selected events">{{bg3}}</SelectedEventBorder>
+    <InvitationBorder description="Color of a border line for for invitations">{{accent}}</InvitationBorder>
+    <RenderEventInvitationsBorders description="Specifies whether borders for event invitations are rendered or not">True</RenderEventInvitationsBorders>
+    <RenderEventBorders description="Specifies whether borders for events are rendered or not">True</RenderEventBorders>
+    <HeaderTodayCircleFontColor description="Color of the text inside ellipse around days">{{bg0}}</HeaderTodayCircleFontColor>
+    <HeaderTodayCircleColor description="Color of the ellipse around days">{{green}}</HeaderTodayCircleColor>
+    <TodayLinkColor description="Color of the today link">{{blue}}</TodayLinkColor>
+    <MoreEventsLinkColor description="Color of the more events link inside month calendar event">{{blue}}</MoreEventsLinkColor>
+    <UseTransparencyForUnselectedEvents description="Specifies whether unselected events in calendar is drawn transparent">False</UseTransparencyForUnselectedEvents>
+    <UseLinearGradientsForEvents description="Specifies whether events' background is solid or a linear gradient is used">False</UseLinearGradientsForEvents>
+  </CalendarColors>
+  <SidebarCalendarColors>
+    <AllDayBackground description="Color of the background for all-day text in a calendar on the left-side bar in a week or day view">{{bg0}}</AllDayBackground>
+    <HeaderBackgroundStart description="Starting color of the gradient used as the background for header with days in a calendar">{{bg2}}</HeaderBackgroundStart>
+    <HeaderBackgroundEnd description="Ending color of the gradient used as the background for header with days in a calendar">{{bg2}}</HeaderBackgroundEnd>
+    <TodayHeaderBackgroundStart description="Starting color of the gradient used as the background for header for a current day">{{bg2}}</TodayHeaderBackgroundStart>
+    <TodayHeaderBackgroundEnd description="Ending color of the gradient used as the background for header for a current day">{{bg2}}</TodayHeaderBackgroundEnd>
+    <HoursBackground description="Background color of a left-side bar with hours in a week or day view">{{bg0}}</HoursBackground>
+    <MainNavigationBackground description="Background color of the topmost space of the calendar where date and navigation arrows are present">{{bg1}}</MainNavigationBackground>
+    <MainNavigationForeground description="Font color of the topmost space of the calendar where date and navigation arrows are present">{{fg}}</MainNavigationForeground>
+    <HeaderFontColor description="Color of the text in a header with days in a calendar">{{fg}}</HeaderFontColor>
+    <TodayHeaderFontColor description="Color of the text for a current day in a header with days in a calendar">{{fg}}</TodayHeaderFontColor>
+    <MonthViewHeaderWeekNumbersColor description="Color of week numbers in a month calendar view">{{grey-dim}}</MonthViewHeaderWeekNumbersColor>
+    <SubheaderBackground description="Background color of a space between the header with days and the main calendar view (week or day calendar view)">{{bg0}}</SubheaderBackground>
+    <Background description="Background color of a calendar">{{bg0}}</Background>
+    <WorkingHoursBackground description="Background color of a calendar for the time which is inside the working time (week or day view)">{{bg0}}</WorkingHoursBackground>
+    <NonWorkingHoursBackground description="Background color of a calendar for the time which is outside the working time (week or day view)">{{bg0}}</NonWorkingHoursBackground>
+    <AllDayFontColor description="Color of the all-day text in a calendar on the left-side bar in a week or day view">{{fg}}</AllDayFontColor>
+    <HoursFontColor description="Color of the text a left-side bar with hours in a week or day view">{{fg}}</HoursFontColor>
+    <SelectedDayBackground description="Background color of an currently selected day in a calendar">{{bg3}}</SelectedDayBackground>
+    <GridStrongLine description="Color of vertical lines in a month view">{{grey-dim}}</GridStrongLine>
+    <GridLightLine description="Color of horizontal lines in a week view">{{bg3}}</GridLightLine>
+    <GridVeryLightLine description="Color of a top line in a week view">{{fg}}</GridVeryLightLine>
+    <GridDarkLine description="Color of vertical lines and several horizontal lines in a week view">{{bg3}}</GridDarkLine>
+    <MonthViewTodayBorder description="Color of a border arround current day in month calendar view">{{bg2}}</MonthViewTodayBorder>
+    <MonthViewDayHeaderFontColor description="Color of the text for each day (day number) in month calendar view">{{fg}}</MonthViewDayHeaderFontColor>
+    <MonthViewDayHeaderEvenFontColor description="Color of the text for each day (day number, month name) in not current month calendar view">{{fg}}</MonthViewDayHeaderEvenFontColor>
+    <MonthViewDayHeaderStart description="Starting color of the gradient used as the background for header for each day in a month calendar view">Transparent</MonthViewDayHeaderStart>
+    <MonthViewDayHeaderEnd description="Ending color of the gradient used as the background for header for each day in a month calendar view">Transparent</MonthViewDayHeaderEnd>
+    <EvenMonthBackground description="Alternating background color for even months in a calendar (month view)">{{bg1}}</EvenMonthBackground>
+    <HeaderBorder description="Border line color around calendar header">{{grey-dim}}</HeaderBorder>
+    <CurrentTimeLine description="Color of a line displaying current time in a week view">{{green}}</CurrentTimeLine>
+    <SelectedEventBorder description="Color of a border line for selected events">{{bg3}}</SelectedEventBorder>
+    <InvitationBorder description="Color of a border line for for invitations">{{accent}}</InvitationBorder>
+    <RenderEventInvitationsBorders description="Specifies whether borders for event invitations are rendered or not">False</RenderEventInvitationsBorders>
+    <RenderEventBorders description="Specifies whether borders for events are rendered or not">True</RenderEventBorders>
+    <HeaderTodayCircleFontColor description="Color of the text inside ellipse around days">{{fg}}</HeaderTodayCircleFontColor>
+    <HeaderTodayCircleColor description="Color of the ellipse around days">{{accent}}</HeaderTodayCircleColor>
+    <TodayLinkColor description="Color of the today link">{{blue}}</TodayLinkColor>
+    <MoreEventsLinkColor description="Color of the more events link inside month calendar event">{{blue}}</MoreEventsLinkColor>
+    <UseTransparencyForUnselectedEvents description="Specifies whether unselected events in calendar is drawn transparent">False</UseTransparencyForUnselectedEvents>
+    <UseLinearGradientsForEvents description="Specifies whether events' background is solid or a linear gradient is used">False</UseLinearGradientsForEvents>
+  </SidebarCalendarColors>
+  <CalendarTasksHeaderBackground description="Background color of a header for tasks shown below the calendar in day or week view">{{bg0}}</CalendarTasksHeaderBackground>
+  <CalendarTasksDraggedTaskPointer description="Color of a pointer when dragging a task shown below the calendar in day or week view">{{accent}}</CalendarTasksDraggedTaskPointer>
+  <!--Date selector-->
+  <DateSelectorForeground description="Text color of the small preview calendar">{{fg}}</DateSelectorForeground>
+  <DateSelectorVerticalDelimeterLineBetweenWeekNumbers description="Color of delimeter between week numbers and day numbers in the samll preview calendar">{{bg0}}</DateSelectorVerticalDelimeterLineBetweenWeekNumbers>
+  <DateSelectorWeekNumbers description="Text color of week numbers in the small preview calendar">{{fg}}</DateSelectorWeekNumbers>
+  <DateSelectorInactiveForeground description="Text color of a non-active month in the small preview calendar">{{grey-dim}}</DateSelectorInactiveForeground>
+  <DateSelectorSelectionBorder description="Color of the border line for the selected dates in the small preview calendar">{{bg0}}</DateSelectorSelectionBorder>
+  <DateSelectorSelectionBackgroundStart description="Starting color of the gradient used as a background for the selected dates in the small preview calendar">{{bg0}}</DateSelectorSelectionBackgroundStart>
+  <DateSelectorSelectionBackgroundEnd description="Ending color of the gradient used as a background for the selected dates in the small preview calendar">{{bg0}}</DateSelectorSelectionBackgroundEnd>
+  <UseRoundedCornersForDateSelector description="Specifies if a background for selected dates in a small preview calendar should be drawn with rounded corners">True</UseRoundedCornersForDateSelector>
+  <!--Contact business cards-->
+  <BusinessCardsColors>
+    <CardsForeground description="Text color of a card">{{fg}}</CardsForeground>
+    <CardsBorder description="Border line color of a card">{{bg3}}</CardsBorder>
+    <CardsSelectedBorder description="Border line color of a selected card">{{fg}}</CardsSelectedBorder>
+    <CardsSelectedBackground description="Background color of a selected card">{{bg3}}</CardsSelectedBackground>
+    <Background description="Background color of the control">{{bg0}}</Background>
+    <CardsBackground description="Background color of a card">{{bg0}}</CardsBackground>
+    <CardsHorizontalLine description="Color of a horizontal line between cards">{{bg3}}</CardsHorizontalLine>
+  </BusinessCardsColors>
+  <!--Contacts-->
+  <ContactsSelectorItemBackground description="Background color of active letter selector item">{{bg3}}</ContactsSelectorItemBackground>
+  <ContactsSelectorItemForeground description="Text color of active letter selector item">{{fg}}</ContactsSelectorItemForeground>
+  <ContactsSelectorForeground description="Text color of letter selector items">{{fg}}</ContactsSelectorForeground>
+  <ContactsSelectorBackground description="Background of letter selector items">{{bg0}}</ContactsSelectorBackground>
+  <!--Attachment cards-->
+  <AttachmentCardsColors>
+    <CardsForeground description="Text color of a card">{{fg}}</CardsForeground>
+    <CardsBorder description="Border line color of a card">{{bg3}}</CardsBorder>
+    <CardsSelectedBorder description="Border line color of a selected card">{{fg}}</CardsSelectedBorder>
+    <CardsSelectedBackground description="Background color of a selected card">{{bg3}}</CardsSelectedBackground>
+    <Background description="Background color of the control">{{bg0}}</Background>
+    <CardsBackground description="Background color of a card">{{bg0}}</CardsBackground>
+    <CardsHorizontalLine description="Color of a horizontal line between cards">{{bg0}}</CardsHorizontalLine>
+  </AttachmentCardsColors>
+  <!--Item cards-->
+  <CardsColors>
+    <CardsForeground description="Text color of a card">{{bg0}}</CardsForeground>
+    <CardsBorder description="Border line color of a card">Transparent</CardsBorder>
+    <CardsSelectedBorder description="Border line color of a selected card">{{fg}}</CardsSelectedBorder>
+    <CardsSelectedBackground description="Background color of a selected card">{{bg3}}</CardsSelectedBackground>
+    <Background description="Background color of the control">{{bg0}}</Background>
+    <CardsBackground description="Background color of a card">{{green}}</CardsBackground>
+    <CardsHorizontalLine description="Color of a horizontal line between cards">Transparent</CardsHorizontalLine>
+  </CardsColors>
+  <WizardCardsColors>
+    <CardsForeground description="Text color of a card">{{fg}}</CardsForeground>
+    <CardsBorder description="Border line color of a card">{{bg3}}</CardsBorder>
+    <CardsSelectedBorder description="Border line color of a selected card">{{fg}}</CardsSelectedBorder>
+    <CardsSelectedBackground description="Background color of a selected card">{{bg3}}</CardsSelectedBackground>
+    <Background description="Background color of the control">{{bg0}}</Background>
+    <CardsBackground description="Background color of a card">{{bg0}}</CardsBackground>
+    <CardsHorizontalLine description="Color of a horizontal line between cards">Transparent</CardsHorizontalLine>
+  </WizardCardsColors>
+  <!--Widgets-->
+  <WidgetHeaderStart description="Starting color of the gradient used as the background for header of widgets">{{accent}}</WidgetHeaderStart>
+  <WidgetHeaderEnd description="Ending color of the gradient used as the background for header of widgets">{{accent}}</WidgetHeaderEnd>
+  <WidgetHeaderFontColorDark description="Color of the text used in the widget header">{{fg}}</WidgetHeaderFontColorDark>
+  <WidgetHeaderFontColorLight description="Color of the lighter text used as a shadow below the text in widget header">{{fg}}</WidgetHeaderFontColorLight>
+  <WidgetBackgroundStart description="Starting color of the gradient used as the background for a widget">{{bg0}}</WidgetBackgroundStart>
+  <WidgetBackgroundEnd description="Ending color of the gradient used as the background for a widget">{{bg0}}</WidgetBackgroundEnd>
+  <WidgetBorder description="Color of the widget border line">{{bg3}}</WidgetBorder>
+  <!--Progress bar-->
+  <ProgressBarInfiniteProgress description="Color of the infinite progress line">{{bg0}}</ProgressBarInfiniteProgress>
+  <ProgressBarInfiniteProgressBackground description="Background color of the infinite progress line">{{green}}</ProgressBarInfiniteProgressBackground>
+  <ProgressBarProgress description="Color of the progress line">{{accent}}</ProgressBarProgress>
+  <ProgressBarBackground description="Background of the progress line">{{fg}}</ProgressBarBackground>
+  <SpinningWheelForeground description="Color of infinite progress spinning wheel">{{accent}}</SpinningWheelForeground>
+  <!--Scrollbar-->
+  <UseSystemScrollbar description="Use system scrollbars with no automatic hiding">False</UseSystemScrollbar>
+  <ScrollbarThumb description="Color of a scrollbar thumb">{{bg3}}</ScrollbarThumb>
+  <ScrollbarThumbHover description="Color of a scrollbar thumb when the mouse is over">{{accent}}</ScrollbarThumbHover>
+  <!--Tab control-->
+  <TabPageForeColor description="Text color of active tab page">{{fg}}</TabPageForeColor>
+  <TabPageBackColor description="Background color of active tab page">{{bg0}}</TabPageBackColor>
+  <TabForeColor description="Text color of active tab">{{fg}}</TabForeColor>
+  <TabBackColor description="Background color of active tab">Transparent</TabBackColor>
+  <TabInactiveForeColor description="Text color of inactive tab">{{fg}}</TabInactiveForeColor>
+  <TabInactiveBackColor description="Background color of inactive tab">Transparent</TabInactiveBackColor>
+  <TabHoverForeColor description="Text color of inactive tab">{{fg}}</TabHoverForeColor>
+  <TabHoverBackColor description="Background color of inactive tab">Transparent</TabHoverBackColor>
+  <TabUnderlineColor description="Color of underline of the active tab">{{accent}}</TabUnderlineColor>
+  <TabBorderColor description="Color of borders of tab">Transparent</TabBorderColor>
+  <TabSpace description="Inner space around text of a tab">6</TabSpace>
+  <!--Account wizard-->
+  <AccountWizardBoxHeaderCollapsed description="Background color of a collapsed header in the account wizard">{{bg3}}</AccountWizardBoxHeaderCollapsed>
+  <AccountWizardBoxHeaderExpanded description="Background color of an expanded header in the account wizard">{{bg3}}</AccountWizardBoxHeaderExpanded>
+  <AccountWizardBoxBorderCollapsed description="Border color of a collapsed box in the account wizard">{{bg3}}</AccountWizardBoxBorderCollapsed>
+  <AccountWizardBoxBorderExpanded description="Border color of an expanded box in the account wizard">{{bg3}}</AccountWizardBoxBorderExpanded>
+  <AccountWizardBoxBackground description="Background of an expanded box in the account wizard">{{bg0}}</AccountWizardBoxBackground>
+  <AccountWizardBoxSpacing description="Space between boxes in the account wizard">8</AccountWizardBoxSpacing>
+  <ToolStripColors>
+    <ButtonColors>
+      <ButtonBackColor description="Gets the background color of a button">{{bg3}}</ButtonBackColor>
+      <ButtonTextColor description="Gets the text color of a button">{{fg}}</ButtonTextColor>
+      <ButtonBorderColor description="Gets the border color of a button">Transparent</ButtonBorderColor>
+      <ButtonDropDownSplitLineColor description="Gets the color of line between text and a drop-down arrow on a button">{{bg0}}</ButtonDropDownSplitLineColor>
+      <ButtonHoverBackColor description="Gets the background color of a button if the mouse cursor is over the button">{{bg0}}</ButtonHoverBackColor>
+      <ButtonHoverTextColor description="Gets the text color of a button if the mouse cursor is over the button">{{fg}}</ButtonHoverTextColor>
+      <ButtonBorderHoverColor description="Gets the border color of a button if the mouse cursor is over the button">{{bg3}}</ButtonBorderHoverColor>
+      <ButtonDropDownSplitLineHoverColor description="Gets the color of line between text and a drop-down arrow on a button if the mouse cursor is over the button">{{bg3}}</ButtonDropDownSplitLineHoverColor>
+      <ButtonCheckedBackColor description="Gets the background color of a checked button">{{bg0}}</ButtonCheckedBackColor>
+      <ButtonCheckedTextColor description="Gets the text color of a checked button">{{fg}}</ButtonCheckedTextColor>
+      <ButtonBorderCheckedColor description="Gets the border color of a checked button">{{bg3}}</ButtonBorderCheckedColor>
+      <ButtonDropDownSplitLineCheckedColor description="Gets the color of line between text and a drop-down arrow on a pressed button">{{bg3}}</ButtonDropDownSplitLineCheckedColor>
+      <ButtonPressedBackColor description="Gets the background color of a pressed button">{{bg0}}</ButtonPressedBackColor>
+      <ButtonPressedTextColor description="Gets the text color of a pressed button">{{fg}}</ButtonPressedTextColor>
+      <ButtonBorderPressedColor description="Gets the border color of a pressed button">{{bg3}}</ButtonBorderPressedColor>
+      <ButtonDropDownSplitLinePressedColor description="Gets the color of line between text and a drop-down arrow on a pressed button">{{bg3}}</ButtonDropDownSplitLinePressedColor>
+      <ButtonDisabledBackColor description="Gets the background color of a disabled button">Transparent</ButtonDisabledBackColor>
+      <ButtonDisabledTextColor description="Gets the text color of a disabled button">{{grey-dim}}</ButtonDisabledTextColor>
+      <ButtonBorderDisabledColor description="Gets the border color of a disabled button">{{bg3}}</ButtonBorderDisabledColor>
+      <ButtonInvertImage description="Indicates if an image should have inverted colors if the button is in normal state">{{invert}}</ButtonInvertImage>
+      <ButtonCheckedInvertImage description="Indicates if an image should have inverted colors if the button is checked">{{invert}}</ButtonCheckedInvertImage>
+      <ButtonPressedInvertImage description="Indicates if an image should have inverted colors if the button is pressed">{{invert}}</ButtonPressedInvertImage>
+      <ButtonHoverInvertImage description="Indicates if an image should have inverted colors if the mouse cursor is over the button">{{invert}}</ButtonHoverInvertImage>
+      <ButtonInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is in normal state">{{invert}}</ButtonInvertDropDownArrow>
+      <ButtonCheckedInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is checked">{{invert}}</ButtonCheckedInvertDropDownArrow>
+      <ButtonPressedInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is pressed">{{invert}}</ButtonPressedInvertDropDownArrow>
+      <ButtonHoverInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the mouse cursor is over the button">{{invert}}</ButtonHoverInvertDropDownArrow>
+    </ButtonColors>
+    <HighlightedButtonColors>
+      <ButtonBackColor description="Gets the background color of a button">{{accent}}</ButtonBackColor>
+      <ButtonTextColor description="Gets the text color of a button">{{bg0}}</ButtonTextColor>
+      <ButtonBorderColor description="Gets the border color of a button">Transparent</ButtonBorderColor>
+      <ButtonDropDownSplitLineColor description="Gets the color of line between text and a drop-down arrow on a button">{{bg0}}</ButtonDropDownSplitLineColor>
+      <ButtonHoverBackColor description="Gets the background color of a button if the mouse cursor is over the button">{{bg0}}</ButtonHoverBackColor>
+      <ButtonHoverTextColor description="Gets the text color of a button if the mouse cursor is over the button">{{fg}}</ButtonHoverTextColor>
+      <ButtonBorderHoverColor description="Gets the border color of a button if the mouse cursor is over the button">{{accent}}</ButtonBorderHoverColor>
+      <ButtonDropDownSplitLineHoverColor description="Gets the color of line between text and a drop-down arrow on a button if the mouse cursor is over the button">{{accent}}</ButtonDropDownSplitLineHoverColor>
+      <ButtonCheckedBackColor description="Gets the background color of a checked button">{{bg0}}</ButtonCheckedBackColor>
+      <ButtonCheckedTextColor description="Gets the text color of a checked button">{{fg}}</ButtonCheckedTextColor>
+      <ButtonBorderCheckedColor description="Gets the border color of a checked button">{{accent}}</ButtonBorderCheckedColor>
+      <ButtonDropDownSplitLineCheckedColor description="Gets the color of line between text and a drop-down arrow on a pressed button">{{accent}}</ButtonDropDownSplitLineCheckedColor>
+      <ButtonPressedBackColor description="Gets the background color of a pressed button">{{bg0}}</ButtonPressedBackColor>
+      <ButtonPressedTextColor description="Gets the text color of a pressed button">{{fg}}</ButtonPressedTextColor>
+      <ButtonBorderPressedColor description="Gets the border color of a pressed button">Transparent</ButtonBorderPressedColor>
+      <ButtonDropDownSplitLinePressedColor description="Gets the color of line between text and a drop-down arrow on a pressed button">{{bg0}}</ButtonDropDownSplitLinePressedColor>
+      <ButtonDisabledBackColor description="Gets the background color of a disabled button">{{bg0}}</ButtonDisabledBackColor>
+      <ButtonDisabledTextColor description="Gets the text color of a disabled button">{{grey-dim}}</ButtonDisabledTextColor>
+      <ButtonBorderDisabledColor description="Gets the border color of a disabled button">Transparent</ButtonBorderDisabledColor>
+      <ButtonInvertImage description="Indicates if an image should have inverted colors if the button is in normal state">{{invert}}</ButtonInvertImage>
+      <ButtonCheckedInvertImage description="Indicates if an image should have inverted colors if the button is checked">{{invert}}</ButtonCheckedInvertImage>
+      <ButtonPressedInvertImage description="Indicates if an image should have inverted colors if the button is pressed">{{invert}}</ButtonPressedInvertImage>
+      <ButtonHoverInvertImage description="Indicates if an image should have inverted colors if the mouse cursor is over the button">{{invert}}</ButtonHoverInvertImage>
+      <ButtonInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is in normal state">{{invert}}</ButtonInvertDropDownArrow>
+      <ButtonCheckedInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is checked">{{invert}}</ButtonCheckedInvertDropDownArrow>
+      <ButtonPressedInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is pressed">{{invert}}</ButtonPressedInvertDropDownArrow>
+      <ButtonHoverInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the mouse cursor is over the button">{{invert}}</ButtonHoverInvertDropDownArrow>
+    </HighlightedButtonColors>
+    <UnderlinedButtonColors>
+      <ButtonUnderline>{{accent}}</ButtonUnderline>
+      <ButtonHoverUnderline>{{bg3}}</ButtonHoverUnderline>
+      <ButtonCheckedUnderline>{{bg3}}</ButtonCheckedUnderline>
+      <ButtonPressedUnderline>{{bg3}}</ButtonPressedUnderline>
+      <ButtonBackColor description="Gets the background color of a button">Transparent</ButtonBackColor>
+      <ButtonTextColor description="Gets the text color of a button">{{fg}}</ButtonTextColor>
+      <ButtonBorderColor description="Gets the border color of a button">Transparent</ButtonBorderColor>
+      <ButtonDropDownSplitLineColor description="Gets the color of line between text and a drop-down arrow on a button">Transparent</ButtonDropDownSplitLineColor>
+      <ButtonHoverBackColor description="Gets the background color of a button if the mouse cursor is over the button">Transparent</ButtonHoverBackColor>
+      <ButtonHoverTextColor description="Gets the text color of a button if the mouse cursor is over the button">{{fg}}</ButtonHoverTextColor>
+      <ButtonBorderHoverColor description="Gets the border color of a button if the mouse cursor is over the button">Transparent</ButtonBorderHoverColor>
+      <ButtonDropDownSplitLineHoverColor description="Gets the color of line between text and a drop-down arrow on a button if the mouse cursor is over the button">Transparent</ButtonDropDownSplitLineHoverColor>
+      <ButtonCheckedBackColor description="Gets the background color of a checked button">Transparent</ButtonCheckedBackColor>
+      <ButtonCheckedTextColor description="Gets the text color of a checked button">{{fg}}</ButtonCheckedTextColor>
+      <ButtonBorderCheckedColor description="Gets the border color of a checked button">Transparent</ButtonBorderCheckedColor>
+      <ButtonDropDownSplitLineCheckedColor description="Gets the color of line between text and a drop-down arrow on a pressed button">Transparent</ButtonDropDownSplitLineCheckedColor>
+      <ButtonPressedBackColor description="Gets the background color of a pressed button">Transparent</ButtonPressedBackColor>
+      <ButtonPressedTextColor description="Gets the text color of a pressed button">{{fg}}</ButtonPressedTextColor>
+      <ButtonBorderPressedColor description="Gets the border color of a pressed button">Transparent</ButtonBorderPressedColor>
+      <ButtonDropDownSplitLinePressedColor description="Gets the color of line between text and a drop-down arrow on a pressed button">Transparent</ButtonDropDownSplitLinePressedColor>
+      <ButtonDisabledBackColor description="Gets the background color of a disabled button">Transparent</ButtonDisabledBackColor>
+      <ButtonDisabledTextColor description="Gets the text color of a disabled button">{{grey-dim}}</ButtonDisabledTextColor>
+      <ButtonBorderDisabledColor description="Gets the border color of a disabled button">Transparent</ButtonBorderDisabledColor>
+      <ButtonInvertImage description="Indicates if an image should have inverted colors if the button is in normal state">{{invert}}</ButtonInvertImage>
+      <ButtonCheckedInvertImage description="Indicates if an image should have inverted colors if the button is checked">{{invert}}</ButtonCheckedInvertImage>
+      <ButtonPressedInvertImage description="Indicates if an image should have inverted colors if the button is pressed">{{invert}}</ButtonPressedInvertImage>
+      <ButtonHoverInvertImage description="Indicates if an image should have inverted colors if the mouse cursor is over the button">{{invert}}</ButtonHoverInvertImage>
+      <ButtonInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is in normal state">{{invert}}</ButtonInvertDropDownArrow>
+      <ButtonCheckedInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is checked">{{invert}}</ButtonCheckedInvertDropDownArrow>
+      <ButtonPressedInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is pressed">{{invert}}</ButtonPressedInvertDropDownArrow>
+      <ButtonHoverInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the mouse cursor is over the button">{{invert}}</ButtonHoverInvertDropDownArrow>
+    </UnderlinedButtonColors>
+    <SeparatorColor>{{bg3}}</SeparatorColor>
+  </ToolStripColors>
+  <ButtonColors>
+    <ButtonBackColor description="Gets the background color of a button">{{accent}}</ButtonBackColor>
+    <ButtonTextColor description="Gets the text color of a button">{{bg0}}</ButtonTextColor>
+    <ButtonBorderColor description="Gets the border color of a button">Transparent</ButtonBorderColor>
+    <ButtonDropDownSplitLineColor description="Gets the color of line between text and a drop-down arrow on a button">{{bg0}}</ButtonDropDownSplitLineColor>
+    <ButtonHoverBackColor description="Gets the background color of a button if the mouse cursor is over the button">{{bg0}}</ButtonHoverBackColor>
+    <ButtonHoverTextColor description="Gets the text color of a button if the mouse cursor is over the button">{{fg}}</ButtonHoverTextColor>
+    <ButtonBorderHoverColor description="Gets the border color of a button if the mouse cursor is over the button">{{accent}}</ButtonBorderHoverColor>
+    <ButtonDropDownSplitLineHoverColor description="Gets the color of line between text and a drop-down arrow on a button if the mouse cursor is over the button">{{accent}}</ButtonDropDownSplitLineHoverColor>
+    <ButtonCheckedBackColor description="Gets the background color of a checked button">{{bg0}}</ButtonCheckedBackColor>
+    <ButtonCheckedTextColor description="Gets the text color of a checked button">{{fg}}</ButtonCheckedTextColor>
+    <ButtonBorderCheckedColor description="Gets the border color of a checked button">{{accent}}</ButtonBorderCheckedColor>
+    <ButtonDropDownSplitLineCheckedColor description="Gets the color of line between text and a drop-down arrow on a pressed button">{{accent}}</ButtonDropDownSplitLineCheckedColor>
+    <ButtonPressedBackColor description="Gets the background color of a pressed button">{{bg0}}</ButtonPressedBackColor>
+    <ButtonPressedTextColor description="Gets the text color of a pressed button">{{fg}}</ButtonPressedTextColor>
+    <ButtonBorderPressedColor description="Gets the border color of a pressed button">{{accent}}</ButtonBorderPressedColor>
+    <ButtonDropDownSplitLinePressedColor description="Gets the color of line between text and a drop-down arrow on a pressed button">{{accent}}</ButtonDropDownSplitLinePressedColor>
+    <ButtonDisabledBackColor description="Gets the background color of a disabled button">{{bg3}}</ButtonDisabledBackColor>
+    <ButtonDisabledTextColor description="Gets the text color of a disabled button">{{fg}}</ButtonDisabledTextColor>
+    <ButtonBorderDisabledColor description="Gets the border color of a disabled button">Transparent</ButtonBorderDisabledColor>
+    <ButtonInvertImage description="Indicates if an image should have inverted colors if the button is in normal state">{{invert}}</ButtonInvertImage>
+    <ButtonCheckedInvertImage description="Indicates if an image should have inverted colors if the button is checked">{{invert}}</ButtonCheckedInvertImage>
+    <ButtonPressedInvertImage description="Indicates if an image should have inverted colors if the button is pressed">{{invert}}</ButtonPressedInvertImage>
+    <ButtonHoverInvertImage description="Indicates if an image should have inverted colors if the mouse cursor is over the button">{{invert}}</ButtonHoverInvertImage>
+    <ButtonInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is in normal state">{{invert}}</ButtonInvertDropDownArrow>
+    <ButtonCheckedInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is checked">{{invert}}</ButtonCheckedInvertDropDownArrow>
+    <ButtonPressedInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is pressed">{{invert}}</ButtonPressedInvertDropDownArrow>
+    <ButtonHoverInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the mouse cursor is over the button">{{invert}}</ButtonHoverInvertDropDownArrow>
+  </ButtonColors>
+  <SidebarSelectorButtonColors>
+    <ButtonBackColor description="Gets the background color of a button">{{bg0}}</ButtonBackColor>
+    <ButtonTextColor description="Gets the text color of a button">{{fg}}</ButtonTextColor>
+    <ButtonBorderColor description="Gets the border color of a button">{{bg3}}</ButtonBorderColor>
+    <ButtonDropDownSplitLineColor description="Gets the color of line between text and a drop-down arrow on a button">{{bg3}}</ButtonDropDownSplitLineColor>
+    <ButtonHoverBackColor description="Gets the background color of a button if the mouse cursor is over the button">{{bg3}}</ButtonHoverBackColor>
+    <ButtonHoverTextColor description="Gets the text color of a button if the mouse cursor is over the button">{{fg}}</ButtonHoverTextColor>
+    <ButtonBorderHoverColor description="Gets the border color of a button if the mouse cursor is over the button">{{bg3}}</ButtonBorderHoverColor>
+    <ButtonDropDownSplitLineHoverColor description="Gets the color of line between text and a drop-down arrow on a button if the mouse cursor is over the button">Transparent</ButtonDropDownSplitLineHoverColor>
+    <ButtonCheckedBackColor description="Gets the background color of a checked button">{{bg3}}</ButtonCheckedBackColor>
+    <ButtonCheckedTextColor description="Gets the text color of a checked button">{{fg}}</ButtonCheckedTextColor>
+    <ButtonBorderCheckedColor description="Gets the border color of a checked button">Transparent</ButtonBorderCheckedColor>
+    <ButtonDropDownSplitLineCheckedColor description="Gets the color of line between text and a drop-down arrow on a pressed button">Transparent</ButtonDropDownSplitLineCheckedColor>
+    <ButtonPressedBackColor description="Gets the background color of a pressed button">{{bg3}}</ButtonPressedBackColor>
+    <ButtonPressedTextColor description="Gets the text color of a pressed button">{{fg}}</ButtonPressedTextColor>
+    <ButtonBorderPressedColor description="Gets the border color of a pressed button">Transparent</ButtonBorderPressedColor>
+    <ButtonDropDownSplitLinePressedColor description="Gets the color of line between text and a drop-down arrow on a pressed button">Transparent</ButtonDropDownSplitLinePressedColor>
+    <ButtonDisabledBackColor description="Gets the background color of a disabled button">{{bg0}}</ButtonDisabledBackColor>
+    <ButtonDisabledTextColor description="Gets the text color of a disabled button">{{grey-dim}}</ButtonDisabledTextColor>
+    <ButtonBorderDisabledColor description="Gets the border color of a disabled button">{{grey-dim}}</ButtonBorderDisabledColor>
+    <ButtonInvertImage description="Indicates if an image should have inverted colors if the button is in normal state">{{invert}}</ButtonInvertImage>
+    <ButtonCheckedInvertImage description="Indicates if an image should have inverted colors if the button is checked">{{invert}}</ButtonCheckedInvertImage>
+    <ButtonPressedInvertImage description="Indicates if an image should have inverted colors if the button is pressed">{{invert}}</ButtonPressedInvertImage>
+    <ButtonHoverInvertImage description="Indicates if an image should have inverted colors if the mouse cursor is over the button">{{invert}}</ButtonHoverInvertImage>
+    <ButtonInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is in normal state">{{invert}}</ButtonInvertDropDownArrow>
+    <ButtonCheckedInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is checked">{{invert}}</ButtonCheckedInvertDropDownArrow>
+    <ButtonPressedInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is pressed">{{invert}}</ButtonPressedInvertDropDownArrow>
+    <ButtonHoverInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the mouse cursor is over the button">{{invert}}</ButtonHoverInvertDropDownArrow>
+  </SidebarSelectorButtonColors>
+  <HighlightedButtonColors>
+    <ButtonBackColor description="Gets the background color of a button">{{green}}</ButtonBackColor>
+    <ButtonTextColor description="Gets the text color of a button">{{bg0}}</ButtonTextColor>
+    <ButtonBorderColor description="Gets the border color of a button">Transparent</ButtonBorderColor>
+    <ButtonDropDownSplitLineColor description="Gets the color of line between text and a drop-down arrow on a button">{{bg0}}</ButtonDropDownSplitLineColor>
+    <ButtonHoverBackColor description="Gets the background color of a button if the mouse cursor is over the button">{{bg0}}</ButtonHoverBackColor>
+    <ButtonHoverTextColor description="Gets the text color of a button if the mouse cursor is over the button">{{fg}}</ButtonHoverTextColor>
+    <ButtonBorderHoverColor description="Gets the border color of a button if the mouse cursor is over the button">{{green}}</ButtonBorderHoverColor>
+    <ButtonDropDownSplitLineHoverColor description="Gets the color of line between text and a drop-down arrow on a button if the mouse cursor is over the button">{{green}}</ButtonDropDownSplitLineHoverColor>
+    <ButtonCheckedBackColor description="Gets the background color of a checked button">{{bg0}}</ButtonCheckedBackColor>
+    <ButtonCheckedTextColor description="Gets the text color of a checked button">{{fg}}</ButtonCheckedTextColor>
+    <ButtonBorderCheckedColor description="Gets the border color of a checked button">{{green}}</ButtonBorderCheckedColor>
+    <ButtonDropDownSplitLineCheckedColor description="Gets the color of line between text and a drop-down arrow on a pressed button">{{green}}</ButtonDropDownSplitLineCheckedColor>
+    <ButtonPressedBackColor description="Gets the background color of a pressed button">{{bg0}}</ButtonPressedBackColor>
+    <ButtonPressedTextColor description="Gets the text color of a pressed button">{{fg}}</ButtonPressedTextColor>
+    <ButtonBorderPressedColor description="Gets the border color of a pressed button">{{green}}</ButtonBorderPressedColor>
+    <ButtonDropDownSplitLinePressedColor description="Gets the color of line between text and a drop-down arrow on a pressed button">{{green}}</ButtonDropDownSplitLinePressedColor>
+    <ButtonDisabledBackColor description="Gets the background color of a disabled button">{{bg0}}</ButtonDisabledBackColor>
+    <ButtonDisabledTextColor description="Gets the text color of a disabled button">{{grey-dim}}</ButtonDisabledTextColor>
+    <ButtonBorderDisabledColor description="Gets the border color of a disabled button">{{bg3}}</ButtonBorderDisabledColor>
+    <ButtonInvertImage description="Indicates if an image should have inverted colors if the button is in normal state">{{invert}}</ButtonInvertImage>
+    <ButtonCheckedInvertImage description="Indicates if an image should have inverted colors if the button is checked">{{invert}}</ButtonCheckedInvertImage>
+    <ButtonPressedInvertImage description="Indicates if an image should have inverted colors if the button is pressed">{{invert}}</ButtonPressedInvertImage>
+    <ButtonHoverInvertImage description="Indicates if an image should have inverted colors if the mouse cursor is over the button">{{invert}}</ButtonHoverInvertImage>
+    <ButtonInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is in normal state">{{invert}}</ButtonInvertDropDownArrow>
+    <ButtonCheckedInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is checked">{{invert}}</ButtonCheckedInvertDropDownArrow>
+    <ButtonPressedInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the button is pressed">{{invert}}</ButtonPressedInvertDropDownArrow>
+    <ButtonHoverInvertDropDownArrow description="Indicates if the drop-down arrow should have inverted colors if the mouse cursor is over the button">{{invert}}</ButtonHoverInvertDropDownArrow>
+  </HighlightedButtonColors>
+  <MenuColors>
+    <MenuBackColor description="Gets the background color of a context menu">{{bg0}}</MenuBackColor>
+    <MenuBorder description="Gets the color that is used for the border of a context menu">{{bg0}}</MenuBorder>
+    <MenuItemBorder description="Gets the border color to use with a ToolStrip menu item">{{bg0}}</MenuItemBorder>
+    <MenuItemPressedBackColor description="Gets the background color for the pressed menu item">{{bg3}}</MenuItemPressedBackColor>
+    <MenuItemSelectedBackColor description="Gets the background color for the selected menu item">{{bg3}}</MenuItemSelectedBackColor>
+    <MenuItemTextColor description="Gets the color of items text">{{fg}}</MenuItemTextColor>
+    <MenuItemDisabledTextColor description="Gets the color of disabled items text">{{grey-dim}}</MenuItemDisabledTextColor>
+    <MenuItemPressedTextColor description="Gets the color of pressed items text">{{fg}}</MenuItemPressedTextColor>
+    <MenuItemSelectedTextColor description="Gets the color of selected items text">{{fg}}</MenuItemSelectedTextColor>
+    <MenuItemInvertImage description="Indicates if an image should have inverted colors if the menu item is in normal state">{{invert}}</MenuItemInvertImage>
+    <MenuItemPressedInvertImage description="Indicates if an image should have inverted colors if the menu item is pressed">{{invert}}</MenuItemPressedInvertImage>
+    <MenuItemSelectedInvertImage description="Indicates if an image should have inverted colors if the menu item is selected">{{invert}}</MenuItemSelectedInvertImage>
+    <MenuItemInvertExpandArrow description="Indicates if the expand arrow should have inverted colors if the menu item is in normal state">{{invert}}</MenuItemInvertExpandArrow>
+    <MenuItemPressedInvertExpandArrow description="Indicates if the expand arrow should have inverted colors if the menu item is pressed">{{invert}}</MenuItemPressedInvertExpandArrow>
+    <MenuItemSelectedInvertExpandArrow description="Indicates if the expand arrow should have inverted colors if the menu item is selected">{{invert}}</MenuItemSelectedInvertExpandArrow>
+    <SeparatorColor description="Gets the color for separators">{{bg0}}</SeparatorColor>
+  </MenuColors>
+  <IsDarkTheme description="Specifies if the theme is derived from a dark theme">{{isdark}}</IsDarkTheme>
+  <Label description="Color of labels preceding an edit control">{{fg}}</Label>
+  <LabelDisabled description="Color of disabled labels preceding an edit control">{{grey-dim}}</LabelDisabled>
+  <PopupBackground description="Color for background of popups">{{blue}}</PopupBackground>
+  <PopupText description="Font color for popups">{{bg0}}</PopupText>
+  <RoundedCornersRadius description="Radius of control corners. Use '0' for rectangular controls">4</RoundedCornersRadius>
+</SerializableColorTheme>
