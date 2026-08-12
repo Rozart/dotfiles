@@ -26,7 +26,7 @@ theme[selected_fg]="#4a3f48"
 theme[inactive_fg]="#9d8d9a"
 
 # Color of text appearing on top of graphs, i.e uptime and current network graph scaling
-theme[graph_text]="#7754e8"
+theme[graph_text]="#5624ed"
 
 # Misc colors for processes box including mini CPU graphs, details memory graph, and details status text
 theme[proc_misc]="#4ea919"
@@ -47,7 +47,7 @@ theme[proc_box]="#6c5f6a"
 theme[div_line]="#d1c2ad"
 
 # Temperature graph colors
-theme[temp_start]="#7754e8"
+theme[temp_start]="#5624ed"
 theme[temp_mid]="#d08d06"
 theme[temp_end]="#ef2e62"
 
@@ -64,7 +64,7 @@ theme[free_end]="#d08d06"
 # Mem/Disk cached meter
 theme[cached_start]="#6c5f6a"
 theme[cached_mid]="#0d7f9b"
-theme[cached_end]="#7754e8"
+theme[cached_end]="#5624ed"
 
 # Mem/Disk available meter
 theme[available_start]="#6c5f6a"
@@ -79,7 +79,7 @@ theme[used_end]="#eb510f"
 # Download graph colors
 theme[download_start]="#f9f2e9"
 theme[download_mid]="#0d7f9b"
-theme[download_end]="#7754e8"
+theme[download_end]="#5624ed"
 
 # Upload graph colors
 theme[upload_start]="#ef2e62"

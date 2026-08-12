@@ -4,6 +4,11 @@
   "overrides": {
     "claude": "#0d7f9b",
     "permission": "#005c72",
+    "suggestion": "#5624ed",
+    "ide": "#005c72",
+    "professionalBlue": "#005c72",
+    "blue_FOR_SUBAGENTS_ONLY": "#005c72",
+    "purple_FOR_SUBAGENTS_ONLY": "#5624ed",
     "inactive": "#6c5f6a",
     "subtle": "#6c5f6a",
     "diffAdded": "#e5f0cd",

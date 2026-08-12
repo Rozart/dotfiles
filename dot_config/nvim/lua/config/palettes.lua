@@ -268,7 +268,7 @@ local hikari = {
   yellow = { "#d08d06", "172" },
   green = { "#4ea919", "70" },
   blue = { "#0d7f9b", "30" },
-  purple = { "#7754e8", "98" },
+  purple = { "#5624ed", "56" },
   grey = { "#6c5f6a", "241" },
   grey_dim = { "#9d8d9a", "246" },
 }
