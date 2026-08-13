@@ -1,0 +1,188 @@
+#!/usr/bin/env bash
+# One pass over every updatable tool on this box. Sections self-select:
+# absent tools never register, so the same script is valid on the Mac and
+# the Linux servers — no templating, nothing to keep in sync per host.
+# A failing section is recorded and the run continues: half an update
+# beats bailing at the first flaky mirror.
+#
+# Run bare in a terminal it offers an fzf multi-select with every section
+# preselected — Tab toggles, Enter runs, Esc quits — falling back to a
+# numbered prompt on a box without fzf. With no TTY it refuses unless
+# given an explicit `--all`: a batch caller (cron, ssh one-liner) must
+# say it means it, because the alternative is a stray pipe or misfire
+# silently upgrading the whole machine. `--list` prints what would run
+# here and touches nothing.
+#
+# nvim plugins are two separate sections: restore (idempotent, obeys
+# lazy-lock.json) and update (bumps the lock, then re-adds it to chezmoi
+# so the deliberate bump doesn't read as drift). Selecting both runs only
+# update — restore-then-update is just update.
+#
+# Deliberately NOT here:
+#   - config sync  -> sync-setup owns chezmoi + ai-cli-configs
+#   - drift checks -> `brew bundle check` et al. live in the config-health
+#                     Claude skill; this script writes, that one reads.
+#
+# String accumulators, not arrays, for anything that can be empty:
+# macOS ships bash 3.2, where "${arr[@]}" on an empty array dies under
+# set -u.
+set -uo pipefail
+
+LABELS=()
+FNS=()
+add() {
+    LABELS+=("$1")
+    FNS+=("$2")
+}
+
+brew_up() { brew update && brew upgrade && brew cleanup; }
+mas_up() { mas upgrade; }
+apt_up() { sudo bash -c 'apt-get update && apt-get upgrade -y'; }
+mise_up() {
+    # self-update first so the new mise does the tool upgrades. mise is
+    # curl-installed (not in the Brewfile), so this is the only thing that
+    # ever updates mise itself. Pinned tools (node 23, python 3.13.2, ...)
+    # stay pinned; only "latest" tools move.
+    mise self-update --yes 2>/dev/null
+    mise upgrade
+}
+fisher_up() { fish -c 'fisher update'; }
+tpm_up() { "$HOME/.config/tmux/plugins/tpm/bin/update_plugins" all; }
+nvim_stable_up() { update-nvim stable; }
+nvim_nightly_up() { update-nvim nightly; }
+lazy_restore() { nvim --headless "+Lazy! restore" +qa; }
+lazy_update() {
+    nvim --headless "+Lazy! update" +qa
+    local lock="$HOME/.config/nvim/lazy-lock.json"
+    if [ -n "$(chezmoi managed "$lock" 2>/dev/null)" ]; then
+        chezmoi re-add "$lock"
+    fi
+}
+tldr_up() { tldr --update; }
+
+if [ "$(uname)" = Darwin ] && command -v brew >/dev/null; then
+    add "brew" brew_up
+    # mas ships in the Brewfile; upgrades the 13 App Store apps.
+    command -v mas >/dev/null && add "mas (App Store apps)" mas_up
+fi
+
+if [ "$(uname)" = Linux ] && command -v apt-get >/dev/null; then
+    # Needs the sudo password up front; apt-get (not apt) keeps the
+    # scripted-use warning out of the output.
+    add "apt" apt_up
+fi
+
+command -v mise >/dev/null && add "mise" mise_up
+
+command -v fish >/dev/null && fish -c 'functions -q fisher' &&
+    add "fish plugins (fisher)" fisher_up
+
+[ -x "$HOME/.config/tmux/plugins/tpm/bin/update_plugins" ] &&
+    add "tmux plugins (tpm)" tpm_up
+
+# Only the channels actually installed on this box; update-nvim prompts
+# interactively when called bare, which a batch run must never hit.
+if command -v update-nvim >/dev/null; then
+    [ -d "$HOME/.local/nvim/stable" ] && add "nvim stable" nvim_stable_up
+    [ -d "$HOME/.local/nvim/nightly" ] && add "nvim nightly" nvim_nightly_up
+fi
+
+if command -v nvim >/dev/null; then
+    add "nvim plugins: restore to lazy-lock" lazy_restore
+    add "nvim plugins: update (bumps lazy-lock)" lazy_update
+fi
+command -v tldr >/dev/null && add "tldr cache" tldr_up
+
+if [ "${1:-}" = --list ]; then
+    for i in "${!LABELS[@]}"; do
+        printf '%2d) %s\n' "$((i + 1))" "${LABELS[$i]}"
+    done
+    exit 0
+fi
+
+run=""
+select_all() {
+    run=""
+    for i in "${!LABELS[@]}"; do run="$run $i"; done
+}
+
+if [ "${1:-}" = --all ]; then
+    select_all
+elif [ ! -t 0 ]; then
+    echo "update-all: no TTY — pass --all to run unattended" >&2
+    exit 1
+elif command -v fzf >/dev/null; then
+    # Everything preselected so bare Enter still means "all". The load
+    # event needs fzf >= 0.36; older fzf exits 2 here and nothing runs.
+    picked=$(printf '%s\n' "${LABELS[@]}" | fzf --multi --reverse --height=50% \
+        --bind load:select-all \
+        --prompt='update-all > ' \
+        --header='Enter = run selected · Tab = toggle · Esc = quit')
+    rc=$?
+    [ "$rc" -eq 130 ] && exit 0
+    [ "$rc" -ne 0 ] && exit "$rc"
+    for i in "${!LABELS[@]}"; do
+        printf '%s\n' "$picked" | grep -Fxq "${LABELS[$i]}" && run="$run $i"
+    done
+else
+    echo "update-all — sections on this box:"
+    for i in "${!LABELS[@]}"; do
+        printf '%2d) %s\n' "$((i + 1))" "${LABELS[$i]}"
+    done
+    printf 'Update which? (numbers, Enter = all, q = quit): '
+    # EOF is an abort, not consent: only a deliberate Enter means "all".
+    read -r reply || exit 1
+    case "$reply" in
+    q | Q) exit 0 ;;
+    "") select_all ;;
+    *)
+        for n in $reply; do
+            case "$n" in
+            *[!0-9]*)
+                echo "update-all: '$n' is not a section number" >&2
+                exit 1
+                ;;
+            esac
+            if [ "$n" -lt 1 ] || [ "$n" -gt "${#LABELS[@]}" ]; then
+                echo "update-all: no section $n" >&2
+                exit 1
+            fi
+            run="$run $((n - 1))"
+        done
+        ;;
+    esac
+fi
+
+restore_i=""
+update_i=""
+for i in "${!FNS[@]}"; do
+    [ "${FNS[$i]}" = lazy_restore ] && restore_i=$i
+    [ "${FNS[$i]}" = lazy_update ] && update_i=$i
+done
+if [ -n "$restore_i" ] && [ -n "$update_i" ]; then
+    case " $run " in
+    *" $update_i "*)
+        case " $run " in
+        *" $restore_i "*)
+            pruned=""
+            for i in $run; do [ "$i" = "$restore_i" ] || pruned="$pruned $i"; done
+            run=$pruned
+            ;;
+        esac
+        ;;
+    esac
+fi
+
+FAILED=""
+for i in $run; do
+    printf '\n==> %s\n' "${LABELS[$i]}"
+    "${FNS[$i]}" || FAILED="${FAILED:+$FAILED, }${LABELS[$i]}"
+done
+
+printf '\n'
+if [ -z "$FAILED" ]; then
+    echo "update-all: everything updated"
+else
+    echo "update-all: FAILED sections: $FAILED"
+    exit 1
+fi
