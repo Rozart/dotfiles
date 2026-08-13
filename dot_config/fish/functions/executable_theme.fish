@@ -216,16 +216,28 @@ function theme --description "Switch the shared colour theme across every app th
         borders $border_args >/dev/null 2>&1
     end
 
-    # Declared out here so the report block at the bottom can read it; a `set -l`
-    # inside the Darwin block below would not survive it.
+    # Declared out here so the report block at the bottom can read them; a
+    # `set -l` inside the Darwin block below would not survive it.
+    set -l beeper_status
     set -l emclient_status
 
     if test (uname) = Darwin
         # Beeper injects this file as a <style> tag. The palette must come first:
-        # base.css consumes the --th-* roles it defines.
+        # base.css consumes the --th-* roles it defines. Injection happens once
+        # at window load: the file watcher is opt-in per session and "Reload
+        # custom CSS" exists only in the command bar, with no scriptable surface.
+        # So a running instance gets the same treatment as eM Client below.
         set -l beeper ~/Library/Application\ Support/BeeperTexts
         if test -d $beeper
             cat ~/.config/beeper/palettes/$slug.css ~/.config/beeper/base.css >$beeper/custom.css
+            set beeper_status "written, applies on next launch"
+            _theme_relaunch "Beeper Desktop"
+            switch $status
+                case 0
+                    set beeper_status restarted
+                case 2
+                    set beeper_status "busy, restart it to apply"
+            end
         end
 
         # eM Client is the one app here that cannot be driven by a file alone. Its
@@ -240,22 +252,12 @@ function theme --description "Switch the shared colour theme across every app th
         python3 ~/.config/emclient/render-theme.py \
             ~/.config/beeper/palettes/$slug.css ~/.config/emclient/active.emtheme $polarity
         set emclient_status "rendered, applies on next launch"
-        if pgrep -qx "eM Client"
-            # Graceful quit only. A mail client killed mid-write is not worth a
-            # colour, and an open modal — a composer, the Quick Tag bar — makes
-            # quit return -128, in which case the theme waits for the next launch.
-            if osascript -e 'tell application "eM Client" to quit' >/dev/null 2>&1
-                for try in (seq 1 20)
-                    pgrep -qx "eM Client"; or break
-                    sleep 0.5
-                end
-            end
-            if pgrep -qx "eM Client"
-                set emclient_status "busy, close it to apply"
-            else
-                open -a "eM Client"
+        _theme_relaunch "eM Client"
+        switch $status
+            case 0
                 set emclient_status restarted
-            end
+            case 2
+                set emclient_status "busy, close it to apply"
         end
 
         # osascript, not `defaults write`: only this posts the change
@@ -313,7 +315,7 @@ function theme --description "Switch the shared colour theme across every app th
 
     if test (uname) = Darwin
         command -q borders; and echo "  borders  reloaded"
-        test -d ~/Library/Application\ Support/BeeperTexts; and echo "  beeper   custom.css written"
+        test -n "$beeper_status"; and echo "  beeper   $beeper_status"
         echo "  emclient $emclient_status"
         echo "  macos    appearance set"
         echo "  slack    theme --slack to copy"
@@ -351,4 +353,20 @@ function theme --description "Switch the shared colour theme across every app th
         end
         rm -rf $fanout
     end
+end
+
+# Quit-wait-relaunch for the apps that read their theme once at startup.
+# Graceful quit only: an app killed mid-write is not worth a colour, and an
+# open modal makes quit return -128, in which case the theme waits for the
+# next launch. Returns 0 relaunched, 1 not running, 2 still up after the quit.
+function _theme_relaunch -a app
+    pgrep -qx $app; or return 1
+    if osascript -e "tell application \"$app\" to quit" >/dev/null 2>&1
+        for try in (seq 1 20)
+            pgrep -qx $app; or break
+            sleep 0.5
+        end
+    end
+    pgrep -qx $app; and return 2
+    open -a $app
 end
