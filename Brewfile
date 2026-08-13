@@ -179,6 +179,8 @@ brew "nmap"
 brew "openjdk@21"
 # ISO-C API and CLI for generating UUIDs
 brew "ossp-uuid"
+# Swiss-army knife of markup format conversion
+brew "pandoc"
 # Source code analyzer for Java, JavaScript, and more
 brew "pmd"
 # Paste PNG into files
@@ -276,6 +278,8 @@ cask "eqmac"
 cask "firefox"
 # Client for the Google Drive storage service
 cask "google-drive"
+# Free cross-platform office suite, fresh version
+cask "libreoffice"
 # Open-source cross-platform alternative to AirDrop
 cask "localsend"
 # GameStream client

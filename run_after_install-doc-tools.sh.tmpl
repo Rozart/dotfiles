@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# pandoc, soffice (LibreOffice) and pdftoppm (poppler) back document
+# conversion. Runs on every apply, not run_once, so a machine that never had
+# them, or lost them, gets them back. The command -v guards make the common
+# case a silent no-op.
+
+set -e
+
+missing=()
+for cmd in pandoc soffice pdftoppm; do
+	command -v "$cmd" &>/dev/null || missing+=("$cmd")
+done
+
+[ ${#missing[@]} -eq 0 ] && exit 0
+
+echo "Installing document tools: ${missing[*]}"
+
+{{ if eq .chezmoi.os "darwin" -}}
+for cmd in "${missing[@]}"; do
+	case "$cmd" in
+	pandoc) brew install pandoc ;;
+	pdftoppm) brew install poppler ;;
+	# the cask's binary stanza links soffice into the brew prefix
+	soffice) brew install --cask libreoffice ;;
+	esac
+done
+{{ else if eq .chezmoi.os "linux" -}}
+packages=()
+for cmd in "${missing[@]}"; do
+	case "$cmd" in
+	pandoc) packages+=(pandoc) ;;
+	pdftoppm) packages+=(poppler-utils) ;;
+	# skip the libreoffice metapackage; these three pull core + common,
+	# which is what ships /usr/bin/soffice, without base/draw/math
+	soffice) packages+=(libreoffice-writer libreoffice-calc libreoffice-impress) ;;
+	esac
+done
+sudo apt update && sudo apt install -y "${packages[@]}"
+{{ end -}}
