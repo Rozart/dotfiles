@@ -245,7 +245,7 @@ function theme --description "Switch the shared colour theme across every app th
             # colour, and an open modal — a composer, the Quick Tag bar — makes
             # quit return -128, in which case the theme waits for the next launch.
             if osascript -e 'tell application "eM Client" to quit' >/dev/null 2>&1
-                for _ in (seq 1 20)
+                for try in (seq 1 20)
                     pgrep -qx "eM Client"; or break
                     sleep 0.5
                 end
