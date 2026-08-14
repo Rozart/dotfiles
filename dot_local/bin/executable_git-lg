@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
-# git-lg — `git log --pretty=tbl` with the signature verdict rendered as a symbol.
+# git-lg — `git log --pretty=tblp` with a signature-presence symbol:
 #
-# This lives in a script rather than a gitconfig alias because it needs work done
-# AFTER git has written each line. git log's pretty formats have no conditionals
-# (%(if) exists for for-each-ref and `git branch --format`, not for log), so %G?
-# can only ever emit its raw letter, and the format string cannot colour it by
-# verdict either. Both have to be done here.
+#   ?  signed — presence only, nothing is verified; `git lgs` for a verdict
+#   ·  unsigned
+#
+# Presence is just "does the commit object carry a gpgsig header", which one
+# streaming `git cat-file --batch` answers for a whole walk in milliseconds.
+# Verification is what costs: git spawns ssh-keygen/gpg once per SIGNED commit
+# (~10ms each), so a fully signed history pays minutes for verdicts. That mode
+# survives as `git lgs` (--verify, pretty=tbl), with the %G? letter recoloured:
 #
 #   ✓  good signature
 #   ✗  BAD signature, or good signature made by a REVOKED key — both mean stop
@@ -14,25 +17,36 @@
 #      the normal state for a teammate's key, not an accusation
 #   ·  unsigned
 #
-# The verdict letter is anchored to the hash at the start of the line. Anchoring it
-# to the date that FOLLOWS it is not enough: sed applies every expression to every
-# line, so on a commit whose verdict is N the G expression finds no verdict to match
-# and happily rewrites a " G 2020-01-01" sitting in the subject instead.
+# This lives in a script rather than a gitconfig alias because both modes need
+# work done AFTER git has written each line: git log's pretty formats have no
+# conditionals (%(if) exists for for-each-ref and `git branch --format`, not
+# for log), so neither a presence symbol nor a coloured verdict can come from
+# the format string.
+#
+# The verify-mode verdict letter is anchored to the hash at the start of the
+# line. Anchoring it to the date that FOLLOWS it is not enough: sed applies
+# every expression to every line, so on a commit whose verdict is N the G
+# expression finds no verdict to match and happily rewrites a " G 2020-01-01"
+# sitting in the subject instead. Presence mode sidesteps the problem with
+# control characters instead: tblp prefixes each line with %H%x01 and marks
+# the symbol slot with %x02, both stripped here, and lines without the prefix
+# (diffs, stats) pass through untouched.
 
 set -euo pipefail
 
-# Match git's own rule: colour when writing to a terminal, or when git has already
-# handed us off to its pager (`pager.lg = true` sets GIT_PAGER_IN_USE).
+mode=presence
+if [ "${1:-}" = --verify ]; then
+	mode=verify
+	shift
+fi
+
+# Match git's own rule: colour when writing to a terminal, or when git has
+# already handed us off to its pager (`pager.lg = true` sets GIT_PAGER_IN_USE).
 if [ -t 1 ] || [ -n "${GIT_PAGER_IN_USE:-}" ]; then
 	colour=always
 else
 	colour=never
 fi
-
-# The abbreviated hash, wrapped in however many escape sequences colour mode adds.
-# Nothing else can match at the start of a line, so only the real verdict is ever
-# rewritten.
-hash_anchor='^((\x1b\[[0-9;]*m)*[0-9a-f]+(\x1b\[[0-9;]*m)*)'
 
 render() {
 	if [ "$colour" = always ]; then
@@ -41,6 +55,46 @@ render() {
 		printf '%s' "$1"
 	fi
 }
+
+if [ "$mode" = presence ]; then
+	# The map pass counts bytes, not lines, so a commit message line that
+	# happens to start with "gpgsig" can never desync it or fake a signature;
+	# LC_ALL=C keeps awk's length() in bytes even for multibyte messages.
+	# ponytail: two walks of the same range — the map pass blocks first output
+	# for ~0.2s per 10k commits walked. A cat-file coprocess would stream
+	# single-pass if a repo ever makes that drag.
+	git log --color=$colour --pretty=tblp "$@" |
+		awk -v sgn="$(render '?' 2)" -v uns="$(render '·' 2)" '
+			NR == FNR { signed[$1] = $2; next }
+			{
+				i = index($0, "\001")
+				if (i == 0) { print; next }
+				oid = substr($0, 1, i - 1)
+				line = substr($0, i + 1)
+				j = index(line, "\002")
+				if (j == 0) { print line; next }
+				mark = (signed[oid] == 1) ? sgn : uns
+				print substr(line, 1, j - 1) mark substr(line, j + 1)
+			}
+		' <(git log -s --pretty=%H "$@" 2>/dev/null |
+			git cat-file --batch 2>/dev/null |
+			LC_ALL=C awk '
+				rem > 0 {
+					rem -= length($0) + 1
+					if (inhdr && $0 == "") inhdr = 0
+					else if (inhdr && $0 ~ /^gpgsig/) s = 1
+					if (rem <= 0) print oid, s
+					next
+				}
+				$2 == "commit" { oid = $1; rem = $3 + 1; inhdr = 1; s = 0 }
+			') -
+	exit
+fi
+
+# The abbreviated hash, wrapped in however many escape sequences colour mode
+# adds. Nothing else can match at the start of a line, so only the real verdict
+# is ever rewritten.
+hash_anchor='^((\x1b\[[0-9;]*m)*[0-9a-f]+(\x1b\[[0-9;]*m)*)'
 
 sed_args=()
 while IFS=: read -r letter symbol code; do
