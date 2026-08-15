@@ -257,7 +257,7 @@ cask "applepi-baker"
 # Display management tool
 cask "betterdisplay"
 # Web browser focusing on privacy
-cask "brave-browser@nightly"
+cask "brave-browser"
 # Utility that prevents the system from going to sleep
 cask "caffeine"
 # E-books management software
