@@ -1,0 +1,10 @@
+# Intended extension set for Brave-Browser/Default (Rozart @ Private).
+# Format: <extension-id>  <human name>. config-health diffs live IDs against this.
+aeblfdkhhhdcdjpifhhbdiojplfjncoa  1Password
+baocaagndhipibgklemoalmkljaimfdj  Dimensions
+fnaicdffflnofjppbagibeoednhnbjhg  floccus bookmarks sync
+bcjindcccaagfpapjjmafapmmgkkhgoa  JSON Formatter
+pnidmkljnhbjfffciajlcpeldoljnidn  Linkwarden
+fmkadmapgofadopljbjfkapdkoienihi  React Developer Tools
+mgngbgbhliflggkamjnpdmegbkidiapm  Remove YouTube Shorts
+bfbameneiokkgbdmiekhjnmfkcnldhhm  Web Developer
