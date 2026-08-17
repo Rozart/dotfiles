@@ -9,18 +9,18 @@
 	     copies arrive deterministically instead of via OSC 52 escape
 	     sequences (size limits, per-hop terminal handling).
 
-	     Replies "OK" once pbcopy has exited successfully. The sender cannot
-	     learn this any other way: the remote sshd accepts the forwarded
-	     connection before the Mac end is consulted, so nc exits 0 even when
-	     this agent is dead. clip-copy waits for the ack to decide between
-	     "landed" (notify) and "tunnel down" (OSC 52 fallback).
+	     clip-receive sets the clipboard, replies "OK", and posts the arrival
+	     notification. The sender cannot learn the copy landed any other way:
+	     the remote sshd accepts the forwarded connection before the Mac end is
+	     consulted, so nc exits 0 even when this agent is dead. clip-copy waits
+	     for that ack to decide between "landed" and "tunnel down" (OSC 52).
 
-	     SYSTEM: rather than EXEC: because the && needs a shell. -->
+	     SYSTEM: rather than EXEC: so a shell expands $HOME. -->
 	<key>ProgramArguments</key>
 	<array>
 		<string>/opt/homebrew/bin/socat</string>
 		<string>TCP-LISTEN:2490,bind=127.0.0.1,fork,reuseaddr</string>
-		<string>SYSTEM:/usr/bin/pbcopy &amp;&amp; printf OK</string>
+		<string>SYSTEM:$HOME/.local/bin/clip-receive</string>
 	</array>
 	<!-- launchd starts agents with no locale at all, and pbcopy then reads its
 	     input as Mac OS Roman: every UTF-8 sequence becomes garbage characters

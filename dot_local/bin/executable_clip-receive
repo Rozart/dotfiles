@@ -1,0 +1,94 @@
+#!/bin/bash
+# Receives a remote copy on stdin, puts it on the Mac clipboard, acks the
+# sender, and posts a notification naming the host it came from. Driven by the
+# dev.rozart.pbcopy-server launchd agent (socat SYSTEM target).
+#
+# The notification runs through a Shortcut rather than terminal-notifier,
+# osascript, or a terminal escape sequence. Those all fail on this machine:
+# terminal-notifier and osascript are not registered notification clients at
+# all, and Ghostty -- despite documenting OSC 9 and OSC 777, and despite the
+# System Settings toggle being on -- has never delivered a single notification
+# (zero records in the usernoted database, while other apps have thousands).
+# Shortcuts is Apple-signed, registered, and the only CLI-drivable notifier
+# left standing.
+#
+# The ack goes out before the notification, and the notification is detached,
+# because `shortcuts run` takes on the order of a second. The sender is waiting
+# on this connection and must not pay that cost.
+
+set -u
+
+readonly SHORTCUT=clip-notify
+readonly PREVIEW_MAX=80
+
+data=$(cat; printf x)
+data=${data%x}
+
+origin=unknown
+if [[ $data == *$'\n'* ]]; then
+	header=${data%%$'\n'*}
+	if [[ $header == $'\037'clip-origin:*$'\037' ]]; then
+		origin=${header#$'\037'clip-origin:}
+		origin=${origin%$'\037'}
+		data=${data#*$'\n'}
+	fi
+fi
+
+printf '%s' "$data" | /usr/bin/pbcopy || exit 1
+printf OK
+
+sanitize() {
+	printf '%s' "$1" |
+		tr -d '\000-\010\013-\037\177' |
+		tr '\n\t' '  ' |
+		tr -s ' ' |
+		sed 's/^ *//; s/ *$//'
+}
+
+# Reduces the leak, does not close it: notification text lands in the macOS
+# notification database, and these patterns will miss plenty.
+looks_secret() {
+	printf '%s' "$data" | grep -qiE \
+		'password|passwd|secret|token|api[_-]?key|bearer|aws_secret|BEGIN [A-Z ]*PRIVATE KEY|xoxb-|ghp_|sk-' &&
+		return 0
+
+	printf '%s' "$data" | grep -qE '^[^[:space:]]{20,100}$' &&
+		printf '%s' "$data" | grep -q '[a-z]' &&
+		printf '%s' "$data" | grep -q '[A-Z]' &&
+		printf '%s' "$data" | grep -q '[0-9]' &&
+		return 0
+
+	return 1
+}
+
+describe() {
+	local bytes lines size preview
+	bytes=$(printf '%s' "$data" | wc -c | tr -d ' ')
+	lines=$(printf '%s' "$data" | grep -c '')
+
+	if [ "$bytes" -lt 1024 ]; then
+		size="$bytes B"
+	else
+		size=$(awk -v b="$bytes" 'BEGIN { printf "%.1f KB", b / 1024 }')
+	fi
+
+	printf '← %s · %s · %s %s' "$(sanitize "$origin")" "$size" "$lines" \
+		"$([ "$lines" -eq 1 ] && echo line || echo lines)"
+
+	if looks_secret; then
+		printf ' · content hidden'
+		return
+	fi
+
+	preview=$(sanitize "$data")
+	if [ "${#preview}" -gt "$PREVIEW_MAX" ]; then
+		printf ' · %s…' "${preview:0:PREVIEW_MAX}"
+	elif [ -n "$preview" ]; then
+		printf ' · %s' "$preview"
+	fi
+}
+
+message=$(describe)
+tmp=$(mktemp -t clip-notify) || exit 0
+printf '%s' "$message" >"$tmp"
+(/usr/bin/shortcuts run "$SHORTCUT" --input-path "$tmp" >/dev/null 2>&1; rm -f "$tmp") >/dev/null 2>&1 &

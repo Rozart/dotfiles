@@ -1,25 +1,23 @@
 #!/bin/bash
 # Copies stdin to the Mac clipboard over the ssh-forwarded tunnel (port 2490,
-# served by the dev.rozart.pbcopy-server launchd agent), then tells the Mac it
-# arrived. Single writer for every remote copy path: the fish pbcopy function,
-# tmux's copy-command, and nvim's clipboard provider all call this.
+# served by the dev.rozart.pbcopy-server launchd agent). Single writer for every
+# remote copy path: the fish pbcopy function, tmux's copy-command, and nvim's
+# clipboard provider all call this.
 #
-# The server replies "OK" only after pbcopy exits successfully, and that ack is
+# The server replies "OK" once the clipboard is actually set, and that ack is
 # the whole point. nc's exit status is worthless here: the remote sshd accepts
 # the forwarded connection before the Mac end is consulted, so nc reports
 # success even when the agent on the other side is dead. Waiting for the ack is
 # what makes the OSC 52 fallback actually trigger.
 #
-# Notifications are emitted from this side as OSC 777 through the terminal
-# chain, not posted on the Mac. Ghostty is the only app registered for
-# notifications there (terminal-notifier and osascript are absent from
-# ~/Library/Preferences/com.apple.ncprefs.plist and deliver nothing), and its
-# desktop-notifications option defaults to on.
+# The arrival notification is posted on the Mac by clip-receive, not from here,
+# because no terminal escape sequence on that machine produces one -- Ghostty
+# ignores both OSC 9 and OSC 777 in practice. Hence the origin header below:
+# it is the only way the Mac can tell which host copied.
 
 set -u
 
 readonly PORT=2490
-readonly PREVIEW_MAX=80
 
 # Trailing newlines are significant for line-wise yanks; $() would eat them.
 data=$(cat; printf x)
@@ -29,75 +27,8 @@ has_tty() {
 	: >/dev/tty 2>/dev/null
 }
 
-sanitize() {
-	# ; would start another OSC parameter, control bytes would end the sequence.
-	printf '%s' "$1" |
-		tr -d '\000-\010\013-\037\177' |
-		tr '\n\t;' '   ' |
-		tr -s ' ' |
-		sed 's/^ *//; s/ *$//'
-}
-
-# Reduces the leak, does not close it: macOS keeps notification text in its own
-# database, and these patterns will miss plenty.
-looks_secret() {
-	printf '%s' "$data" | grep -qiE \
-		'password|passwd|secret|token|api[_-]?key|bearer|aws_secret|BEGIN [A-Z ]*PRIVATE KEY|xoxb-|ghp_|sk-' &&
-		return 0
-
-	# An opaque single token — the shape of a bare credential.
-	printf '%s' "$data" | grep -qE '^[^[:space:]]{20,100}$' &&
-		printf '%s' "$data" | grep -q '[a-z]' &&
-		printf '%s' "$data" | grep -q '[A-Z]' &&
-		printf '%s' "$data" | grep -q '[0-9]' &&
-		return 0
-
-	return 1
-}
-
-describe() {
-	local bytes lines size preview
-	bytes=$(printf '%s' "$data" | wc -c | tr -d ' ')
-	lines=$(printf '%s' "$data" | grep -c '')
-
-	if [ "$bytes" -lt 1024 ]; then
-		size="$bytes B"
-	else
-		size=$(awk -v b="$bytes" 'BEGIN { printf "%.1f KB", b / 1024 }')
-	fi
-
-	printf '%s · %s %s' "$size" "$lines" "$([ "$lines" -eq 1 ] && echo line || echo lines)"
-
-	if looks_secret; then
-		printf ' · content hidden'
-		return
-	fi
-
-	preview=$(sanitize "$data")
-	if [ "${#preview}" -gt "$PREVIEW_MAX" ]; then
-		printf ' · %s…' "${preview:0:PREVIEW_MAX}"
-	elif [ -n "$preview" ]; then
-		printf ' · %s' "$preview"
-	fi
-}
-
-notify() {
-	local seq
-	has_tty || return 0
-	seq=$(printf '\033]777;notify;Clipboard ← %s;%s\033\\' "$(sanitize "$(hostname -s)")" "$(describe)")
-
-	if [ -n "${TMUX:-}" ]; then
-		# tmux does not understand OSC 777, so it has to be tunnelled through
-		# the passthrough sequence (allow-passthrough is on in tmux.conf) with
-		# every inner ESC doubled.
-		printf '\033Ptmux;%s\033\\' "${seq//$'\033'/$'\033\033'}" >/dev/tty
-	else
-		printf '%s' "$seq" >/dev/tty
-	fi
-}
-
 # tmux understands OSC 52 natively and re-emits it to the outer terminal, so
-# unlike OSC 777 this needs no passthrough wrapper.
+# this needs no passthrough wrapper.
 fallback() {
 	has_tty || return 1
 	printf '\033]52;c;%s\a' "$(printf '%s' "$data" | base64 | tr -d '\n')" >/dev/tty
@@ -109,8 +40,14 @@ if ! command -v nc >/dev/null 2>&1; then
 	exit 0
 fi
 
-if [ "$(printf '%s' "$data" | nc -N -w 1 127.0.0.1 "$PORT" 2>/dev/null)" = OK ]; then
-	notify
+# \037 (unit separator) keeps the header from ever colliding with real content.
+# An un-updated host sends no header and simply shows up as "unknown".
+send() {
+	printf '\037clip-origin:%s\037\n' "$(hostname -s)"
+	printf '%s' "$data"
+}
+
+if [ "$(send | nc -N -w 1 127.0.0.1 "$PORT" 2>/dev/null)" = OK ]; then
 	exit 0
 fi
 
