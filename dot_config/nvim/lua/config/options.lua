@@ -31,28 +31,22 @@ vim.opt.iskeyword:remove("_")
 -- Remote sessions: copy/paste via the ssh-forwarded clipboard tunnels
 -- (~/.ssh/config RemoteForward + launchd pbcopy/pbpaste servers on the Mac,
 -- ports 2490/2489). Deterministic — no OSC 52 size limits or per-hop escape
--- handling. OSC 52 remains the copy fallback when no tunnel is up. Never OSC
--- 52 paste — its queries can't reach the real clipboard through tmux and
--- block nvim waiting for a reply.
--- ponytail: nc exits 0 even when the Mac end of the RemoteForward refuses
--- (sshd accepts first), so a dead pbcopy-server drops copies silently instead
--- of hitting the OSC 52 fallback. Probe port 2489 before copying if it bites
--- again.
+-- handling. Never OSC 52 paste — its queries can't reach the real clipboard
+-- through tmux and block nvim waiting for a reply.
+--
+-- Copies go through ~/.local/bin/clip-copy, shared with fish's pbcopy and
+-- tmux's copy-command. It waits for the server's ack before deciding the copy
+-- landed, which is why nvim no longer needs its own OSC 52 fallback here: nc
+-- exits 0 even against a dead pbcopy-server (the remote sshd accepts first),
+-- so nc's status could never drive that decision.
 -- Local sessions: no override, nvim autodetects pbcopy/pbpaste.
 if vim.env.SSH_TTY or vim.env.SSH_CONNECTION then
-  local osc52 = require("vim.ui.clipboard.osc52")
-  local function tunnel_copy(reg)
-    local fallback = osc52.copy(reg)
-    return function(lines, regtype)
-      local data = table.concat(lines, "\n")
-      if regtype == "V" then
-        data = data .. "\n"
-      end
-      vim.fn.system("nc -N -w 1 127.0.0.1 2490", data)
-      if vim.v.shell_error ~= 0 then
-        fallback(lines, regtype)
-      end
+  local function tunnel_copy(lines, regtype)
+    local data = table.concat(lines, "\n")
+    if regtype == "V" then
+      data = data .. "\n"
     end
+    vim.fn.system(vim.env.HOME .. "/.local/bin/clip-copy", data)
   end
   local function tunnel_paste()
     local out = vim.fn.systemlist("nc -N -w 1 127.0.0.1 2489")
@@ -64,7 +58,7 @@ if vim.env.SSH_TTY or vim.env.SSH_CONNECTION then
   end
   vim.g.clipboard = {
     name = "ssh-tunnel",
-    copy = { ["+"] = tunnel_copy("+"), ["*"] = tunnel_copy("*") },
+    copy = { ["+"] = tunnel_copy, ["*"] = tunnel_copy },
     paste = { ["+"] = tunnel_paste, ["*"] = tunnel_paste },
   }
 end

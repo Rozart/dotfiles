@@ -7,12 +7,20 @@
 	<!-- Writes anything sent to localhost:2490 into the Mac clipboard. SSH
 	     RemoteForward (see ~/.ssh/config) exposes it on remote hosts so
 	     copies arrive deterministically instead of via OSC 52 escape
-	     sequences (size limits, per-hop terminal handling). -->
+	     sequences (size limits, per-hop terminal handling).
+
+	     Replies "OK" once pbcopy has exited successfully. The sender cannot
+	     learn this any other way: the remote sshd accepts the forwarded
+	     connection before the Mac end is consulted, so nc exits 0 even when
+	     this agent is dead. clip-copy waits for the ack to decide between
+	     "landed" (notify) and "tunnel down" (OSC 52 fallback).
+
+	     SYSTEM: rather than EXEC: because the && needs a shell. -->
 	<key>ProgramArguments</key>
 	<array>
 		<string>/opt/homebrew/bin/socat</string>
 		<string>TCP-LISTEN:2490,bind=127.0.0.1,fork,reuseaddr</string>
-		<string>EXEC:/usr/bin/pbcopy</string>
+		<string>SYSTEM:/usr/bin/pbcopy &amp;&amp; printf OK</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>

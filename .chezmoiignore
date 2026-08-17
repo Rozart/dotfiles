@@ -29,4 +29,6 @@ Library
 # native pbcopy/pbpaste exist on macOS; the shims are for Linux servers
 .config/fish/functions/pbcopy.fish
 .config/fish/functions/pbpaste.fish
+# sends copies *to* this Mac through the ssh tunnel; pointless on the Mac itself
+.local/bin/clip-copy
 {{- end }}
