@@ -89,6 +89,8 @@ describe() {
 }
 
 message=$(describe)
-tmp=$(mktemp -t clip-notify) || exit 0
+# .txt matters: shortcuts run hands the shortcut a file, and an extensionless
+# one does not get recognised as text.
+tmp=$(mktemp -t clip-notify).txt || exit 0
 printf '%s' "$message" >"$tmp"
 (/usr/bin/shortcuts run "$SHORTCUT" --input-path "$tmp" >/dev/null 2>&1; rm -f "$tmp") >/dev/null 2>&1 &

@@ -18,6 +18,8 @@ Library
 .local/bin/mount-servers
 # receives remote copies into this Mac's clipboard; Mac-side only
 .local/bin/clip-receive
+# the notification Shortcut it drives; Shortcuts.app is macOS-only
+.local/share/clip-notify
 .ssh/proxmox.pub
 .ssh/dev-station.pub
 .ssh/docker-host.pub
