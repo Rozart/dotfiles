@@ -13,6 +13,15 @@
 		<string>TCP-LISTEN:2489,bind=127.0.0.1,fork,reuseaddr</string>
 		<string>EXEC:/usr/bin/pbpaste</string>
 	</array>
+	<!-- launchd starts agents with no locale at all, and pbpaste then encodes
+	     the pasteboard as Mac OS Roman instead of UTF-8. Must stay in step with
+	     the pbcopy server: both wrong cancelled out over the tunnel, so fixing
+	     only one end would start corrupting remote pastes. -->
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>LC_CTYPE</key>
+		<string>UTF-8</string>
+	</dict>
 	<key>RunAtLoad</key>
 	<true/>
 	<key>KeepAlive</key>

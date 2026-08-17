@@ -22,6 +22,16 @@
 		<string>TCP-LISTEN:2490,bind=127.0.0.1,fork,reuseaddr</string>
 		<string>SYSTEM:/usr/bin/pbcopy &amp;&amp; printf OK</string>
 	</array>
+	<!-- launchd starts agents with no locale at all, and pbcopy then reads its
+	     input as Mac OS Roman: every UTF-8 sequence becomes garbage characters
+	     in the pasteboard, so Cmd-V pasted mojibake into every Mac app. The
+	     tunnel round-trip hid it, because the pbpaste server reversed the same
+	     wrong mapping on the way back out. -->
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>LC_CTYPE</key>
+		<string>UTF-8</string>
+	</dict>
 	<key>RunAtLoad</key>
 	<true/>
 	<key>KeepAlive</key>
