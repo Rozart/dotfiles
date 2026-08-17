@@ -13,9 +13,7 @@ if ! command -v docker &>/dev/null; then
 fi
 
 echo "Installing cli tools"
-# netcat-openbsd, not the traditional flavour: clip-copy needs nc -N to
-# half-close the connection so the Mac's pbcopy server can send its ack back.
-sudo apt install -y ripgrep tmux bat btop fzf zoxide unzip build-essential fish git-delta netcat-openbsd
+sudo apt install -y ripgrep tmux bat btop fzf zoxide unzip build-essential fish git-delta
 
 # Add fish to /etc/shells if not already there
 if ! grep -q "$(which fish)" /etc/shells; then
