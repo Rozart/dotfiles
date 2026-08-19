@@ -1,0 +1,40 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+
+# pulse-notify.plist hash: {{ include "dot_local/share/pulse-notify/pulse-notify.plist" | sha256sum }}
+
+# Builds the signed .shortcut that pulse calls to post its notification. Same
+# shape and same unavoidable manual step as build-clip-notify: the shortcuts CLI
+# has run/list/view/sign and no create or import verb, and writing the Core Data
+# store behind Shortcuts.app by hand is not safe.
+#
+# This never opens the import sheet on its own -- it prints the command so the
+# import stays a deliberate choice.
+
+dir="$HOME/.local/share/pulse-notify"
+src="$dir/pulse-notify.plist"
+out="$dir/pulse-notify.shortcut"
+# The .shortcut extension is load-bearing: `shortcuts sign` rejects an input
+# without it ("isn't in the correct format"), whatever the file contains.
+tmp="$dir/pulse-notify.unsigned.shortcut"
+
+if [ ! -f "$src" ]; then
+	echo "pulse-notify: $src missing, skipping"
+	exit 0
+fi
+
+plutil -convert binary1 -o "$tmp" "$src" || exit 1
+rm -f "$out"
+if ! shortcuts sign --mode anyone -i "$tmp" -o "$out"; then
+	rm -f "$tmp"
+	echo "pulse-notify: signing failed"
+	exit 1
+fi
+rm -f "$tmp"
+
+if shortcuts list 2>/dev/null | grep -qx pulse-notify; then
+	echo "pulse-notify shortcut rebuilt; re-import to pick up changes: open $out"
+else
+	echo ">>> the pulse clock needs its shortcut imported (one click): open $out"
+fi
+{{ end -}}

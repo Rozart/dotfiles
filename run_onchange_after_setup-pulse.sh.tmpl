@@ -1,0 +1,22 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+
+# pulse.plist hash: {{ include "Library/LaunchAgents/dev.rozart.pulse.plist" | sha256sum }}
+# pulse hash: {{ include "dot_local/bin/executable_pulse" | sha256sum }}
+# focus-log.plist hash: {{ include "Library/LaunchAgents/dev.rozart.focus-log.plist" | sha256sum }}
+# focus-log hash: {{ include "dot_local/bin/executable_focus-log" | sha256sum }}
+
+# Loads the two halves of the clock: focus-log measures, pulse reports. They ship
+# together because pulse quotes focus-log's numbers, so a machine with one and not
+# the other is a half-configured state nobody wants to debug.
+#
+# bootout before bootstrap because bootstrap on an already-loaded label is an
+# error, and this script re-runs whenever either plist changes.
+
+for label in dev.rozart.focus-log dev.rozart.pulse; do
+	launchctl bootout "gui/$(id -u)/$label" 2>/dev/null
+	launchctl bootstrap "gui/$(id -u)" "$HOME/Library/LaunchAgents/$label.plist"
+done
+
+echo "focus sampler + pulse clock loaded (10:30, 13:00, 15:30, 18:00 daily)"
+{{ end -}}

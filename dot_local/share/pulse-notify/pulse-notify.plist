@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Source of truth for the pulse-notify Shortcut, which is how ~/.local/bin/pulse
+     reaches the screen. run_onchange_after_build-pulse-notify converts this to a
+     signed .shortcut; importing it is one click, for the same reasons spelled out
+     in clip-notify.plist -- the shortcuts CLI has no create or import verb.
+
+     Shortcuts is not a preference here, it is the only route that works on this
+     machine: clip-receive's header records terminal-notifier, osascript and
+     Ghostty OSC 9/777 all failing to deliver. Same --input-path .txt constraint
+     applies, and the Get Text action ahead of the notification coerces that file
+     into a string the body can read.
+
+     A second Shortcut rather than reusing clip-notify because that one hardcodes
+     its notification title to "Clipboard". Title is a fixed string in the
+     notification action, so one Shortcut cannot serve both senders.
+
+     Sound is on, unlike clip-notify. Clipboard arrivals are frequent and a chime
+     each time would be noise; this fires four times a day and a silent banner is
+     exactly the kind that gets dismissed unread. -->
+
+<plist version="1.0">
+<dict>
+	<key>WFWorkflowClientVersion</key>
+	<string>2600</string>
+	<key>WFWorkflowMinimumClientVersion</key>
+	<integer>900</integer>
+	<key>WFWorkflowMinimumClientVersionString</key>
+	<string>900</string>
+	<key>WFWorkflowHasOutputFallback</key>
+	<false/>
+	<key>WFWorkflowHasShortcutInputVariables</key>
+	<true/>
+	<key>WFWorkflowIcon</key>
+	<dict>
+		<key>WFWorkflowIconGlyphNumber</key>
+		<integer>59446</integer>
+		<key>WFWorkflowIconStartColor</key>
+		<integer>2071128575</integer>
+	</dict>
+	<key>WFWorkflowImportQuestions</key>
+	<array/>
+	<key>WFWorkflowTypes</key>
+	<array/>
+	<key>WFWorkflowInputContentItemClasses</key>
+	<array>
+		<string>WFStringContentItem</string>
+		<string>WFGenericFileContentItem</string>
+	</array>
+	<key>WFWorkflowActions</key>
+	<array>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.gettext</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>UUID</key>
+				<string>300D6469-5D45-4CE8-AB1B-DC9431F5DA52</string>
+				<key>WFTextActionText</key>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenString</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>￼</string>
+						<key>attachmentsByRange</key>
+						<dict>
+							<key>{0, 1}</key>
+							<dict>
+								<key>Type</key>
+								<string>ExtensionInput</string>
+							</dict>
+						</dict>
+					</dict>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.notification</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFNotificationActionTitle</key>
+				<string>Pulse</string>
+				<key>WFNotificationActionSound</key>
+				<true/>
+				<key>WFNotificationActionBody</key>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenString</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>￼</string>
+						<key>attachmentsByRange</key>
+						<dict>
+							<key>{0, 1}</key>
+							<dict>
+								<key>Type</key>
+								<string>ActionOutput</string>
+								<key>OutputUUID</key>
+								<string>300D6469-5D45-4CE8-AB1B-DC9431F5DA52</string>
+								<key>OutputName</key>
+								<string>Text</string>
+							</dict>
+						</dict>
+					</dict>
+				</dict>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>

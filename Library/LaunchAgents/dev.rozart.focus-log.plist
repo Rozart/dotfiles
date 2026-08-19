@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>dev.rozart.focus-log</string>
+	<!-- Samples the frontmost app once a minute into
+	     ~/.local/state/focus-log/YYYY-MM-DD.tsv; `dayreport` reads it back.
+	     See ~/.local/bin/focus-log.
+
+	     StartInterval rather than a long-running daemon on purpose: the work is
+	     two shell-outs and one append, so a process that lives for 40ms a minute
+	     has nothing to leak, nothing to wedge, and needs no KeepAlive to babysit
+	     it. A crashed sample costs one row.
+
+	     60s is the resolution floor worth having. Coarser and short context
+	     switches vanish, which are exactly the ones worth seeing; finer buys
+	     nothing the report can use and `dayreport` assumes this interval when it
+	     turns a run of rows into a duration. -->
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/rozart/.local/bin/focus-log</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StartInterval</key>
+	<integer>60</integer>
+</dict>
+</plist>

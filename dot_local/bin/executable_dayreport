@@ -1,0 +1,143 @@
+#!/usr/bin/env python3
+"""Turn a focus-log day into a timeline of where the time actually went.
+
+usage: dayreport [--date YYYY-MM-DD] [--min MINUTES] [--dir PATH]
+       dayreport --current
+
+Reads the TSV that ~/.local/bin/focus-log appends to once a minute and collapses
+runs of identical samples into blocks. A block is what you can actually recognise
+as a stretch of work; the raw rows are unreadable.
+
+Two things break a block besides the app changing. Crossing the idle threshold
+splits work from an unattended desk, so a lunch break stops inflating whatever
+happened to be frontmost. A gap wider than GAP_BREAK means samples are missing --
+the Mac slept, or the agent was unloaded -- and that wall-clock is dropped rather
+than attributed to the app on either side of the hole, which is the difference
+between a report you can trust and one that quietly invents two hours.
+
+--current exists so `pulse` can name the stretch you are in without a second
+copy of the block rules living in shell. It prints one tab-separated line, state
+then duration, and exits 1 with no output whenever there is nothing honest to say
+-- no log, or samples too stale to describe the present.
+
+Durations assume the sampler's interval, so SAMPLE has to track StartInterval in
+dev.rozart.focus-log.plist. Nothing detects a mismatch; a single sample is simply
+reported as SAMPLE seconds of that app.
+"""
+import argparse
+import datetime as dt
+import os
+import sys
+
+SAMPLE = 60
+AFK_IDLE = 300
+GAP_BREAK = 150
+AFK = "(afk)"
+BAR_WIDTH = 24
+
+
+def parse(path):
+    rows = []
+    with open(path, encoding="utf-8") as fh:
+        for n, line in enumerate(fh, 1):
+            parts = line.rstrip("\n").split("\t")
+            if len(parts) != 3:
+                print("%s:%d: skipped malformed row" % (path, n), file=sys.stderr)
+                continue
+            try:
+                rows.append((int(parts[0]), parts[1], int(parts[2])))
+            except ValueError:
+                print("%s:%d: skipped unparsable row" % (path, n), file=sys.stderr)
+    rows.sort(key=lambda r: r[0])
+    return rows
+
+
+def blocks(rows):
+    out = []
+    for ts, app, idle in rows:
+        state = AFK if idle >= AFK_IDLE else app
+        if out and out[-1]["state"] == state and ts - out[-1]["last"] <= GAP_BREAK:
+            out[-1]["last"] = ts
+            continue
+        out.append({"state": state, "first": ts, "last": ts})
+    for b in out:
+        b["seconds"] = b["last"] - b["first"] + SAMPLE
+    return out
+
+
+def hm(seconds):
+    m = round(seconds / 60)
+    return "%dh%02dm" % divmod(m, 60) if m >= 60 else "%dm" % m
+
+
+def clock(ts):
+    return dt.datetime.fromtimestamp(ts).strftime("%H:%M")
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--date", default=dt.date.today().isoformat())
+    ap.add_argument("--current", action="store_true")
+    ap.add_argument("--min", type=int, default=2, metavar="MINUTES")
+    ap.add_argument(
+        "--dir",
+        default=os.path.join(
+            os.environ.get("XDG_STATE_HOME", os.path.expanduser("~/.local/state")),
+            "focus-log",
+        ),
+    )
+    args = ap.parse_args()
+
+    path = os.path.join(args.dir, "%s.tsv" % args.date)
+    if not os.path.exists(path):
+        sys.exit(1 if args.current else "no log for %s (%s)" % (args.date, path))
+
+    rows = parse(path)
+    found = blocks(rows)
+    if not found:
+        sys.exit(1 if args.current else "no usable samples in %s" % path)
+
+    if args.current:
+        last = found[-1]
+        if dt.datetime.now().timestamp() - last["last"] > GAP_BREAK:
+            sys.exit(1)
+        print("%s\t%s" % (last["state"], hm(last["seconds"])))
+        return
+
+    shown = [b for b in found if b["seconds"] >= args.min * 60]
+    longest = max((b["seconds"] for b in found if b["state"] != AFK), default=0)
+    scale = max((b["seconds"] for b in shown), default=1)
+    width = max(len(b["state"]) for b in shown) if shown else 0
+
+    print("%s  %s samples, %s blocks" % (args.date, len(rows), len(found)))
+    print()
+    for b in shown:
+        bar = "█" * max(1, round(BAR_WIDTH * b["seconds"] / scale))
+        print(
+            "%s-%s  %-*s  %7s  %s"
+            % (clock(b["first"]), clock(b["first"] + b["seconds"]),
+               width, b["state"], hm(b["seconds"]), bar)
+        )
+
+    hidden = len(found) - len(shown)
+    if hidden:
+        print()
+        print("%d block(s) under %dm not shown (use --min 0)" % (hidden, args.min))
+
+    totals = {}
+    for b in found:
+        totals[b["state"]] = totals.get(b["state"], 0) + b["seconds"]
+    print()
+    for state, seconds in sorted(totals.items(), key=lambda kv: -kv[1]):
+        print("%8s  %s" % (hm(seconds), state))
+
+    focus = [b for b in found if b["state"] != AFK]
+    print()
+    print(
+        "focus blocks: %d (longest %s) · afk %s"
+        % (len(focus), hm(longest), hm(totals.get(AFK, 0)))
+    )
+
+
+if __name__ == "__main__":
+    main()

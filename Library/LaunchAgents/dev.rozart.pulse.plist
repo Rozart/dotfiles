@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>dev.rozart.pulse</string>
+	<!-- The only thing in this setup that acts on the clock rather than on an
+	     event. See ~/.local/bin/pulse for what it says and why.
+
+	     Four times, and resisting a fifth is the whole design. These land either
+	     side of the two transitions that get missed (into lunch, out of the
+	     afternoon) plus a start and a stop. Notifications only work here while
+	     they stay rare enough to still read; add a fifth and the set becomes
+	     wallpaper, taking the four that worked down with it.
+
+	     No Weekday key on purpose -- hyperfocus does not observe the weekend, and
+	     a Saturday that eats itself is the one most worth interrupting.
+
+	     StartCalendarInterval, not StartInterval: an interval drifts against the
+	     wall clock every time the Mac sleeps, and "mid-afternoon" has to mean
+	     mid-afternoon. A slot that comes due while asleep fires once on wake,
+	     which is why pulse derives its message from the hour it actually ran at
+	     instead of trusting these numbers. -->
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/rozart/.local/bin/pulse</string>
+	</array>
+	<key>StartCalendarInterval</key>
+	<array>
+		<dict>
+			<key>Hour</key>
+			<integer>10</integer>
+			<key>Minute</key>
+			<integer>30</integer>
+		</dict>
+		<dict>
+			<key>Hour</key>
+			<integer>13</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>Hour</key>
+			<integer>15</integer>
+			<key>Minute</key>
+			<integer>30</integer>
+		</dict>
+		<dict>
+			<key>Hour</key>
+			<integer>18</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+	</array>
+</dict>
+</plist>

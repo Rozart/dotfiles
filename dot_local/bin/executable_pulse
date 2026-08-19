@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# pulse — say the time out loud, four times a day.
+#
+# The thing this setup was missing is not another app, it is a clock. Every other
+# automation here is event-driven (network_change, after-select-window, tool hooks)
+# or invoked by hand, so nothing was ever in a position to notice that three hours
+# had gone. See dev.rozart.pulse.plist for the schedule.
+#
+# The elapsed figure is the payload; the closing question is just what makes it
+# actionable. Duration is the part that cannot be felt from the inside, which is
+# why a fixed "take a break" string would be ignorable and this is not.
+#
+# Deliberately four a day and nothing else. A pulse that also listed due cards and
+# unread inboxes would be a chore list, and a chore list is a thing you learn to
+# dismiss -- at which point the one notification that mattered goes with it.
+#
+# The idle check is duplicated from focus-log rather than shared or read out of its
+# log, so that the clock keeps working when the sampler is unloaded. An empty desk
+# gets no notification: the point is to interrupt work, and nobody is working.
+#
+# Absolute paths throughout, because launchd hands an agent no PATH at all and the
+# default it falls back to (/usr/bin:/bin:/usr/sbin:/sbin) does not include
+# ~/.local/bin. Anything here found only by PATH would work when run by hand and
+# never once on the schedule -- the worst possible failure mode for a clock.
+
+set -euo pipefail
+
+IDLE_LIMIT=600
+SHORTCUT=pulse-notify
+DAYREPORT="$HOME/.local/bin/dayreport"
+
+[ -x /usr/bin/shortcuts ] || exit 0
+
+# awk must not exit on first match: closing the pipe early makes ioreg die of
+# SIGPIPE, which `pipefail` turns into a silent no-pulse.
+idle=$(ioreg -c IOHIDSystem 2>/dev/null |
+	awk '/HIDIdleTime/ && !seen {seen = 1; printf "%d", $NF / 1000000000}')
+[ "${idle:-0}" -lt "$IDLE_LIMIT" ] || exit 0
+
+# Slots are ranges, not the exact times in the plist. A calendar interval that
+# comes due while the Mac is asleep fires on wake instead, so the hour it actually
+# runs at is not the hour it was scheduled for.
+hour=$(date +%-H)
+if [ "$hour" -lt 12 ]; then
+	line="what is the one thing today?"
+elif [ "$hour" -lt 15 ]; then
+	line="eat something."
+elif [ "$hour" -lt 17 ]; then
+	line="still the right thing?"
+else
+	line="close the day."
+fi
+
+# Field 2 is the duration, field 1 the app. Exit 1 means no log or samples too
+# stale to describe the present, and then there is no honest figure to quote.
+stretch=''
+if current=$("$DAYREPORT" --current 2>/dev/null); then
+	app=${current%%$'\t'*}
+	dur=${current##*$'\t'}
+	[ "$app" = '(afk)' ] || stretch="$app $dur · "
+fi
+
+body="$(date +%H:%M) · ${stretch}${line}"
+
+# --input-path, and the file must be named .txt or the notification body renders
+# empty -- the same Shortcuts quirk clip-receive works around. A directory rather
+# than clip-receive's `$(mktemp -t ...).txt`, which strands its extensionless
+# original on every call; four a day forever is worth two extra characters.
+dir=$(mktemp -d "${TMPDIR:-/tmp}/pulse.XXXXXX")
+trap 'rm -rf "$dir"' EXIT
+printf '%s' "$body" >"$dir/pulse.txt"
+
+/usr/bin/shortcuts run "$SHORTCUT" --input-path "$dir/pulse.txt" >/dev/null

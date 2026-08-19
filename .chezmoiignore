@@ -20,6 +20,12 @@ Library
 .local/bin/clip-receive
 # the notification Shortcut it drives; Shortcuts.app is macOS-only
 .local/share/clip-notify
+# the focus clock: lsappinfo and ioreg are macOS, and the pulse it feeds reaches
+# the screen through Shortcuts
+.local/bin/focus-log
+.local/bin/dayreport
+.local/bin/pulse
+.local/share/pulse-notify
 .ssh/proxmox.pub
 .ssh/dev-station.pub
 .ssh/docker-host.pub

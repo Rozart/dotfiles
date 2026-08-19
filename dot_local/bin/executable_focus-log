@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# focus-log — record which app holds the foreground, one row per invocation.
+#
+# Passive by design: the whole point is that nothing has to be started, so there
+# is no session to open, no timer to remember and nothing to forget. A launchd
+# StartInterval drives it (see dev.rozart.focus-log.plist) and `dayreport` reads
+# what it leaves behind.
+#
+# App name only, never window titles. `lsappinfo` reports the frontmost app with
+# no permission grant at all, whereas reading a window's title needs Accessibility
+# — a TCC prompt that cannot be scripted, and a log full of repo and client names
+# that would then want excluding from every sync. App granularity already answers
+# "where did the day go".
+#
+# Idle seconds ride along on every row instead of a separate AFK watcher: one
+# number per sample is enough for the report to split real work from a desk nobody
+# is sitting at, and there is no second agent to keep alive.
+
+set -euo pipefail
+
+dir="${XDG_STATE_HOME:-$HOME/.local/state}/focus-log"
+mkdir -p "$dir"
+
+# No frontmost app happens for real (fast user switch, screen locked mid-sample).
+# A missing sample is better than a wrong one, so bail rather than guess.
+asn=$(lsappinfo front 2>/dev/null) || exit 0
+[ -n "$asn" ] || exit 0
+
+# lsappinfo prints `"LSDisplayName"="Brave Browser"`; take what is inside the
+# second pair of quotes. Greedy .* on the left so an app whose own name contains
+# `="` cannot shift the capture.
+app=$(lsappinfo info -only name "$asn" 2>/dev/null |
+	sed -nE 's/.*"LSDisplayName"="(.*)"[^"]*$/\1/p')
+app=${app:-unknown}
+
+# HIDIdleTime is nanoseconds since the last input event of any kind.
+# awk must NOT exit on the first match: that closes the pipe early, ioreg dies of
+# SIGPIPE, and `pipefail` then takes the whole script down before it writes a row.
+# The flag gives the same first-match-only result while draining the stream.
+idle=$(ioreg -c IOHIDSystem 2>/dev/null |
+	awk '/HIDIdleTime/ && !seen {seen = 1; printf "%d", $NF / 1000000000}')
+idle=${idle:-0}
+
+printf '%s\t%s\t%s\n' "$(date +%s)" "$app" "$idle" \
+	>>"$dir/$(date +%F).tsv"
