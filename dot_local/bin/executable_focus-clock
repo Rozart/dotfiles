@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# focus-clock — how long the current tmux window has held focus.
+#
+# Time blindness is the friction this exists for: the number is unremarkable once
+# you can see it, and unknowable when you cannot. Nothing else in the bar measures
+# a duration -- %R and %Y-%m-%d say what time it is, which is a different question
+# from how long you have been here.
+#
+#   focus-clock <window-id>            render the clock for that window
+#   focus-clock --stamp <window-id>    restart it; the window just took focus
+#
+# Rendering is called from status-right in .chezmoitemplates/tmuxline.tmux.conf as
+#   #(~/.local/bin/focus-clock #{window_id})
+# because tmux expands formats inside #() before running it, and a status script
+# is otherwise given no way to know which window the client is looking at.
+# status-interval 3 is what makes it tick.
+#
+# Stamping is an after-select-window hook. It lives here rather than as inline
+# tmux-in-tmux quoting in tmux.conf so the reset rule and the read rule cannot
+# drift apart.
+#
+# Separate from agent-state rather than folded into it: that script derives badges
+# when state *changes* and has no periodic tick, which is exactly what a clock is.
+#
+# Only fg is set, like @agent_badge, so bg carries over from the surrounding
+# status segment and the template re-asserts the full style afterwards.
+
+set -euo pipefail
+
+WARN_MINUTES=50
+HIGH_MINUTES=90
+
+if [ "${1:-}" = --stamp ]; then
+	win=${2:-}
+	[ -n "$win" ] || exit 0
+	tmux set-option -w -t "$win" @focus_since "$(date +%s)" 2>/dev/null || true
+	exit 0
+fi
+
+win=${1:-}
+[ -n "$win" ] || exit 0
+
+now=$(date +%s)
+since=$(tmux show-option -qvw -t "$win" @focus_since 2>/dev/null || true)
+
+# Stamping here as well as in the after-select-window hook is what makes the clock
+# appear straight after a config reload, instead of staying blank on whichever
+# window you were already on until you happen to switch away and back.
+if [ -z "$since" ]; then
+	tmux set-option -w -t "$win" @focus_since "$now" 2>/dev/null || true
+	since=$now
+fi
+
+minutes=$(((now - since) / 60))
+[ "$minutes" -ge 0 ] || minutes=0
+
+if [ "$minutes" -ge "$HIGH_MINUTES" ]; then
+	printf '#[fg=red]'
+elif [ "$minutes" -ge "$WARN_MINUTES" ]; then
+	printf '#[fg=yellow]'
+fi
+
+if [ "$minutes" -ge 60 ]; then
+	printf '󰅐 %dh%02dm' $((minutes / 60)) $((minutes % 60))
+else
+	printf '󰅐 %dm' "$minutes"
+fi

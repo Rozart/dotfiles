@@ -86,6 +86,11 @@ set -g history-limit 10000
 # `wait` and `busy` are left alone: they describe the present, not something unseen.
 set-hook -g after-select-window 'run-shell -b "~/.local/bin/agent-state viewed #{window_id}"'
 
+# Focus clock (see ~/.local/bin/focus-clock). Appended with -ga rather than folded
+# into the hook above: both fire on the same event but answer to different things,
+# and a combined hook string would have to be edited to change either.
+set-hook -ga after-select-window 'run-shell -b "~/.local/bin/focus-clock --stamp #{window_id}"'
+
 set -g @resurrect-strategy-vim 'session'
 set -g @resurrect-strategy-nvim 'session'
 
