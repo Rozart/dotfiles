@@ -245,6 +245,8 @@ brew "zip"
 brew "zlib"
 # Shell extension to navigate your filesystem faster
 brew "zoxide"
+# A window border system for macOS
+brew "felixkratz/formulae/borders"
 # Terraform
 brew "hashicorp/tap/terraform", trusted: true
 cask "aerospace"
