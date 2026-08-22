@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>dev.rozart.vault-push</string>
+	<!-- Pushes ~/obsidian/roz-obsidian to Gitea when commits have piled up.
+	     See ~/.local/bin/vault-push.
+
+	     Exists because nothing else pushes: the wiki app and Claude skills
+	     commit locally, and the vault once sat 269 commits ahead with no
+	     off-device copy. 30 min bounds the loss window without hammering
+	     the home server; the script is a no-op when there is nothing to
+	     push or the box is offline. -->
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/rozart/.local/bin/vault-push</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StartInterval</key>
+	<integer>1800</integer>
+</dict>
+</plist>

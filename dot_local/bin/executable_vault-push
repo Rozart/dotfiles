@@ -1,0 +1,15 @@
+#!/bin/sh
+# Pushes the Obsidian vault repo to Gitea when local commits have piled up.
+# Fired by dev.rozart.vault-push.plist every 30 min; silent no-op when
+# offline, mid-rebase, or already up to date. Never commits — the wiki app
+# and Claude skills own commits; this only moves them off-device.
+
+VAULT="$HOME/obsidian/roz-obsidian"
+
+[ -d "$VAULT/.git" ] || exit 0
+git -C "$VAULT" rev-parse --verify --quiet MERGE_HEAD >/dev/null && exit 0
+
+ahead=$(git -C "$VAULT" rev-list --count '@{upstream}..HEAD' 2>/dev/null) || exit 0
+[ "$ahead" -gt 0 ] || exit 0
+
+exec git -C "$VAULT" push --quiet
