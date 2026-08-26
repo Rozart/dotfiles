@@ -8,6 +8,7 @@ java = "openjdk-25"
 gradle = "latest"
 go = "latest"
 maven = "3.9"
+fd = "latest"
 
 [settings]
 python.uv_venv_auto = true
