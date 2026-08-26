@@ -52,7 +52,10 @@ fullscreen = false
 macos-non-native-fullscreen = false
 macos-auto-secure-input = true
 macos-secure-input-indication = true
-macos-option-as-alt = left
+# right, not left: the Polish Pro layout composes every diacritic with
+# Option+letter, so the left Option key has to reach macOS. Right Option
+# stays Alt for tmux M- bindings and readline word motions.
+macos-option-as-alt = right
 macos-titlebar-style = transparent
 
 window-colorspace = "display-p3"
