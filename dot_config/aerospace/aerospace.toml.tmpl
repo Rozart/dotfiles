@@ -41,13 +41,11 @@ default-root-container-layout = 'tiles'
 #               tall monitor (anything higher than wide) gets vertical orientation
 default-root-container-orientation = 'auto'
 
-# Mouse follows focus when focused monitor changes
-# Drop it from your config, if you don't like this behavior
+# Both focus callbacks are deliberately absent: the documented fallback for an
+# omitted key is [], and move-mouse teleported the cursor to another display on
+# every monitor focus change.
 # See https://nikitabobko.github.io/AeroSpace/guide#on-focus-changed-callbacks
 # See https://nikitabobko.github.io/AeroSpace/commands#move-mouse
-# Fallback value (if you omit the key): on-focused-monitor-changed = []
-on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
-#on-focus-changed = ['move-mouse window-lazy-center']
 
 # You can effectively turn off macOS "Hide application" (cmd-h) feature by toggling this flag
 # Useful if you don't use this macOS feature, but accidentally hit cmd-h or cmd-alt-h key
@@ -125,6 +123,12 @@ run = "move-node-to-workspace 12"
 [[on-window-detected]]
 if.app-id = "com.automattic.beeper.desktop"
 run = "move-node-to-workspace 12"
+
+# Quick Access is a panel AeroSpace's dialog heuristics do not recognise, so
+# tiling it switches workspace and monitor on every unlock.
+[[on-window-detected]]
+if.app-id = "com.1password.1password"
+run = "layout floating"
 
 [[on-window-detected]]
 if.app-id = "com.mitchellh.ghostty"
