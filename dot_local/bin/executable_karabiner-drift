@@ -1,0 +1,161 @@
+#!/usr/bin/env python3
+# karabiner-drift — compare the live karabiner.json against the repo snapshot.
+#
+# .chezmoiignore excludes .config/karabiner/karabiner.json on purpose: Karabiner
+# rewrites it on every UI change and injects per-machine device ids, so
+# `chezmoi apply` must never clobber it. The cost is that nothing tells you when
+# two machines diverge. This does.
+#
+# It also audits the live rules for manipulators that swallow Option without the
+# full Hyper modifier set. The Polish Pro layout composes every diacritic with
+# Option+letter (a c e l n o s x z), so such a rule steals Polish input
+# system-wide.
+#
+# Exits 1 on drift or a suspicious rule, 0 when the machines agree.
+
+import argparse
+import json
+import pathlib
+import sys
+
+HOME = pathlib.Path.home()
+LIVE = HOME / ".config/karabiner/karabiner.json"
+SNAPSHOT = HOME / ".local/share/chezmoi/dot_config/karabiner/private_karabiner.json"
+
+POLISH_KEYS = set("acelnosxz")
+OPTION_KEYS = {"left_option", "right_option"}
+HYPER_PARTNERS = {"command", "control", "shift"}
+
+
+def canonical_modifier(name):
+    return name.removeprefix("left_").removeprefix("right_")
+
+
+def load_profile(path, wanted):
+    try:
+        document = json.loads(path.read_text())
+    except FileNotFoundError:
+        sys.exit(f"missing: {path}")
+    except json.JSONDecodeError as error:
+        sys.exit(f"unparseable JSON in {path}: {error}")
+
+    profiles = document.get("profiles", [])
+    for profile in profiles:
+        if profile.get("name") == wanted:
+            return profile
+    names = ", ".join(repr(p.get("name")) for p in profiles) or "none"
+    sys.exit(f"no profile named {wanted!r} in {path} (found: {names})")
+
+
+def index_rules(profile):
+    indexed = {}
+    rules = profile.get("complex_modifications", {}).get("rules", [])
+    for position, rule in enumerate(rules):
+        label = rule.get("description") or f"<undescribed rule #{position}>"
+        body = json.dumps(rule.get("manipulators", []), sort_keys=True)
+        indexed.setdefault(label, []).append(body)
+    return indexed
+
+
+def report_drift(live, snapshot):
+    only_live = sorted(set(live) - set(snapshot))
+    only_snapshot = sorted(set(snapshot) - set(live))
+    changed = sorted(
+        label for label in set(live) & set(snapshot) if live[label] != snapshot[label]
+    )
+
+    for label in only_live:
+        print(f"  only on this machine: {label}")
+    for label in only_snapshot:
+        print(f"  only in the snapshot: {label}")
+    for label in changed:
+        print(f"  same name, different body: {label}")
+
+    return bool(only_live or only_snapshot or changed)
+
+
+def describe_target(manipulator):
+    targets = manipulator.get("to", [])
+    if not targets:
+        return "nothing (swallowed)"
+    parts = []
+    for target in targets:
+        if "shell_command" in target:
+            parts.append(f"shell: {target['shell_command']}")
+        elif "key_code" in target:
+            modifiers = target.get("modifiers", [])
+            if isinstance(modifiers, str):
+                modifiers = [modifiers]
+            prefix = "+".join(canonical_modifier(m) for m in modifiers)
+            parts.append(f"{prefix}+{target['key_code']}" if prefix else target["key_code"])
+        elif "set_variable" in target:
+            parts.append(f"set {target['set_variable'].get('name')}")
+        else:
+            parts.append(json.dumps(target, sort_keys=True))
+    return ", ".join(parts)
+
+
+def audit_option_theft(profile):
+    findings = []
+    rules = profile.get("complex_modifications", {}).get("rules", [])
+    for rule in rules:
+        label = rule.get("description") or "<undescribed>"
+        for manipulator in rule.get("manipulators", []):
+            source = manipulator.get("from", {})
+            key = source.get("key_code", "")
+            mandatory = source.get("modifiers", {}).get("mandatory", []) or []
+            present = {canonical_modifier(m) for m in mandatory}
+
+            if key in OPTION_KEYS:
+                findings.append(
+                    (True, label, f"remaps the {key} key itself -> {describe_target(manipulator)}")
+                )
+                continue
+
+            if "option" not in present:
+                continue
+            if HYPER_PARTNERS <= present:
+                continue
+
+            combination = "+".join(sorted(present)) + f"+{key}"
+            polish = key in POLISH_KEYS
+            findings.append(
+                (polish, label, f"{combination} -> {describe_target(manipulator)}")
+            )
+    return findings
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="compare the live karabiner.json against the repo snapshot"
+    )
+    parser.add_argument("live", nargs="?", type=pathlib.Path, default=LIVE)
+    parser.add_argument("snapshot", nargs="?", type=pathlib.Path, default=SNAPSHOT)
+    parser.add_argument("--profile", default="Rozart")
+    arguments = parser.parse_args()
+
+    live_profile = load_profile(arguments.live, arguments.profile)
+    snapshot_profile = load_profile(arguments.snapshot, arguments.profile)
+
+    print(f"live     {arguments.live}")
+    print(f"snapshot {arguments.snapshot}")
+    print(f"profile  {arguments.profile}\n")
+
+    print("rule drift")
+    drifted = report_drift(index_rules(live_profile), index_rules(snapshot_profile))
+    if not drifted:
+        print("  none — the two agree")
+
+    print("\noption-key audit (live file)")
+    findings = audit_option_theft(live_profile)
+    if not findings:
+        print("  clean — nothing grabs Option outside the full Hyper set")
+    for polish, label, detail in sorted(findings, reverse=True):
+        marker = "STEALS POLISH" if polish else "suspicious   "
+        print(f"  {marker}  {detail}\n                 in rule: {label}")
+
+    return 1 if drifted or findings else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

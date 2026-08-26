@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+# keylayout-probe — ask the active macOS keyboard layout what a key produces.
+#
+# Answers one question when Polish input breaks: is the layout itself wrong, or
+# is something intercepting the keystroke before macOS composes it? This reads
+# the layout through UCKeyTranslate, below every hotkey daemon, so output here is
+# what the layout WOULD produce. If it prints the diacritics and you still cannot
+# type them, the layout is innocent and an interceptor is at fault.
+#
+# ctypes only, so it runs on the system python3 with nothing installed.
+
+import ctypes
+import ctypes.util
+import sys
+
+VIRTUAL_KEY_CODES = {
+    "a": 0, "s": 1, "c": 8, "z": 6, "x": 7,
+    "e": 14, "o": 31, "n": 45, "l": 37,
+}
+
+SHIFT = 1 << 9
+OPTION = 1 << 11
+TRANSLATE_UNICODE_KEY_ACTION_DOWN = 3
+
+
+def load_current_layout():
+    carbon = ctypes.cdll.LoadLibrary(ctypes.util.find_library("Carbon"))
+    core = ctypes.cdll.LoadLibrary(ctypes.util.find_library("CoreFoundation"))
+
+    core.CFDataGetBytePtr.restype = ctypes.c_void_p
+    carbon.TISCopyCurrentKeyboardLayoutInputSource.restype = ctypes.c_void_p
+    carbon.TISGetInputSourceProperty.restype = ctypes.c_void_p
+    carbon.TISGetInputSourceProperty.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+    carbon.UCKeyTranslate.argtypes = [
+        ctypes.c_void_p, ctypes.c_ushort, ctypes.c_ushort, ctypes.c_uint,
+        ctypes.c_uint, ctypes.c_uint, ctypes.POINTER(ctypes.c_uint),
+        ctypes.c_ulong, ctypes.POINTER(ctypes.c_ulong), ctypes.POINTER(ctypes.c_ushort),
+    ]
+
+    source = carbon.TISCopyCurrentKeyboardLayoutInputSource()
+    if not source:
+        sys.exit("no current keyboard layout input source")
+    property_key = ctypes.c_void_p.in_dll(carbon, "kTISPropertyUnicodeKeyLayoutData")
+    layout_data = carbon.TISGetInputSourceProperty(source, property_key)
+    if not layout_data:
+        sys.exit("the active input source exposes no unicode layout data")
+    return carbon, ctypes.c_void_p(core.CFDataGetBytePtr(ctypes.c_void_p(layout_data)))
+
+
+def translate(carbon, layout, key_code, modifiers):
+    dead_key_state = ctypes.c_uint(0)
+    produced = ctypes.c_ulong(0)
+    buffer = (ctypes.c_ushort * 8)()
+    carbon.UCKeyTranslate(
+        layout, key_code, TRANSLATE_UNICODE_KEY_ACTION_DOWN, modifiers >> 8,
+        0, 0, ctypes.byref(dead_key_state), 8, ctypes.byref(produced), buffer,
+    )
+    return "".join(chr(buffer[index]) for index in range(produced.value))
+
+
+def main():
+    carbon, layout = load_current_layout()
+    print(f"{'key':>5}  {'plain':^7}  {'option':^7}  {'opt+shift':^9}")
+    for letter, key_code in VIRTUAL_KEY_CODES.items():
+        plain = translate(carbon, layout, key_code, 0)
+        with_option = translate(carbon, layout, key_code, OPTION)
+        with_both = translate(carbon, layout, key_code, OPTION | SHIFT)
+        print(f"{letter:>5}  {plain:^7}  {with_option:^7}  {with_both:^9}")
+
+
+if __name__ == "__main__":
+    main()
