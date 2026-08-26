@@ -54,6 +54,13 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 # Also see: https://nikitabobko.github.io/AeroSpace/goodies#disable-hide-app
 automatically-unhide-macos-hidden-apps = true
 
+# Keep monitor-assigned workspaces present even when empty (needs
+# config-version = 2). It lives up here, before the first [table] header,
+# because TOML scopes every key after a header into that table — sitting under
+# [workspace-to-monitor-force-assignment] it parsed as a member of that table
+# and AeroSpace never saw it.
+persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "12"]
+
 # Possible values: (qwerty|dvorak|colemak)
 # See https://nikitabobko.github.io/AeroSpace/guide#key-mapping
 [key-mapping]
@@ -75,30 +82,29 @@ outer.bottom = 10
 outer.top = 10
 outer.right = 10
 
+# Pin by display name, never by index. An index is the "sequence number of the
+# monitor from left to right" (AeroSpace guide), so it silently re-points
+# whenever a display sleeps, docks or rearranges. The previous block pinned
+# 1-5 to monitor 4, which never exists: BetterDisplay's
+# disconnectBuiltInOnExternal caps this Mac at three displays when docked and
+# there is exactly one when it isn't. A workspace whose pin resolves to nothing
+# gets spread arbitrarily and re-rolled on every display change.
+#
+# `main` is the fallback for the single-display case (undocked here, always on
+# roz-mini-laptop) so every workspace resolves to a monitor that exists.
 [workspace-to-monitor-force-assignment]
-{{- if eq .chezmoi.hostname "laptop" }}
-1 = 4
-2 = 4
-3 = 4
-4 = 4
-5 = 4
-{{- else }}
-1 = 2
-2 = 2
-3 = 2
-4 = 2
-5 = 2
-{{- end }}
+1 = ['gigabyte', 'main']
+2 = ['gigabyte', 'main']
+3 = ['gigabyte', 'main']
+4 = ['gigabyte', 'main']
+5 = ['gigabyte', 'main']
 
-6 = 1
-7 = 1
-8 = 1
-9 = 1
+6 = ['benq', 'main']
+7 = ['benq', 'main']
+8 = ['benq', 'main']
+9 = ['benq', 'main']
 
-12 = 3
-
-# Keep monitor-assigned workspaces present even when empty (needs config-version = 2).
-persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "12"]
+12 = ['pg27aqn', 'main']
 
 [[on-window-detected]]
 if.app-id = "it.bloop.airmail2"
