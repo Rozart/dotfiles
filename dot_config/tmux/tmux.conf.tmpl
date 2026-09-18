@@ -112,6 +112,8 @@ TMUX_FZF_LAUNCH_KEY="C-Space"
 set -g allow-passthrough on
 set -s set-clipboard on
 set -as terminal-features ",*:clipboard"
+# OSC 8 hyperlinks pass through to Ghostty (Cmd+click links, e.g. the plan-review pane)
+set -as terminal-features ",xterm-ghostty:hyperlinks"
 
 set -g update-environment "DISPLAY SSH_AUTH_SOCK SSH_ASKPASS SSH_AGENT_PID SSH_CONNECTION WINDOWID XAUTHORITY LC_DESKTOP_HOST"
 
