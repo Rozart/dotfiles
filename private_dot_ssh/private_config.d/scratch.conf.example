@@ -1,0 +1,11 @@
+# Copy to a *.conf file in this directory, set HostName, delete the file when done.
+#   cp scratch.conf.example droplet.conf
+
+Host droplet
+	HostName 203.0.113.10
+	User root
+	IdentityFile ~/.ssh/do-scratch.pub
+	IdentitiesOnly yes
+	ForwardAgent no
+	UserKnownHostsFile ~/.ssh/known_hosts.scratch
+	StrictHostKeyChecking accept-new
