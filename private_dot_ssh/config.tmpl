@@ -87,6 +87,18 @@ Host media-host
 	RemoteCommand tmux new-session -A -s media-host
 	LogLevel QUIET
 
+Host raspbox1
+	HostName 192.168.0.31
+	User rozart
+	IdentityFile ~/.ssh/raspbox1.pub
+	IdentitiesOnly yes
+
+Host raspbox2
+	HostName 192.168.0.32
+	User rozart
+	IdentityFile ~/.ssh/raspbox2.pub
+	IdentitiesOnly yes
+
 Host proxmox-tailscale
 	HostName 192.168.0.45
 	User root
