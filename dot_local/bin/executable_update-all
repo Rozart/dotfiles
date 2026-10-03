@@ -27,6 +27,7 @@
 # macOS ships bash 3.2, where "${arr[@]}" on an empty array dies under
 # set -u.
 set -uo pipefail
+export PATH="$HOME/.pi/agent/bin:$HOME/.local/bin:$PATH"
 
 LABELS=()
 FNS=()
@@ -59,6 +60,8 @@ lazy_update() {
     fi
 }
 tldr_up() { tldr --update; }
+pi_up() { pi update --self --no-approve; }
+claude_up() { claude update; }
 
 if [ "$(uname)" = Darwin ] && command -v brew >/dev/null; then
     add "brew" brew_up
@@ -73,6 +76,12 @@ if [ "$(uname)" = Linux ] && command -v apt-get >/dev/null; then
 fi
 
 command -v mise >/dev/null && add "mise" mise_up
+command -v pi >/dev/null && add "Pi (latest stable)" pi_up
+if command -v claude >/dev/null; then
+    if [ "$(uname)" != Darwin ] || ! command -v brew >/dev/null || ! { brew list --cask claude-code >/dev/null 2>&1 || brew list --cask claude-code@latest >/dev/null 2>&1; }; then
+        add "Claude Code (stable)" claude_up
+    fi
+fi
 
 command -v fish >/dev/null && fish -c 'functions -q fisher' &&
     add "fish plugins (fisher)" fisher_up

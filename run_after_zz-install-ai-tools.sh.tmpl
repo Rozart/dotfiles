@@ -1,0 +1,96 @@
+{{ if or (eq .chezmoi.os "darwin") (and (eq .chezmoi.os "linux") (or .is_dev_station .is_docker_host .is_media_host)) -}}
+#!/usr/bin/env bash
+set -euo pipefail
+
+export PATH="$HOME/.pi/agent/bin:$HOME/.local/bin:$PATH"
+plannotator_version=0.27.25
+plannotator_commit=c9c8cbbb96572fee9520baf776fbbc9c017b7946
+stage=""
+cleanup() {
+    if [ -n "$stage" ]; then rm -rf "$stage"; fi
+}
+trap cleanup EXIT
+prepare_stage() {
+    if [ -z "$stage" ]; then stage=$(mktemp -d "${TMPDIR:-/tmp}/chezmoi-ai-tools.XXXXXXXX"); fi
+}
+download() {
+    curl --fail --silent --show-error --location --retry 2 --connect-timeout 15 --max-time 180 "$1" --output "$2"
+}
+
+if ! command -v pi >/dev/null 2>&1; then
+    prepare_stage
+    download https://pi.dev/install.sh "$stage/pi-install.sh"
+    if command -v mise >/dev/null 2>&1; then
+        mise --cd "$HOME" exec node -- sh "$stage/pi-install.sh"
+    elif command -v node >/dev/null 2>&1 && command -v npm >/dev/null 2>&1; then
+        sh "$stage/pi-install.sh"
+    else
+        echo "Install mise with its configured Node.js runtime before installing Pi." >&2
+        exit 1
+    fi
+    hash -r
+    command -v pi >/dev/null 2>&1 || { echo "Pi installer did not provide a launcher on PATH." >&2; exit 1; }
+fi
+
+if ! command -v claude >/dev/null 2>&1; then
+{{ if eq .chezmoi.os "darwin" -}}
+    brew install --cask claude-code
+{{ else -}}
+    prepare_stage
+    download https://claude.ai/install.sh "$stage/claude-install.sh"
+    DISABLE_AUTOUPDATER=1 bash "$stage/claude-install.sh" stable
+{{ end -}}
+    hash -r
+    command -v claude >/dev/null 2>&1 || { echo "Claude installer did not provide a launcher on PATH." >&2; exit 1; }
+fi
+
+if command -v plannotator >/dev/null 2>&1; then
+    installed=$(plannotator --version)
+    if [ "$installed" != "plannotator $plannotator_version" ]; then
+        echo "Expected Plannotator $plannotator_version; found $installed. Leaving the existing installation unchanged." >&2
+        exit 1
+    fi
+    exit 0
+fi
+
+case "$(uname -s)" in
+    Darwin) platform=darwin ;;
+    Linux) platform=linux ;;
+    *) echo "Unsupported Plannotator platform." >&2; exit 1 ;;
+esac
+case "$(uname -m)" in
+    arm64|aarch64) architecture=arm64 ;;
+    x86_64|amd64) architecture=x64 ;;
+    *) echo "Unsupported Plannotator architecture." >&2; exit 1 ;;
+esac
+prepare_stage
+asset="plannotator-$platform-$architecture"
+base="https://github.com/backnotprop/plannotator/releases/download/v$plannotator_version"
+download "$base/$asset" "$stage/$asset"
+download "$base/$asset.sha256" "$stage/$asset.sha256"
+read -r expected _ < "$stage/$asset.sha256"
+if ! printf '%s\n' "$expected" | grep -Eq '^[0-9a-fA-F]{64}$'; then
+    echo "Invalid Plannotator checksum." >&2
+    exit 1
+fi
+if command -v sha256sum >/dev/null 2>&1; then
+    actual=$(sha256sum "$stage/$asset")
+else
+    actual=$(shasum -a 256 "$stage/$asset")
+fi
+actual=${actual%% *}
+[ "$actual" = "$expected" ] || { echo "Plannotator checksum verification failed." >&2; exit 1; }
+if command -v gh >/dev/null 2>&1; then
+    gh attestation verify "$stage/$asset" --repo backnotprop/plannotator --source-digest "$plannotator_commit" --deny-self-hosted-runners
+else
+    echo "GitHub CLI unavailable: verified checksum only, not signed build provenance." >&2
+fi
+[ "$(chmod 755 "$stage/$asset" && "$stage/$asset" --version)" = "plannotator $plannotator_version" ] || { echo "Unexpected Plannotator binary version." >&2; exit 1; }
+mkdir -p "$HOME/.local/bin"
+target="$HOME/.local/bin/plannotator"
+if [ -e "$target" ] || [ -L "$target" ]; then
+    echo "Refusing to replace an existing Plannotator path: $target" >&2
+    exit 1
+fi
+install -m 755 "$stage/$asset" "$target"
+{{ end -}}
