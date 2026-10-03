@@ -216,6 +216,32 @@ function theme --description "Switch the shared colour theme across every app th
         borders $border_args >/dev/null 2>&1
     end
 
+    # sketchybar sources colors.sh from palette.sh on every reload, falling back
+    # to sonokai-shusia when it is missing. The roles come from the beeper
+    # palette for this slug, which is already in the Darwin `required` list, so
+    # the bar needs no colour table of its own. 0xAARRGGBB, alpha first.
+    set -l sketchybar_status
+    if test (uname) = Darwin; and command -q sketchybar
+        set -l palette ~/.config/beeper/palettes/$slug.css
+        mkdir -p ~/.config/sketchybar
+        printf '%s\n' \
+            "BAR_COLOR=0xf0"(_theme_role $palette bg0) \
+            "SURFACE=0xff"(_theme_role $palette bg3) \
+            "FG=0xff"(_theme_role $palette fg) \
+            "DIM=0xff"(_theme_role $palette grey-dim) \
+            "ALERT=0xff"(_theme_role $palette red) \
+            "ORANGE=0xff"(_theme_role $palette orange) \
+            "GREEN=0xff"(_theme_role $palette green) \
+            "PURPLE=0xff"(_theme_role $palette purple) \
+            "ACCENT=0xff"(_theme_role $palette accent) \
+            "ACCENT_FG=0xff"(_theme_role $palette bg0) >~/.config/sketchybar/colors.sh
+        set sketchybar_status "written, applies on next start"
+        if pgrep -qx sketchybar
+            sketchybar --reload >/dev/null 2>&1
+            set sketchybar_status reloaded
+        end
+    end
+
     # Declared out here so the report block at the bottom can read them; a
     # `set -l` inside the Darwin block below would not survive it.
     set -l beeper_status
@@ -315,6 +341,7 @@ function theme --description "Switch the shared colour theme across every app th
 
     if test (uname) = Darwin
         command -q borders; and echo "  borders  reloaded"
+        test -n "$sketchybar_status"; and echo "  sketchybar $sketchybar_status"
         test -n "$beeper_status"; and echo "  beeper   $beeper_status"
         echo "  emclient $emclient_status"
         echo "  macos    appearance set"
@@ -353,6 +380,11 @@ function theme --description "Switch the shared colour theme across every app th
         end
         rm -rf $fanout
     end
+end
+
+# One `--th-<name>: #rrggbb;` hex from a beeper palette, without the hash.
+function _theme_role -a palette name
+    string replace -rf -- "^\s*--th-$name:\s*#([0-9a-fA-F]{6});.*" '$1' <$palette
 end
 
 # Quit-wait-relaunch for the apps that read their theme once at startup.
