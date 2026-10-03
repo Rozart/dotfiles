@@ -33,6 +33,8 @@ Library
 .ssh/docker-host.pub
 .ssh/media-host.pub
 .ssh/proxmox-tailscale-lxc.pub
+.local/bin/update-orcaslicer
+.local/bin/choose-orcaslicer
 {{- end }}
 
 # Ignore systemd-related files on macOS
