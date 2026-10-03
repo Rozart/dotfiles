@@ -52,10 +52,12 @@ fullscreen = false
 macos-non-native-fullscreen = false
 macos-auto-secure-input = true
 macos-secure-input-indication = true
-# right, not left: the Polish Pro layout composes every diacritic with
-# Option+letter, so the left Option key has to reach macOS. Right Option
-# stays Alt for tmux M- bindings and readline word motions.
-macos-option-as-alt = right
+# left, not right: diacritics are typed with the RIGHT Option key, so that
+# one must reach macOS and compose against Polish Pro. The left Option is
+# Alt, which is what tmux M- bindings, readline word motions and nvim's
+# snacks pickers (<a-b> <a-d> <a-f> <a-g> <a-h> <a-i> <a-m> <a-p> <a-r>
+# <a-w>) all expect. Setting this to `right` inverts both habits at once.
+macos-option-as-alt = left
 macos-titlebar-style = transparent
 
 window-colorspace = "display-p3"
