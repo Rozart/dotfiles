@@ -30,6 +30,8 @@ function theme --description "Switch the shared colour theme across every app th
         "Everforest Light" "Tokyo Night Day" "Gruvbox Material Dark" "Gruvbox Material Light"
     set -l bat_themes sonokai-shusia "Monokai Extended Light" GitHub GitHub \
         gruvbox-light OneHalfLight gruvbox-dark gruvbox-light
+    set -l plannotator_themes monokai-pro gruvbox rose-pine catppuccin \
+        everforest tokyo-night gruvbox gruvbox
     set -l dark 1 0 0 0 0 0 1 0
     set -l accents "#78dce8" "#0d7f9b" "#286983" "#1e66f5" \
         "#3a94c5" "#2e7de9" "#7daea3" "#45707a"
@@ -102,6 +104,7 @@ function theme --description "Switch the shared colour theme across every app th
     # there still falls back quietly — the gap we keep.
     if test (count $ghostty_names) -ne (count $slugs) \
             -o (count $bat_themes) -ne (count $slugs) \
+            -o (count $plannotator_themes) -ne (count $slugs) \
             -o (count $dark) -ne (count $slugs) \
             -o (count $accents) -ne (count $slugs) \
             -o (count $cursors) -ne (count $slugs)
@@ -110,7 +113,8 @@ function theme --description "Switch the shared colour theme across every app th
     end
 
     set -l required ~/.config/tmux/tmuxline/$slug.tmux.conf ~/.config/delta/themes/$slug.gitconfig \
-        ~/.config/claude-code/themes/$slug.json ~/.config/btop/themes/$slug.theme
+        ~/.config/claude-code/themes/$slug.json ~/.config/btop/themes/$slug.theme \
+        ~/.config/plannotator/sync-theme.py
     # Beeper, Slack and eM Client are Mac-only apps; the Linux boxes must not fail
     # a switch over assets they have no use for. The eM Client pair is not
     # per-slug — one template rendered per switch — but a missing one fails the
@@ -201,6 +205,13 @@ function theme --description "Switch the shared colour theme across every app th
     # contents change. It watches ~/.claude/themes/ and reloads live.
     mkdir -p ~/.claude/themes
     cp ~/.config/claude-code/themes/$slug.json ~/.claude/themes/system.json
+
+    set -l plannotator_mode light
+    test $dark[$i] -eq 1; and set plannotator_mode dark
+    set -l plannotator_status "written, reopen or reload to apply"
+    if not python3 ~/.config/plannotator/sync-theme.py --palette $plannotator_themes[$i] --mode $plannotator_mode
+        set plannotator_status "failed; existing settings left unchanged"
+    end
 
     # borders reads bordersrc on a cold start; a running instance takes the same
     # args directly. 0xAARRGGBB — alpha FIRST (`man borders`). One neutral grey
@@ -329,6 +340,7 @@ function theme --description "Switch the shared colour theme across every app th
     echo "  git      delta follows immediately"
     echo "  bat      follows immediately"
     echo "  claude   reloaded"
+    echo "  plannotator $plannotator_status"
     # fish needs no line here: it queries the terminal background itself and
     # picks the matching variant of ~/.config/fish/themes/ansi.theme.
 
