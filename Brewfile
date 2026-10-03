@@ -247,6 +247,8 @@ brew "zlib"
 brew "zoxide"
 # A window border system for macOS
 brew "felixkratz/formulae/borders"
+# Highly customizable macOS status bar replacement
+brew "felixkratz/formulae/sketchybar"
 # Terraform
 brew "hashicorp/tap/terraform", trusted: true
 cask "aerospace"
@@ -278,6 +280,8 @@ cask "element"
 cask "eqmac"
 # Web browser
 cask "firefox"
+# Ligature font of app icons for SketchyBar
+cask "font-sketchybar-app-font"
 # Client for the Google Drive storage service
 cask "google-drive"
 # Free cross-platform office suite, fresh version

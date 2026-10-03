@@ -21,8 +21,13 @@ auto-reload-config = true
 # Colours in bordersrc are 0xAARRGGBB, alpha FIRST (`man borders`). The inline
 # values this replaced had it backwards: 0x9ed072e4 meant to be sonokai green
 # #9ed072 was parsed as alpha 9e over #d072e4, i.e. magenta on olive.
+#
+# SketchyBar follows AeroSpace itself through `aerospace subscribe` (see
+# ~/.config/sketchybar/plugins/aerospace_listen.sh), so no workspace or
+# focus callback is needed here.
 after-startup-command = [
     'exec-and-forget borders',
+    'exec-and-forget sketchybar',
 ]
 # Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
 enable-normalization-flatten-containers = true
@@ -77,7 +82,8 @@ inner.horizontal = 10
 inner.vertical = 10
 outer.left = 10
 outer.bottom = 10
-outer.top = 10
+# 32 px SketchyBar plus the usual 10; the native menu bar is set to auto-hide.
+outer.top = 42
 outer.right = 10
 
 # Pin by display name, never by index. An index is the "sequence number of the

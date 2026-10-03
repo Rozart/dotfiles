@@ -1,0 +1,115 @@
+#!/bin/zsh
+
+CONFIG_DIR=${CONFIG_DIR:-$HOME/.config/sketchybar}
+PLUGIN_DIR=$CONFIG_DIR/plugins
+source $CONFIG_DIR/palette.sh
+
+FONT="Pragmasevka Nerd Font"
+APP_FONT="sketchybar-app-font:Regular:15.0"
+SETTINGS="open x-apple.systempreferences:com.apple"
+
+sketchybar --bar position=top height=32 color=$BAR_COLOR topmost=on display=all shadow=off
+
+sketchybar --default \
+  icon.font="$FONT:Bold:16.0" label.font="$FONT:Bold:14.0" \
+  icon.color=$FG label.color=$FG \
+  padding_left=3 padding_right=3 \
+  icon.padding_left=6 icon.padding_right=3 \
+  label.padding_left=3 label.padding_right=6 \
+  popup.background.color=$BAR_COLOR popup.background.corner_radius=8 \
+  popup.background.border_width=1 popup.background.border_color=$SURFACE
+
+sketchybar --add event aerospace_workspace_change
+
+for sid in $(aerospace list-workspaces --all); do
+  sketchybar --add item space.$sid left \
+    --set space.$sid icon=$sid icon.color=$DIM \
+      icon.padding_left=9 icon.padding_right=9 \
+      label.font="$APP_FONT" label.padding_left=0 label.padding_right=9 label.drawing=off \
+      background.color=$ACCENT background.corner_radius=6 background.height=22 \
+      background.drawing=off click_script="aerospace workspace $sid"
+done
+
+sketchybar --add item aerospace_mode left \
+  --set aerospace_mode drawing=off icon=$'\U000f030c' \
+    icon.color=$ACCENT_FG label.color=$ACCENT_FG \
+    background.color=$ALERT background.corner_radius=6 background.height=22
+
+sketchybar --add item front_app left \
+  --set front_app padding_left=12 icon.font="$APP_FONT" label.max_chars=24 \
+    script=$PLUGIN_DIR/front_app.sh click_script="$PLUGIN_DIR/app_menu.sh toggle" \
+  --subscribe front_app front_app_switched mouse.exited.global
+
+sketchybar --add item spaces_sync left \
+  --set spaces_sync drawing=off update_freq=10 script=$PLUGIN_DIR/aerospace.sh \
+  --subscribe spaces_sync aerospace_workspace_change front_app_switched display_change system_woke
+
+sketchybar --add item notch left \
+  --set notch drawing=off script=$PLUGIN_DIR/notch.sh \
+  --subscribe notch display_change
+
+sketchybar --add item clock right \
+  --set clock icon=$'\U000f0150' update_freq=30 script=$PLUGIN_DIR/clock.sh \
+    click_script="open -a Calendar"
+
+sketchybar --add event privacy_change
+for kind icon color in \
+    mic $'\U000f036c' $ORANGE \
+    cam $'\U000f0567' $GREEN \
+    scr $'\U000f0e51' $PURPLE \
+    loc $'\U000f034e' $FG; do
+  sketchybar --add item privacy.$kind right \
+    --set privacy.$kind drawing=off icon=$icon icon.color=$color label.color=$color
+done
+sketchybar --add item privacy right \
+  --set privacy drawing=off script=$PLUGIN_DIR/privacy.sh \
+  --subscribe privacy privacy_change
+
+sketchybar --add item battery right \
+  --set battery update_freq=120 script=$PLUGIN_DIR/battery.sh \
+    click_script="$SETTINGS.Battery-Settings.extension" \
+  --subscribe battery power_source_change system_woke
+
+sketchybar --add item volume right \
+  --set volume script=$PLUGIN_DIR/volume.sh \
+    click_script="$SETTINGS.Sound-Settings.extension" \
+  --subscribe volume volume_change
+
+sketchybar --add item bluetooth right \
+  --set bluetooth update_freq=30 script=$PLUGIN_DIR/bluetooth.sh \
+    click_script="$SETTINGS.BluetoothSettings" \
+  --subscribe bluetooth system_woke
+
+sketchybar --add item network right \
+  --set network label.drawing=off update_freq=30 script=$PLUGIN_DIR/network.sh \
+    click_script="$SETTINGS.wifi-settings-extension" \
+  --subscribe network wifi_change system_woke
+
+sketchybar --add item tailscale right \
+  --set tailscale update_freq=30 script=$PLUGIN_DIR/tailscale.sh \
+    click_script="$PLUGIN_DIR/tray.sh open Tailscale" \
+  --subscribe tailscale system_woke
+
+sketchybar --add item focus right \
+  --set focus drawing=off update_freq=15 script=$PLUGIN_DIR/focus.sh \
+    click_script="$SETTINGS.Focus-Settings.extension"
+
+sketchybar --add event input_change AppleSelectedInputSourcesChangedNotification
+sketchybar --add item input_source right \
+  --set input_source icon=$'\U000f097b' script=$PLUGIN_DIR/input_source.sh \
+  --subscribe input_source input_change
+
+sketchybar --add item keep_awake right \
+  --set keep_awake label.drawing=off script=$PLUGIN_DIR/keep_awake.sh \
+    click_script="$PLUGIN_DIR/keep_awake.sh toggle" \
+  --subscribe keep_awake system_woke
+
+sketchybar --add item tray right \
+  --set tray icon=$'\U000f01d8' label.drawing=off update_freq=60 \
+    script=$PLUGIN_DIR/tray.sh click_script="$PLUGIN_DIR/tray.sh toggle" \
+  --subscribe tray mouse.exited.global
+
+$PLUGIN_DIR/aerospace_listen.sh >/dev/null 2>&1 &!
+$PLUGIN_DIR/privacy_listen.sh >/dev/null 2>&1 &!
+
+sketchybar --update
