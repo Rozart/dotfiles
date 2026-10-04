@@ -35,6 +35,28 @@ Tests use real chezmoi rendering and Bash with temporary homes and stubbed insta
 
 `.tests` is ignored by chezmoi, so test assets are not deployed to HOME.
 
+## Plannotator theme synchronization
+
+The `theme` function updates Plannotator's machine-local config through
+`~/.config/plannotator/sync-theme.py`. It maps the selected palette family and
+light/dark mode to built-in Plannotator themes. Sonokai Shusia uses Monokai Pro;
+Sonokai Hikari uses Gruvbox Light. These are approximations, not exact colors.
+Reopen or reload Plannotator after switching.
+
+The helper preserves unrelated settings and the unselected theme half, honors
+`PLANNOTATOR_DATA_DIR`, writes private files atomically, and refuses to replace
+malformed JSON. Do not add `~/.plannotator/config.json` as a managed chezmoi file;
+Plannotator writes its own settings there.
+
+```sh
+python3 ~/.local/share/chezmoi/.tests/test-plannotator-theme.py
+```
+
+The test runs the real Fish theme function in a temporary HOME with external app
+commands stubbed. It covers all eight theme mappings and does not change live
+application themes. The approval/archive adapters and their tests live in
+`ai-cli-configs`; see that repository's `docs/plannotator.md`.
+
 Sources:
 
 - https://pi.dev/install.sh and the installed Pi README/CLI documentation.
