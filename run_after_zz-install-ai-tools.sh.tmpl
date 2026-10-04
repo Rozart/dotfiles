@@ -16,6 +16,14 @@ prepare_stage() {
 download() {
     curl --fail --silent --show-error --location --retry 2 --connect-timeout 15 --max-time 180 "$1" --output "$2"
 }
+gh_can_verify_provenance() {
+    command -v gh >/dev/null 2>&1 || return 1
+    case "$(gh attestation verify --help 2>/dev/null)" in
+        *--source-digest*) ;;
+        *) return 1 ;;
+    esac
+    gh auth status --active --hostname github.com >/dev/null 2>&1
+}
 
 if ! command -v pi >/dev/null 2>&1; then
     prepare_stage
@@ -80,10 +88,10 @@ else
 fi
 actual=${actual%% *}
 [ "$actual" = "$expected" ] || { echo "Plannotator checksum verification failed." >&2; exit 1; }
-if command -v gh >/dev/null 2>&1; then
+if gh_can_verify_provenance; then
     gh attestation verify "$stage/$asset" --repo backnotprop/plannotator --source-digest "$plannotator_commit" --deny-self-hosted-runners
 else
-    echo "GitHub CLI unavailable: verified checksum only, not signed build provenance." >&2
+    echo "GitHub CLI missing, older than 2.68, or not logged in: verified checksum only, not signed build provenance." >&2
 fi
 [ "$(chmod 755 "$stage/$asset" && "$stage/$asset" --version)" = "plannotator $plannotator_version" ] || { echo "Unexpected Plannotator binary version." >&2; exit 1; }
 mkdir -p "$HOME/.local/bin"
