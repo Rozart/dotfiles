@@ -114,7 +114,7 @@ function theme --description "Switch the shared colour theme across every app th
 
     set -l required ~/.config/tmux/tmuxline/$slug.tmux.conf ~/.config/delta/themes/$slug.gitconfig \
         ~/.config/claude-code/themes/$slug.json ~/.config/btop/themes/$slug.theme \
-        ~/.config/plannotator/sync-theme.py
+        ~/.config/plannotator/sync-theme.py ~/.config/pi/sync-theme.py
     # Beeper, Slack and eM Client are Mac-only apps; the Linux boxes must not fail
     # a switch over assets they have no use for. The eM Client pair is not
     # per-slug — one template rendered per switch — but a missing one fails the
@@ -128,6 +128,10 @@ function theme --description "Switch the shared colour theme across every app th
             echo "theme: $slug is missing $f" >&2
             return 1
         end
+    end
+
+    if not python3 ~/.config/pi/sync-theme.py --source ~/.config/claude-code/themes/$slug.json --check
+        return 1
     end
 
     # Fired before the local writes so three round-trips overlap them and each
@@ -205,6 +209,9 @@ function theme --description "Switch the shared colour theme across every app th
     # contents change. It watches ~/.claude/themes/ and reloads live.
     mkdir -p ~/.claude/themes
     cp ~/.config/claude-code/themes/$slug.json ~/.claude/themes/system.json
+    if not python3 ~/.config/pi/sync-theme.py --source ~/.config/claude-code/themes/$slug.json
+        return 1
+    end
 
     set -l plannotator_mode light
     test $dark[$i] -eq 1; and set plannotator_mode dark

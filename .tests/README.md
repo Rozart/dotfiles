@@ -57,6 +57,27 @@ commands stubbed. It covers all eight theme mappings and does not change live
 application themes. The approval/archive adapters and their tests live in
 `ai-cli-configs`; see that repository's `docs/plannotator.md`.
 
+## Pi theme synchronization
+
+The shared `theme` function also runs `~/.config/pi/sync-theme.py` with the
+selected Claude theme JSON. It generates `~/.pi/agent/themes/claude-system.json`
+and selects `claude-system` while preserving unrelated Pi settings. Explicit
+Claude overrides retain their hex values; inherited roles use terminal ANSI
+colors. Pi tool-state panels reuse Claude diff fills. Native Pi diffs keep
+colored text rather than Claude's word-level background highlighting.
+
+Both generated files remain machine-local. Select `claude-system` through
+Pi's `/settings` once in an already-running session; Pi then hot-reloads the
+active theme file after future shared theme switches.
+
+```sh
+python3 ~/.local/share/chezmoi/.tests/test-pi-theme.py
+python3 ~/.local/share/chezmoi/.tests/test-plannotator-theme.py
+```
+
+Tests cover all eight palettes, exact overrides, preserved settings, check-only
+preflight, invalid-input safety, and the real Fish integration in a temporary HOME.
+
 Sources:
 
 - https://pi.dev/install.sh and the installed Pi README/CLI documentation.

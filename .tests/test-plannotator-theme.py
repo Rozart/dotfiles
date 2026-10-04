@@ -37,10 +37,15 @@ def main():
             for relative in [f"tmux/tmuxline/{slug}.tmux.conf", f"delta/themes/{slug}.gitconfig", f"claude-code/themes/{slug}.json", f"btop/themes/{slug}.theme"]:
                 target = config / relative
                 target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_text("{}")
+                if relative.startswith("claude-code/"):
+                    shutil.copyfile(ROOT / "dot_config" / relative, target)
+                else:
+                    target.write_text("{}")
         (config / "ghostty").mkdir()
         (config / "plannotator").mkdir()
         shutil.copyfile(HELPER, config / "plannotator/sync-theme.py")
+        (config / "pi").mkdir()
+        shutil.copyfile(ROOT / "dot_config/pi/sync-theme.py", config / "pi/sync-theme.py")
         data = home / "custom-data"
         data.mkdir()
         target = data / "config.json"
@@ -57,6 +62,11 @@ def main():
             assert value["displayName"] == original["displayName"]
             assert value["diffOptions"] == original["diffOptions"]
             assert "reopen or reload" in result.stdout
+            pi_theme = json.loads((home / ".pi/agent/themes/claude-system.json").read_text())
+            claude_theme = json.loads((config / f"claude-code/themes/{slug}.json").read_text())
+            assert pi_theme["appearance"] == mode
+            assert pi_theme["colors"]["accent"] == claude_theme["overrides"]["claude"]
+            assert json.loads((home / ".pi/agent/settings.json").read_text())["theme"] == "claude-system"
         subprocess.run([fish, "--no-config", "-n", str(THEME)], check=True)
         for invalid in ["{invalid", "[]", '{"theme": []}']:
             target.write_text(invalid)
