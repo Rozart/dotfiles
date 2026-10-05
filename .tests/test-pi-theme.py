@@ -40,6 +40,10 @@ def main():
         assert theme["colors"]["border"] == "#a89684"
         assert theme["colors"]["muted"] == "#6c5f6a"
         assert theme["colors"]["thinkingMedium"] == "#0d7f9b"
+        assert theme["colors"]["toolTitle"] == "#0d7f9b"
+        assert theme["colors"]["toolOutput"] == "#6c5f6a"
+        assert theme["colors"]["syntaxVariable"] == "#005c72"
+        assert [key for key, value in theme["colors"].items() if value == ""] == ["text", "userMessageText"]
         before = theme_path.read_bytes()
         for invalid in ["{invalid", "[]"]:
             settings.write_text(invalid)
