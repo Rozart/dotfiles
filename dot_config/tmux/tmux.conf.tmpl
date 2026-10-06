@@ -4,6 +4,7 @@ set -as terminal-overrides ',*:Setulc=\E[58::2::%p1%{65536}%/%d::%p1%{256}%/%{25
 # the pre-3.2 mechanism and tmux 3.7 no longer honours `*:RGB` there, so this
 # silently did nothing and every colour fell back to the 256-colour cube.
 set -as terminal-features ',*:RGB'
+set -g extended-keys on
 
 set -g prefix C-a
 # Statusline theme follows ~/.config/theme (written by the `theme` fish function).
@@ -77,6 +78,7 @@ set -g @plugin 'sainnhe/tmux-plugin-sysstat'
 set -g @plugin 'sainnhe/tmux-fzf'
 
 set -g @plugin 'toddyamakawa/tmux-scratchpad'
+set -g @vim_navigator_pattern '(\S+/)?g?\.?(view|l?n?vim?x?|fzf|pi)(diff)?(-wrapped)?'
 set -g @plugin 'christoomey/vim-tmux-navigator'
 
 set -g history-limit 10000
