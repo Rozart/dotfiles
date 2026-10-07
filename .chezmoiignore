@@ -46,3 +46,6 @@ Library
 # sends copies *to* this Mac through the ssh tunnel; pointless on the Mac itself
 .local/bin/clip-copy
 {{- end }}
+
+# Python bytecode from running source-dir scripts such as sync-theme.py
+**/__pycache__
