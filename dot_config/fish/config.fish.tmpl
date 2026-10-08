@@ -44,6 +44,14 @@ set -gx EMACS /opt/homebrew/bin/emacs
 set XDG_CURRENT_DESKTOP XFCE
 {{ end }}
 
+# Plannotator over ssh: a port range lets concurrent sessions coexist, and the
+# advertised host is the server address the client dialed, so the URL the
+# xdg-open shim sends to the Mac is reachable from there.
+if set -q SSH_CONNECTION
+    set -gx PLANNOTATOR_PORT 19432-19451
+    set -gx PLANNOTATOR_URL_HOST (string split ' ' -- $SSH_CONNECTION)[3]
+end
+
 set -gx FZF_DEFAULT_COMMAND 'fd --type file'
 set -gx FZF_CTRL_T_COMMAND $FZF_DEFAULT_COMMAND
 
