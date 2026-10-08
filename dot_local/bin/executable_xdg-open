@@ -1,0 +1,39 @@
+#!/bin/bash
+# Opens URLs in the browser of the Mac this ssh session came from, over the
+# ssh-forwarded tunnel (port 2491, served by the dev.rozart.open-server launchd
+# agent). Shadows /usr/bin/xdg-open via ~/.local/bin's PATH precedence, so
+# plannotator, gh, gcloud and anything else that calls xdg-open route here
+# without per-tool config.
+#
+# Same ack contract as clip-copy: sshd accepts the forwarded connection before
+# the Mac end is consulted, so only the "OK" reply proves the tab opened.
+#
+# Without the tunnel, a local graphical session gets the real xdg-open; a
+# headless one prints the URL so the caller's terminal still shows it.
+
+set -u
+
+readonly PORT=2491
+readonly REAL=/usr/bin/xdg-open
+
+target=${1:-}
+
+fallback() {
+	if [ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ] && [ -x "$REAL" ]; then
+		exec "$REAL" "$@"
+	fi
+	echo "xdg-open: no Mac tunnel (port $PORT) or local display; open manually: $target" >&2
+	exit 1
+}
+
+case $target in
+http://* | https://*) ;;
+*) fallback "$@" ;;
+esac
+
+if command -v nc >/dev/null 2>&1 &&
+	[ "$(printf '%s\n' "$target" | nc -N -w 1 127.0.0.1 "$PORT" 2>/dev/null)" = OK ]; then
+	exit 0
+fi
+
+fallback "$@"

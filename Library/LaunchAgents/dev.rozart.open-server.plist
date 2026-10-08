@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>dev.rozart.open-server</string>
+	<!-- Opens URLs sent to localhost:2491 in this Mac's default browser. SSH
+	     RemoteForward (see ~/.ssh/config) exposes it on remote hosts, where the
+	     xdg-open shim sends to it. url-receive validates, opens, and acks.
+
+	     SYSTEM: rather than EXEC: so a shell expands $HOME. -->
+	<key>ProgramArguments</key>
+	<array>
+		<string>/opt/homebrew/bin/socat</string>
+		<string>TCP-LISTEN:2491,bind=127.0.0.1,fork,reuseaddr</string>
+		<string>SYSTEM:$HOME/.local/bin/url-receive</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<true/>
+</dict>
+</plist>

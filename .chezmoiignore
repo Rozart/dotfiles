@@ -20,6 +20,8 @@ Library
 .local/bin/mount-servers
 # receives remote copies into this Mac's clipboard; Mac-side only
 .local/bin/clip-receive
+# opens URLs sent by remote xdg-open shims in this Mac's browser; Mac-side only
+.local/bin/url-receive
 # the notification Shortcut it drives; Shortcuts.app is macOS-only
 .local/share/clip-notify
 # the focus clock: lsappinfo and ioreg are macOS, and the pulse it feeds reaches
@@ -45,6 +47,8 @@ Library
 .config/fish/functions/pbpaste.fish
 # sends copies *to* this Mac through the ssh tunnel; pointless on the Mac itself
 .local/bin/clip-copy
+# sends URLs to this Mac's browser through the ssh tunnel; macOS has open(1)
+.local/bin/xdg-open
 {{- end }}
 
 # Python bytecode from running source-dir scripts such as sync-theme.py

@@ -1,0 +1,16 @@
+#!/bin/bash
+# Receives one URL line from a remote xdg-open shim, opens it in the default
+# browser, and acks the sender. Driven by the dev.rozart.open-server launchd
+# agent (socat SYSTEM target).
+#
+# Anything on a remote host can reach the forwarded port, so only http(s) URLs
+# pass: `open` would otherwise launch arbitrary apps and local files.
+
+set -u
+
+IFS= read -r url || [ -n "$url" ] || exit 1
+
+[[ $url =~ ^https?://[^[:space:]]+$ ]] || exit 1
+
+open "$url" || exit 1
+printf OK

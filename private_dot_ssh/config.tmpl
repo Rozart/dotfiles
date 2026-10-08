@@ -63,6 +63,7 @@ Host dev-station
 	LocalForward 3001 100.85.168.15:3000
 	RemoteForward 2489 127.0.0.1:2489
 	RemoteForward 2490 127.0.0.1:2490
+	RemoteForward 2491 127.0.0.1:2491
 	RequestTTY yes
 	RemoteCommand tmux new-session -A -s dev-station
 	LogLevel QUIET
@@ -74,6 +75,7 @@ Host docker-host
 	IdentitiesOnly yes
 	RemoteForward 2489 127.0.0.1:2489
 	RemoteForward 2490 127.0.0.1:2490
+	RemoteForward 2491 127.0.0.1:2491
 	RequestTTY yes
 	RemoteCommand tmux new-session -A -s docker-host
 	LogLevel QUIET
@@ -85,6 +87,7 @@ Host media-host
 	IdentitiesOnly yes
 	RemoteForward 2489 127.0.0.1:2489
 	RemoteForward 2490 127.0.0.1:2490
+	RemoteForward 2491 127.0.0.1:2491
 	RequestTTY yes
 	RemoteCommand tmux new-session -A -s media-host
 	LogLevel QUIET
