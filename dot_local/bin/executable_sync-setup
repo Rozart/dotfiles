@@ -17,9 +17,6 @@ if [ -z "$ai_repo" ]; then
     exit 0
 fi
 
-echo "==> ai-cli-configs: pull + restow ($ai_repo)"
+echo "==> ai-cli-configs: pull + install ($ai_repo)"
 git -C "$ai_repo" pull --ff-only
-for pkg in "$ai_repo"/*/; do
-    [ -d "$pkg" ] || continue
-    stow -R -d "$ai_repo" -t "$HOME" "$(basename "$pkg")"
-done
+"$ai_repo/common/.agents/skills/setup/scripts/install.sh"
