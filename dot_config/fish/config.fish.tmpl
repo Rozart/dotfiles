@@ -44,13 +44,22 @@ set -gx EMACS /opt/homebrew/bin/emacs
 set XDG_CURRENT_DESKTOP XFCE
 {{ end }}
 
-# Plannotator over ssh: a port range lets concurrent sessions coexist, and the
-# advertised host is the server address the client dialed, so the URL the
+{{ $plannotatorHosts := dict "roz-dev-station" "192.168.0.41" "roz-docker-host" "192.168.0.46" "roz-media-host" "192.168.0.49" }}
+{{ if hasKey $plannotatorHosts .chezmoi.hostname }}
+# Plannotator on the LAN servers. Remote mode is forced rather than detected:
+# daemon-hosted Claude sessions strip SSH_CONNECTION, and without remote mode
+# the server binds loopback where the Mac cannot reach it. A port range lets
+# concurrent sessions coexist. The advertised host is the address the client
+# dialed when there is one, else this host's LAN address, so the URL the
 # xdg-open shim sends to the Mac is reachable from there.
+set -gx PLANNOTATOR_REMOTE 1
+set -gx PLANNOTATOR_PORT 19432-19451
 if set -q SSH_CONNECTION
-    set -gx PLANNOTATOR_PORT 19432-19451
     set -gx PLANNOTATOR_URL_HOST (string split ' ' -- $SSH_CONNECTION)[3]
+else
+    set -gx PLANNOTATOR_URL_HOST {{ index $plannotatorHosts .chezmoi.hostname }}
 end
+{{ end }}
 
 set -gx FZF_DEFAULT_COMMAND 'fd --type file'
 set -gx FZF_CTRL_T_COMMAND $FZF_DEFAULT_COMMAND
