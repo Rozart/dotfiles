@@ -1,0 +1,34 @@
+#!/bin/sh
+
+is_claude_keychain_request() {
+    case "${1:-}" in
+        find-generic-password|add-generic-password|delete-generic-password) ;;
+        *) return 1 ;;
+    esac
+
+    shift
+    while [ "$#" -gt 0 ]; do
+        if [ "$1" = -s ]; then
+            shift
+            case "${1:-}" in
+                "Claude Code"|"Claude Code-"*) return 0 ;;
+                *) return 1 ;;
+            esac
+        fi
+        shift
+    done
+    return 1
+}
+
+if [ "${1:-}" = -i ]; then
+    exit 1
+fi
+
+if is_claude_keychain_request "$@"; then
+    case "$1" in
+        add-generic-password) exit 1 ;;
+        *) exit 44 ;;
+    esac
+fi
+
+exec /usr/bin/security "$@"
