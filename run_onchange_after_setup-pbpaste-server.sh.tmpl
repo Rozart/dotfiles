@@ -1,6 +1,8 @@
 {{ if eq .chezmoi.os "darwin" -}}
 #!/bin/bash
 
+set -e
+
 # pbpaste-server.plist hash: {{ include "Library/LaunchAgents/dev.rozart.pbpaste-server.plist" | sha256sum }}
 # pbcopy-server.plist hash: {{ include "Library/LaunchAgents/dev.rozart.pbcopy-server.plist" | sha256sum }}
 # open-server.plist hash: {{ include "Library/LaunchAgents/dev.rozart.open-server.plist" | sha256sum }}
@@ -14,7 +16,7 @@ if [ ! -x /opt/homebrew/bin/socat ]; then
 fi
 
 for name in pbpaste-server pbcopy-server open-server; do
-	launchctl bootout "gui/$(id -u)/dev.rozart.$name" 2>/dev/null
+	launchctl bootout "gui/$(id -u)/dev.rozart.$name" 2>/dev/null || true
 	launchctl bootstrap "gui/$(id -u)" "$HOME/Library/LaunchAgents/dev.rozart.$name.plist"
 done
 

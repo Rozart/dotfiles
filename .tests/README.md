@@ -1,3 +1,14 @@
+# Clipboard tunnel agents
+
+```sh
+python3 ~/.local/share/chezmoi/.tests/test-clipboard-agents.py
+```
+
+Tests render the Mac setup script and stub `launchctl`. They verify that missing
+agents can be loaded, bootstrap failures stop the script with a nonzero status,
+and missing socat prevents any reload. Linux and Windows render no script.
+The tests do not change running services or clipboard contents.
+
 # AI CLI installation policy
 
 `run_after_zz-install-ai-tools.sh.tmpl` installs missing tools on every Mac and Linux hosts marked `is_dev_station`, `is_docker_host`, or `is_media_host`. Those flags identify `roz-dev-station`, `roz-docker-host`, and `roz-media-host` in the chezmoi config template. Other Linux hosts and Windows render an empty script.
