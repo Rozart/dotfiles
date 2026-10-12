@@ -96,7 +96,7 @@
 # the clean filter keeps day-to-day /model flips out of diffs and commits.
 # Change the committed default by editing the canonical value here.
 [filter "claude-model"]
-	clean = sed -E 's/\"model\": \"[^\"]*\"/\"model\": \"opus\"/'
+	clean = sed -E 's/\"model\": \"[^\"]*\"/\"model\": \"opus[1m]\"/'
 # The host prefix is an ~/.ssh/config alias, so the remote reads
 # `<alias>:owner/repo.git`. Pattern must be `:*/**`, not `:*` — this glob is
 # pathname-style, so a bare `*` stops at the first `/` and never matches a real
