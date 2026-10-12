@@ -10,3 +10,4 @@ ACCENT=0xff78dce8
 ACCENT_FG=0xff2d2a2e
 
 [[ -r ${CONFIG_DIR:-$HOME/.config/sketchybar}/colors.sh ]] && source ${CONFIG_DIR:-$HOME/.config/sketchybar}/colors.sh
+BAR_COLOR=0xff${BAR_COLOR#0x??}

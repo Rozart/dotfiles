@@ -1,3 +1,28 @@
+# SketchyBar window geometry
+
+SketchyBar uses the native menu-bar row on ordinary desktops. The macOS setup
+script selects menu-bar auto-hide in fullscreen only, and `notch.sh` reads
+`NSMenu.menuBarHeight` to fit the bar inside that row. With shared Spaces,
+macOS reserves that row only on the main display. AeroSpace adds 10 pixels on
+that display and keeps the 42-pixel allowance elsewhere. The palette forces
+an opaque bar background so the native menu bar cannot show through.
+
+`sticky=off` keeps SketchyBar out of the separate overlay Space that caused the
+background to cover its items during native fullscreen transitions.
+`show_in_fullscreen=off` leaves native fullscreen window controls unobstructed.
+AeroSpace's Alt+F keeps the menu-bar row and SketchyBar visible.
+
+```sh
+python3 ~/.local/share/chezmoi/.tests/test-sketchybar.py
+```
+
+Tests run the real Zsh config and geometry helper with stubbed application
+commands. They cover fullscreen settings, startup sizing, notch reset, invalid
+geometry, per-monitor top gaps, opaque themed backgrounds, and macOS-only
+setup rendering. They do not alter live
+application settings. Native fullscreen transitions and window controls require
+manual desktop checks.
+
 # Clipboard tunnel agents
 
 ```sh

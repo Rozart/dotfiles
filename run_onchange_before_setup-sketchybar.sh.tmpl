@@ -1,0 +1,7 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/sh
+set -eu
+
+defaults write -g _HIHideMenuBar -bool false
+defaults write com.apple.controlcenter AutoHideMenuBarOption -int 2
+{{ end -}}

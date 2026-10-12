@@ -82,8 +82,8 @@ inner.horizontal = 10
 inner.vertical = 10
 outer.left = 10
 outer.bottom = 10
-# 32 px SketchyBar plus the usual 10; the native menu bar is set to auto-hide.
-outer.top = 42
+# Only the main display reserves a native menu-bar row with shared Spaces.
+outer.top = [{ monitor.main = 10 }, 42]
 outer.right = 10
 
 # Pin by display name, never by index. An index is the "sequence number of the
@@ -188,8 +188,8 @@ alt-slash = 'layout tiles horizontal vertical'
 # alt-comma = 'layout accordion horizontal vertical'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#fullscreen
-# Use instead of the title-bar double-click zoom: fullscreen keeps the outer
-# gaps, so the window stays below SketchyBar.
+# AeroSpace fullscreen keeps the outer gaps and SketchyBar visible.
+# Native macOS fullscreen hides SketchyBar.
 alt-f = 'fullscreen'
 
 

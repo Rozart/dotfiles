@@ -8,7 +8,8 @@ FONT="Pragmasevka Nerd Font"
 APP_FONT="sketchybar-app-font:Regular:15.0"
 SETTINGS="open x-apple.systempreferences:com.apple"
 
-sketchybar --bar position=top height=32 color=$BAR_COLOR topmost=on display=all shadow=off
+sketchybar --bar position=top height=24 color=$BAR_COLOR topmost=on sticky=off show_in_fullscreen=off display=all shadow=off
+$PLUGIN_DIR/notch.sh
 
 sketchybar --default \
   icon.font="$FONT:Bold:16.0" label.font="$FONT:Bold:14.0" \
