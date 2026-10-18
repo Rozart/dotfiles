@@ -13,4 +13,5 @@ ax_press() {
     $1
   end ignoring
 end tell" >/dev/null
+  sketchybar --reorder front_app --update
 }

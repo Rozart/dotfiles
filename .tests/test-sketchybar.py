@@ -57,6 +57,50 @@ class SketchyBarTests(unittest.TestCase):
             )
             return list(map(json.loads, log.read_text().splitlines()))
 
+    def test_native_menu_click_restores_item_window_order(self):
+        for plugin, arguments in (
+            ("app_menu", ["open", "3"]),
+            ("tray", ["open", "Tailscale"]),
+        ):
+            with self.subTest(plugin=plugin), tempfile.TemporaryDirectory() as directory:
+                home = Path(directory)
+                binary = home / "bin"
+                binary.mkdir()
+                log = home / "commands.jsonl"
+                for name in ("sketchybar", "osascript"):
+                    command = binary / name
+                    command.write_text(
+                        "#!/usr/bin/env python3\n"
+                        "import json, os, sys\n"
+                        "from pathlib import Path\n"
+                        "with open(os.environ['COMMAND_LOG'], 'a') as log:\n"
+                        "    log.write(json.dumps([Path(sys.argv[0]).name, *sys.argv[1:]]) + '\\n')\n"
+                    )
+                    command.chmod(0o755)
+                subprocess.run(
+                    [
+                        "zsh",
+                        str(ROOT / f"dot_config/sketchybar/plugins/executable_{plugin}.sh"),
+                        *arguments,
+                    ],
+                    env={
+                        **os.environ,
+                        "PATH": f"{binary}:{os.environ['PATH']}",
+                        "CONFIG_DIR": str(ROOT / "dot_config/sketchybar"),
+                        "COMMAND_LOG": str(log),
+                    },
+                    check=True,
+                    capture_output=True,
+                    timeout=10,
+                )
+                commands = list(map(json.loads, log.read_text().splitlines()))
+                click = next(i for i, args in enumerate(commands) if args[0] == "osascript")
+                self.assertIn("click menu bar item", commands[click][-1])
+                self.assertEqual(
+                    commands[click + 1:],
+                    [["sketchybar", "--reorder", "front_app", "--update"]],
+                )
+
     def test_bar_leaves_native_fullscreen_spaces(self):
         command = next(args for args in self.run_config() if args[0] == "--bar")
         self.assertIn("sticky=off", command)
