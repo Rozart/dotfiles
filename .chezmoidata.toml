@@ -1,0 +1,62 @@
+[rex]
+mac_hostname = "roz-mini-laptop"
+version = "0.0.1793981048-g01d6c4"
+commit = "01d6c4fe68668db3521570d7fbc9b6b112b1e572"
+channel = "snapshot"
+chezmoi_version = "2.74.0"
+
+[rex.arch.amd64]
+sha256 = "2874bb64dacb120eac8cae71ff9b6660479a654a9f89c6cd29cdc88372b7ee2d"
+chezmoi_sha256 = "1b98a567f726f41540414aea4caf912699d53e248b29ccf8369cf553657b2374"
+
+[rex.arch.arm64]
+sha256 = "c8f98378fb83617a5dd7867d273454789197934c4b62de313176e45adf5a6b2f"
+chezmoi_sha256 = "bf89495d1aab5e4fa0fc1ba9457837b34ee8dec9b787570f2de3e1c12a5835a5"
+
+[[rex.hosts]]
+label = "dev-station"
+hostname = "roz-dev-station"
+address = "192.168.0.41"
+user = "rozart"
+uid = 1000
+identity = "dev-station"
+
+[[rex.hosts]]
+label = "docker-host"
+hostname = "roz-docker-host"
+address = "192.168.0.46"
+user = "rozart"
+uid = 1000
+identity = "docker-host"
+
+[[rex.hosts]]
+label = "media-host"
+hostname = "roz-media-host"
+address = "192.168.0.49"
+user = "rozart"
+uid = 1000
+identity = "media-host"
+
+[[rex.hosts]]
+label = "proxmox"
+hostname = "proxmox"
+address = "192.168.0.40"
+user = "rozart"
+uid = 1000
+identity = "proxmox"
+
+[[rex.hosts]]
+label = "raspbox1"
+hostname = "raspbox1"
+address = "192.168.0.31"
+user = "rozart"
+uid = 1000
+identity = "raspbox1"
+
+[[rex.hosts]]
+label = "raspbox2"
+hostname = "raspbox2"
+address = "192.168.0.32"
+user = "rozart"
+uid = 1000
+identity = "raspbox2"

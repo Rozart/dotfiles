@@ -1,0 +1,16 @@
+[Unit]
+Description=Personal Rex terminal server
+
+[Service]
+Type=simple
+ExecStart={{ .chezmoi.homeDir }}/.local/bin/rex server run --listen %t/rex/server.sock --socket-mode 0600 --state-dir {{ .chezmoi.homeDir }}/.local/state/rex --config {{ .chezmoi.homeDir }}/.config/rex/init.lua
+Environment=PATH={{ .chezmoi.homeDir }}/.local/bin:{{ .chezmoi.homeDir }}/bin:/usr/local/bin:/usr/bin:/bin
+RuntimeDirectory=rex
+RuntimeDirectoryMode=0700
+UMask=0077
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+
+[Install]
+WantedBy=default.target

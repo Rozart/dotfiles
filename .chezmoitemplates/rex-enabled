@@ -1,0 +1,7 @@
+{{- $enabled := and (eq .chezmoi.os "darwin") (eq .chezmoi.hostname .rex.mac_hostname) -}}
+{{- if eq .chezmoi.os "linux" -}}
+{{- range .rex.hosts -}}
+{{- if and (eq $.chezmoi.hostname .hostname) (eq $.chezmoi.username .user) -}}{{- $enabled = true -}}{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- $enabled -}}

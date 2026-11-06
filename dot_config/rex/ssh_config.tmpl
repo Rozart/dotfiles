@@ -1,0 +1,22 @@
+Host *
+    IdentityAgent "{{ .chezmoi.homeDir }}/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+    IdentitiesOnly yes
+    BatchMode yes
+    StrictHostKeyChecking yes
+    RequestTTY no
+    RemoteCommand none
+    ControlMaster no
+    ControlPath none
+    ForwardAgent no
+    ExitOnForwardFailure yes
+    ServerAliveInterval 30
+    ServerAliveCountMax 3
+    ConnectTimeout 10
+    StreamLocalBindMask 0177
+    StreamLocalBindUnlink yes
+{{ range .rex.hosts }}
+Host {{ .label }}
+    HostName {{ .address }}
+    User {{ .user }}
+    IdentityFile {{ $.chezmoi.homeDir }}/.ssh/{{ .identity }}.pub
+{{ end }}

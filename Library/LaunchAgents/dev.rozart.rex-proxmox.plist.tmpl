@@ -1,0 +1,5 @@
+{{ range .rex.hosts -}}
+{{ if eq .label "proxmox" -}}
+{{ includeTemplate "rex-tunnel.plist" (dict "root" $ "host" .) }}
+{{ end -}}
+{{ end -}}

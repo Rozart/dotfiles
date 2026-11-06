@@ -1,0 +1,35 @@
+{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.hostname "proxmox") (eq .chezmoi.username "root") -}}
+#!/bin/sh
+set -eu
+{{ range .rex.hosts -}}
+{{ if eq .label "proxmox" -}}
+user={{ .user | quote }}
+uid={{ .uid }}
+home="/home/$user"
+[ "$(id -u)" = 0 ]
+if ! id "$user" >/dev/null 2>&1; then
+    [ ! -e "$home" ]
+    useradd --create-home --user-group --uid "$uid" --home-dir "$home" --shell /bin/bash "$user"
+fi
+[ "$(id -u "$user")" = "$uid" ]
+[ "$(getent passwd "$user" | cut -d : -f 6)" = "$home" ]
+[ "$(id -nG "$user")" = "$user" ]
+install -d -m 700 -o "$user" -g "$user" "$home/.ssh"
+key={{ include "private_dot_ssh/proxmox.pub" | trim | quote }}
+authorized="$home/.ssh/authorized_keys"
+if [ ! -e "$authorized" ]; then
+    install -m 600 -o "$user" -g "$user" /dev/null "$authorized"
+fi
+if ! grep -qxF "$key" "$authorized"; then
+    printf '%s\n' "$key" >> "$authorized"
+fi
+chown "$user:$user" "$authorized"
+chmod 600 "$authorized"
+if [ "$(loginctl show-user "$user" -p Linger --value 2>/dev/null || true)" != yes ]; then
+    runuser -u "$user" -- env HOME="$home" sh -c 'umask 077; mkdir -p "$HOME/.local/state/rex"; printf "no\n" > "$HOME/.local/state/rex/previous-linger"'
+    loginctl enable-linger "$user"
+fi
+systemctl start "user@$uid.service"
+{{ end -}}
+{{ end -}}
+{{ end -}}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>dev.rozart.rex-{{ .host.label }}</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/ssh</string>
+        <string>-F</string>
+        <string>{{ .root.chezmoi.homeDir }}/.config/rex/ssh_config</string>
+        <string>-N</string>
+        <string>-T</string>
+        <string>-L</string>
+        <string>{{ .root.chezmoi.homeDir }}/.local/state/rex/tunnels/{{ .host.label }}.sock:/run/user/{{ .host.uid }}/rex/server.sock</string>
+        <string>{{ .host.label }}</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>15</integer>
+    <key>StandardErrorPath</key>
+    <string>{{ .root.chezmoi.homeDir }}/.local/state/rex/tunnels/{{ .host.label }}.log</string>
+</dict>
+</plist>

@@ -1,0 +1,9 @@
+require("keys")
+{{ if and (eq .chezmoi.os "darwin") (eq .chezmoi.hostname .rex.mac_hostname) -}}
+{{ range .rex.hosts -}}
+rex.host{
+  label = {{ .label | quote }},
+  endpoint = {{ printf "%s/.local/state/rex/tunnels/%s.sock" $.chezmoi.homeDir .label | quote }},
+}
+{{ end -}}
+{{ end -}}

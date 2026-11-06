@@ -1,0 +1,9 @@
+{{ if eq (includeTemplate "rex-enabled" .) "true" -}}
+#!/bin/sh
+configuration_revision={{ list (include ".chezmoitemplates/rex-tunnel.plist") (include "dot_config/rex/keys.lua") (includeTemplate "dot_config/rex/init.lua.tmpl" .) (includeTemplate "dot_config/systemd/user/rex.service.tmpl" .) (includeTemplate "dot_config/rex/ssh_config.tmpl" .) (.rex | toJson) | toJson | sha256sum | quote }}
+{{ if eq .chezmoi.os "linux" -}}
+{{ includeTemplate "rex-linux-setup.sh" . }}
+{{ else -}}
+{{ includeTemplate "rex-mac-setup.sh" . }}
+{{ end -}}
+{{ end -}}

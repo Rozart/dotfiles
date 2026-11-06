@@ -120,3 +120,22 @@ Sources:
 - https://claude.ai/install.sh and https://code.claude.com/docs/en/setup.
 - https://github.com/backnotprop/plannotator/releases/tag/v0.27.25.
 - https://www.chezmoi.io/user-guide/use-scripts-to-perform-actions/.
+
+## Rex alongside tmux
+
+```sh
+python3 ~/.local/share/chezmoi/.tests/test-rex.py -v
+```
+
+Requires Python 3.11+, chezmoi, and Rex. Thirteen tests cover host/platform/account gates,
+launch-agent rendering, dedicated SSH settings, Lua loading, current-directory
+custom actions against an isolated real server, checksum failures, unsupported
+architectures, unmanaged binaries, restart refusal with active sessions, selective
+apply parent creation, Linux/Mac reapplication safety, root-server exclusion,
+and the root-only Proxmox account bootstrap.
+
+Tests use temporary homes and mocked activation commands, except for a dedicated
+Rex server on its own temporary socket. They do not restart the normal Rex server,
+change running tunnel agents, or touch tmux. The Linux installation fixture makes
+no network requests. Deployment and compatibility notes live in the homelab repo's
+`infra/rex/README.md`.

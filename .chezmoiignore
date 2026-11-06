@@ -54,5 +54,15 @@ Library
 .local/bin/xdg-open
 {{- end }}
 
+{{ if ne (includeTemplate "rex-enabled" .) "true" }}
+.config/rex
+.config/systemd/user/rex.service
+Library/LaunchAgents/dev.rozart.rex-*.plist
+{{ else if eq .chezmoi.os "linux" }}
+.config/rex/ssh_config
+{{ else }}
+.config/systemd/user/rex.service
+{{ end }}
+
 # Python bytecode from running source-dir scripts such as sync-theme.py
 **/__pycache__
