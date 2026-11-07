@@ -94,6 +94,29 @@ class RexTests(unittest.TestCase):
             self.assertIn(setting, config)
         self.assertNotIn("RemoteForward", config)
 
+    def test_laptop_hostname_scoped_apply(self):
+        for hostname in ["laptop", "Laptop"]:
+            with self.subTest(hostname=hostname), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                home = root / "home"
+                home.mkdir()
+                config = root / "config.toml"
+                config.write_text("")
+                result = subprocess.run(
+                    ["chezmoi", "--source", str(ROOT), "--destination", str(home),
+                     "--config", str(config), "--persistent-state", str(root / "state"),
+                     "--override-data", json.dumps({"chezmoi": {"os": "darwin", "hostname": hostname,
+                                                                "homeDir": str(home), "username": "rozart"}}),
+                     "apply", "--parent-dirs", "--include", "files,dirs", "--source-path",
+                     str(ROOT / "dot_config/rex/init.lua.tmpl")],
+                    capture_output=True, text=True,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                target = home / ".config/rex/init.lua"
+                self.assertEqual(target.read_text().count("rex.host{"), 6)
+                self.assertIn(str(home / ".local/state/rex/tunnels/dev-station.sock"), target.read_text())
+                self.assertFalse((home / "Applications").exists())
+
     def test_mac_registration_guide(self):
         for hostname in DATA["mac_hostnames"]:
             guide = render("dot_config/rex/client-hosts.txt.tmpl", "darwin", hostname, "/Users/another-account")

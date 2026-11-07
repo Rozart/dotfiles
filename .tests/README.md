@@ -128,11 +128,11 @@ python3 ~/.local/share/chezmoi/.tests/test-rex.py -v
 python3 ~/.local/share/chezmoi/.tests/test-rex-client-hosts.py -v
 ```
 
-Requires Python 3.11+, chezmoi, and Rex. Nineteen tests cover host/platform/account
-gates, both Mac hostnames and case variants, per-HOME launch-agent paths, dedicated
+Requires Python 3.11+, chezmoi, and Rex. Twenty tests cover host/platform/account
+gates, both Macs' hostnames and aliases, case variants, per-HOME launch-agent paths, dedicated
 SSH settings, a HOME-relative native-registration guide, Lua loading and the
-host-picker binding, current-directory actions
-against an isolated real server, checksum failures, unsupported architectures,
+host-picker binding, the real scoped apply for hostname `laptop`, current-directory
+actions against an isolated real server, checksum failures, unsupported architectures,
 unmanaged binaries, active-session restart refusal, selective apply parent creation,
 Linux/Mac reapplication safety, root-server exclusion, and the root-only Proxmox
 account bootstrap. Mac installer cases cover fresh installation, existing-version
