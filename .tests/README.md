@@ -128,8 +128,9 @@ python3 ~/.local/share/chezmoi/.tests/test-rex.py -v
 python3 ~/.local/share/chezmoi/.tests/test-rex-client-hosts.py -v
 ```
 
-Requires Python 3.11+, chezmoi, and Rex. Twenty tests cover host/platform/account
-gates, both Macs' hostnames and aliases, case variants, per-HOME launch-agent paths, dedicated
+Requires Python 3.11+, chezmoi, and Rex. Twenty-one tests cover host/platform/account
+gates, both Macs' hostnames and aliases, case variants, Mac-only appearance files,
+per-HOME launch-agent paths, dedicated
 SSH settings, a HOME-relative native-registration guide, Lua loading and the
 host-picker binding, the real scoped apply for hostname `laptop`, current-directory
 actions against an isolated real server, checksum failures, unsupported architectures,
@@ -156,3 +157,27 @@ The native synchronization script runs on each approved Mac apply, adding missin
 entries only. It does not remove saved hosts or restart the app. Existing builds
 other than the reviewed 1853 are preserved, but native synchronization fails
 visibly until their format is reviewed.
+
+## Rex full appearance profile
+
+```sh
+python3 ~/.local/share/chezmoi/.tests/test-rex-appearance.py -v
+```
+
+Seventeen isolated tests cover the captured 36-setting profile and two exact
+custom themes, strict preference allowlisting, app identity/build guards,
+missing-font refusal, typed writes/readback, exact private backups, fresh
+preferences, additive custom-theme merging, unknown-field preservation,
+concurrent changes, write failures, check-only behavior, and running-GUI
+deferral. Unchanged applies create no backup and make no native writes, even
+with Rex open. These tests mock preference writes, font lookup, and process
+checks; a separate live read-only check verifies CoreText detects Pragmasevka
+and rejects a nonexistent font rather than accepting fallback.
+
+`run_after_sync-rex-appearance.sh.tmpl` reuses app discovery without starting a
+Rex server. It runs only on approved Macs; Linux excludes its profile and helper.
+A changed apply reports pending while the GUI is running. Quit only the GUI
+manually, reapply the appearance targets, and reopen Rex normally. Never stop a
+server or kill sessions to apply an appearance profile. The helper does not
+install fonts, launch or restart apps, enable Remote Control, change hosts, or
+connect this profile to the shared Fish `theme` command.

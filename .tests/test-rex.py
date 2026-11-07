@@ -53,9 +53,15 @@ class RexTests(unittest.TestCase):
             sync = render("run_after_sync-rex-client-hosts.sh.tmpl", "darwin", hostname)
             subprocess.run(["/bin/sh", "-n"], input=sync, text=True, check=True)
             self.assertIn("sync-client-hosts.py", sync)
+            appearance = render("run_after_sync-rex-appearance.sh.tmpl", "darwin", hostname)
+            subprocess.run(["/bin/sh", "-n"], input=appearance, text=True, check=True)
+            self.assertIn("sync-appearance.py", appearance)
+            self.assertNotIn("launchctl", appearance)
+            self.assertNotIn("rex_command", appearance)
         for platform, hostname in [("linux", "roz-laptop"), ("windows", "roz-laptop"), ("darwin", "other-mac")]:
             self.assertFalse(render("run_onchange_before_install-rex-client.sh.tmpl", platform, hostname).strip())
             self.assertFalse(render("run_after_sync-rex-client-hosts.sh.tmpl", platform, hostname).strip())
+            self.assertFalse(render("run_after_sync-rex-appearance.sh.tmpl", platform, hostname).strip())
 
     def test_proxmox_never_activates_root_rex(self):
         self.assertFalse(render("run_onchange_after_setup-rex.sh.tmpl", hostname="proxmox", username="root").strip())
@@ -116,6 +122,33 @@ class RexTests(unittest.TestCase):
                 self.assertEqual(target.read_text().count("rex.host{"), 6)
                 self.assertIn(str(home / ".local/state/rex/tunnels/dev-station.sock"), target.read_text())
                 self.assertFalse((home / "Applications").exists())
+
+    def test_mac_appearance_scoped_files_and_linux_ignore(self):
+        for hostname in [*DATA["mac_hostnames"], "Laptop"]:
+            with self.subTest(hostname=hostname), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                home = root / "home"
+                home.mkdir()
+                config = root / "config.toml"
+                config.write_text("")
+                result = subprocess.run(
+                    ["chezmoi", "--source", str(ROOT), "--destination", str(home),
+                     "--config", str(config), "--persistent-state", str(root / "state"),
+                     "--override-data", json.dumps({"chezmoi": {"os": "darwin", "hostname": hostname,
+                                                                "homeDir": str(home), "username": "rozart"}}),
+                     "apply", "--parent-dirs", "--include", "files,dirs", "--source-path",
+                     str(ROOT / "dot_config/rex/appearance.json"), str(ROOT / "dot_config/rex/sync-appearance.py")],
+                    capture_output=True, text=True,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual((home / ".config/rex/appearance.json").read_bytes(),
+                                 (ROOT / "dot_config/rex/appearance.json").read_bytes())
+                self.assertTrue((home / ".config/rex/sync-appearance.py").is_file())
+                self.assertFalse((home / "Applications").exists())
+        ignored = render(".chezmoiignore")
+        self.assertIn(".config/rex/appearance.json", ignored)
+        self.assertIn(".config/rex/sync-appearance.py", ignored)
+        self.assertFalse(render("run_after_sync-rex-appearance.sh.tmpl").strip())
 
     def test_mac_registration_guide(self):
         for hostname in DATA["mac_hostnames"]:
@@ -200,7 +233,7 @@ class RexTests(unittest.TestCase):
                 (root / "init.lua").write_text(render("dot_config/rex/init.lua.tmpl", platform, hostname))
                 result = subprocess.run(["rex", "config", "check", str(root / "init.lua"), "--json"], capture_output=True, text=True)
                 self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
-                self.assertEqual(json.loads(result.stdout)["bindings"], 27)
+                self.assertEqual(json.loads(result.stdout)["bindings"], 39)
                 config = (root / "init.lua").read_text()
                 self.assertEqual(config.count("rex.host{"), 6 if platform == "darwin" else 0)
         self.assertIn('rex.bind("ctrl+a>g", "client.host.switch")', (ROOT / "dot_config/rex/keys.lua").read_text())
@@ -233,6 +266,28 @@ class RexTests(unittest.TestCase):
                                "--", "/bin/sh", "-c", "sleep 60")
                 session = created["session_id"]
                 block = created["initial_windows"][0]["block_ids"][0]
+                keymap = call("keymap", "--json")
+                self.assertEqual(keymap["diagnostics"], [])
+                bindings = {tuple(binding["keys"]): (binding["action"], binding.get("args", {}))
+                            for binding in keymap["bindings"]}
+                self.assertEqual(len(bindings), len(keymap["bindings"]))
+                expected = {
+                    "x": ("pane.close", {}),
+                    "shift+7": ("client.tab.close", {}),
+                    "shift+c": ("session.new", {}),
+                    "shift+e": ("pane.balance", {}),
+                    "s": ("session.switch", {}),
+                    "w": ("pane.go_to", {}),
+                }
+                for direction in ("left", "down", "up", "right"):
+                    for modifier, amount in (("ctrl", 1), ("alt", 5)):
+                        expected[f"{modifier}+{direction}"] = (
+                            "pane.resize", {"direction": direction, "amount": amount})
+                for index in range(1, 10):
+                    expected[str(index)] = ("client.tab.goto", {"index": index})
+                for key, binding in expected.items():
+                    with self.subTest(key=key):
+                        self.assertEqual(bindings.get(("ctrl+a", key)), binding)
                 for action, arguments in [("new_tab_here", []), ("split_here", ["direction=horizontal"]),
                                           ("split_here", ["direction=vertical"])]:
                     result = call("do", action, "-s", session, "-b", block, "--json", *arguments)

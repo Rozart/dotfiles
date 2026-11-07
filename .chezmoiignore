@@ -62,6 +62,8 @@ Library/LaunchAgents/dev.rozart.rex-*.plist
 .config/rex/ssh_config
 .config/rex/client-hosts.*
 .config/rex/sync-client-hosts.py
+.config/rex/appearance.json
+.config/rex/sync-appearance.py
 {{ else }}
 .config/systemd/user/rex.service
 {{ end }}

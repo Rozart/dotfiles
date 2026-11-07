@@ -1,0 +1,14 @@
+{{ if eq (includeTemplate "rex-mac-enabled" .) "true" -}}
+#!/bin/sh
+set -eu
+{{ includeTemplate "rex-mac-app.sh" . }}
+app=$(find_rex_app) || {
+    printf '%s\n' "Rex must be installed before synchronizing its appearance" >&2
+    exit 1
+}
+command -v python3 >/dev/null 2>&1 || {
+    printf '%s\n' "Python 3 is required to synchronize Rex appearance" >&2
+    exit 1
+}
+python3 "$HOME/.config/rex/sync-appearance.py" --app "$app"
+{{ end -}}
