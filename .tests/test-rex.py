@@ -31,6 +31,10 @@ def executable(path, content):
     path.chmod(0o755)
 
 
+def run_script(script, env):
+    return subprocess.run(["/bin/sh"], input=script, env=env, capture_output=True, text=True)
+
+
 class RexTests(unittest.TestCase):
     def test_platform_gates(self):
         for host in DATA["hosts"]:
@@ -39,9 +43,19 @@ class RexTests(unittest.TestCase):
             subprocess.run(["/bin/sh", "-n"], input=script, text=True, check=True)
         for platform, hostname in [("linux", "unmanaged"), ("windows", "desktop"), ("darwin", "other-mac")]:
             self.assertFalse(render("run_onchange_after_setup-rex.sh.tmpl", platform, hostname).strip())
-        script = render("run_onchange_after_setup-rex.sh.tmpl", "darwin", DATA["mac_hostname"])
-        subprocess.run(["/bin/sh", "-n"], input=script, text=True, check=True)
-        self.assertEqual(script.count("launchctl bootstrap"), 6)
+        for hostname in [*DATA["mac_hostnames"], "Roz-Laptop", "Roz-Mini-Laptop"]:
+            script = render("run_onchange_after_setup-rex.sh.tmpl", "darwin", hostname)
+            subprocess.run(["/bin/sh", "-n"], input=script, text=True, check=True)
+            self.assertEqual(script.count("launchctl bootstrap"), 6)
+            script = render("run_onchange_before_install-rex-client.sh.tmpl", "darwin", hostname)
+            subprocess.run(["/bin/sh", "-n"], input=script, text=True, check=True)
+            self.assertIn(DATA["mac_app"]["url"], script)
+            sync = render("run_after_sync-rex-client-hosts.sh.tmpl", "darwin", hostname)
+            subprocess.run(["/bin/sh", "-n"], input=sync, text=True, check=True)
+            self.assertIn("sync-client-hosts.py", sync)
+        for platform, hostname in [("linux", "roz-laptop"), ("windows", "roz-laptop"), ("darwin", "other-mac")]:
+            self.assertFalse(render("run_onchange_before_install-rex-client.sh.tmpl", platform, hostname).strip())
+            self.assertFalse(render("run_after_sync-rex-client-hosts.sh.tmpl", platform, hostname).strip())
 
     def test_proxmox_never_activates_root_rex(self):
         self.assertFalse(render("run_onchange_after_setup-rex.sh.tmpl", hostname="proxmox", username="root").strip())
@@ -65,17 +79,35 @@ class RexTests(unittest.TestCase):
             self.assertFalse(render(path, platform, hostname, username=username).strip())
 
     def test_plists_and_dedicated_ssh(self):
-        for host in DATA["hosts"]:
-            path = f'Library/LaunchAgents/dev.rozart.rex-{host["label"]}.plist.tmpl'
-            plist = plistlib.loads(render(path, "darwin", DATA["mac_hostname"]).encode())
-            args = plist["ProgramArguments"]
-            self.assertEqual(args[:2], ["/usr/bin/ssh", "-F"])
-            self.assertIn(f'/run/user/{host["uid"]}/rex/server.sock', args[6])
-            self.assertTrue(plist["KeepAlive"])
-        config = render("dot_config/rex/ssh_config.tmpl", "darwin", DATA["mac_hostname"])
+        for hostname in DATA["mac_hostnames"]:
+            for host in DATA["hosts"]:
+                home = "/Users/another-account"
+                path = f'Library/LaunchAgents/dev.rozart.rex-{host["label"]}.plist.tmpl'
+                plist = plistlib.loads(render(path, "darwin", hostname, home).encode())
+                args = plist["ProgramArguments"]
+                self.assertEqual(args[:2], ["/usr/bin/ssh", "-F"])
+                self.assertEqual(args[2], home + "/.config/rex/ssh_config")
+                self.assertEqual(args[6], f'{home}/.local/state/rex/tunnels/{host["label"]}.sock:/run/user/{host["uid"]}/rex/server.sock')
+                self.assertTrue(plist["KeepAlive"])
+        config = render("dot_config/rex/ssh_config.tmpl", "darwin", DATA["mac_hostnames"][0])
         for setting in ["RemoteCommand none", "ControlPath none", "StrictHostKeyChecking yes", "BatchMode yes"]:
             self.assertIn(setting, config)
         self.assertNotIn("RemoteForward", config)
+
+    def test_mac_registration_guide(self):
+        for hostname in DATA["mac_hostnames"]:
+            guide = render("dot_config/rex/client-hosts.txt.tmpl", "darwin", hostname, "/Users/another-account")
+            for host in DATA["hosts"]:
+                self.assertIn(f'/Users/another-account/.local/state/rex/tunnels/{host["label"]}.sock', guide)
+            self.assertNotIn("/Users/rozart/", guide)
+            self.assertIn("not the CLI label", guide)
+            self.assertNotIn(".config/rex/client-hosts.txt", render(".chezmoiignore", "darwin", hostname))
+            config = json.loads(render("dot_config/rex/client-hosts.json.tmpl", "darwin", hostname, "/Users/another-account"))
+            self.assertEqual(config["build"], DATA["mac_app"]["build"])
+            self.assertEqual([host["endpoint"] for host in config["hosts"]],
+                             [f'/Users/another-account/.local/state/rex/tunnels/{host["label"]}.sock' for host in DATA["hosts"]])
+        self.assertIn(".config/rex/client-hosts.*", render(".chezmoiignore"))
+        self.assertIn(".config/rex/sync-client-hosts.py", render(".chezmoiignore"))
 
     def test_selective_apply_creates_parents_without_unrelated_scripts(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -115,7 +147,11 @@ class RexTests(unittest.TestCase):
             for host in DATA["hosts"]:
                 name = f'dev.rozart.rex-{host["label"]}.plist'
                 (agents / name).write_text(render("Library/LaunchAgents/" + name + ".tmpl",
-                                                 "darwin", DATA["mac_hostname"], str(home)))
+                                                 "darwin", DATA["mac_hostnames"][0], str(home)))
+            app = home / "Applications/Rex Beta.app/Contents"
+            (app / "MacOS").mkdir(parents=True)
+            (app / "Info.plist").write_bytes(plistlib.dumps({"CFBundleVersion": DATA["mac_app"]["build"]}))
+            executable(app / "MacOS/Rex", "exit 0\n")
             executable(tools / "rex", "exit 0\n")
             executable(tools / "launchctl",
                        'printf "%s\\n" "$*" >> "$HOME/launchctl.log"\n'
@@ -124,10 +160,10 @@ class RexTests(unittest.TestCase):
                        'bootstrap) name=${3##*/}; touch "$HOME/loaded/${name%.plist}" ;;\n'
                        'bootout) rm "$HOME/loaded/${2##*/}" ;;\n'
                        'esac\n')
-            script = render("run_onchange_after_setup-rex.sh.tmpl", "darwin", DATA["mac_hostname"], str(home))
+            script = render("run_onchange_after_setup-rex.sh.tmpl", "darwin", DATA["mac_hostnames"][0], str(home))
             env = {**os.environ, "HOME": str(home), "PATH": f"{tools}:{os.environ['PATH']}"}
             for attempt in range(2):
-                result = self.run_script(script, env)
+                result = run_script(script, env)
                 self.assertEqual(result.returncode, 0, result.stderr)
             calls = (home / "launchctl.log").read_text().splitlines()
             self.assertEqual(sum(line.startswith("bootstrap ") for line in calls), 6)
@@ -137,10 +173,14 @@ class RexTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             shutil.copy(ROOT / "dot_config/rex/keys.lua", root / "keys.lua")
-            for platform, hostname in [("linux", "proxmox"), ("darwin", DATA["mac_hostname"])]:
+            for platform, hostname in [("linux", "proxmox"), *[("darwin", name) for name in DATA["mac_hostnames"]]]:
                 (root / "init.lua").write_text(render("dot_config/rex/init.lua.tmpl", platform, hostname))
                 result = subprocess.run(["rex", "config", "check", str(root / "init.lua"), "--json"], capture_output=True, text=True)
                 self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+                self.assertEqual(json.loads(result.stdout)["bindings"], 27)
+                config = (root / "init.lua").read_text()
+                self.assertEqual(config.count("rex.host{"), 6 if platform == "darwin" else 0)
+        self.assertIn('rex.bind("ctrl+a>g", "client.host.switch")', (ROOT / "dot_config/rex/keys.lua").read_text())
 
     def test_custom_actions_on_isolated_server(self):
         with tempfile.TemporaryDirectory(prefix="rx-") as directory:
@@ -210,18 +250,15 @@ class RexTests(unittest.TestCase):
         script = script.replace(DATA["arch"]["amd64"]["sha256"], hashlib.sha256(archive.read_bytes()).hexdigest())
         return script, env
 
-    def run_script(self, script, env):
-        return subprocess.run(["/bin/sh"], input=script, env=env, capture_output=True, text=True)
-
     def test_install_and_reapply(self):
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)
             script, env = self.fixture(home)
-            first = self.run_script(script, env)
+            first = run_script(script, env)
             self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
             binary = home / ".local/bin/rex"
             previous = binary.stat().st_mtime_ns
-            second = self.run_script(script, env)
+            second = run_script(script, env)
             self.assertEqual(second.returncode, 0, second.stdout + second.stderr)
             self.assertEqual(binary.stat().st_mtime_ns, previous)
             self.assertNotIn("--user stop", (home / "systemctl.log").read_text())
@@ -231,7 +268,7 @@ class RexTests(unittest.TestCase):
             home = Path(directory)
             script, env = self.fixture(home)
             script = script.replace(hashlib.sha256((home / "fixture.tar.gz").read_bytes()).hexdigest(), "0" * 64)
-            result = self.run_script(script, env)
+            result = run_script(script, env)
             self.assertNotEqual(result.returncode, 0)
             self.assertFalse((home / ".local/bin/rex").exists())
             self.assertNotIn("--user start", (home / "systemctl.log").read_text())
@@ -240,7 +277,7 @@ class RexTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)
             script, env = self.fixture(home)
-            result = self.run_script(script, {**env, "TEST_ARCH": "armv7l"})
+            result = run_script(script, {**env, "TEST_ARCH": "armv7l"})
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("Unsupported", result.stderr)
             self.assertFalse((home / ".local/bin/rex").exists())
@@ -253,7 +290,7 @@ class RexTests(unittest.TestCase):
             binary.parent.mkdir(parents=True)
             executable(binary, "exit 0\n")
             before = binary.read_bytes()
-            result = self.run_script(script, env)
+            result = run_script(script, env)
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("unmanaged", result.stderr)
             self.assertEqual(before, binary.read_bytes())
@@ -262,17 +299,147 @@ class RexTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)
             script, env = self.fixture(home)
-            first = self.run_script(script, env)
+            first = run_script(script, env)
             self.assertEqual(first.returncode, 0, first.stderr)
             binary = home / ".local/bin/rex"
             binary.write_text(binary.read_text().replace('"session_count":0', '"session_count":1'))
             state = home / ".local/state/rex"
             (state / "managed-binary.sha256").write_text(hashlib.sha256(binary.read_bytes()).hexdigest() + "\n")
             (state / "managed-unit.sha256").write_text("changed\n")
-            result = self.run_script(script, env)
+            result = run_script(script, env)
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("active sessions", result.stderr)
             self.assertNotIn("--user stop", (home / "systemctl.log").read_text())
+
+
+class RexMacClientTests(unittest.TestCase):
+    def fixture(self, home):
+        tools = home / "tools"
+        tools.mkdir()
+        app = home / "fixture-app"
+        (app / "Contents/MacOS").mkdir(parents=True)
+        (app / "Contents/Info.plist").write_bytes(plistlib.dumps({"CFBundleVersion": DATA["mac_app"]["build"]}))
+        executable(app / "Contents/MacOS/Rex", "exit 0\n")
+        cli = app / "Contents/Helpers/Rex Server.rex/Contents/MacOS/rex"
+        cli.parent.mkdir(parents=True)
+        executable(cli, 'printf "%s\\n" "$*" >> "$HOME/cli.log"\n')
+        image = home / "fixture.dmg"
+        image.write_bytes(b"fixture disk image")
+        executable(tools / "sw_vers", 'printf "%s\\n" "${TEST_MACOS_VERSION:-15.0}"\n')
+        executable(tools / "curl",
+                   'printf "%s\\n" "$*" >> "$HOME/curl.log"\n'
+                   '[ "${TEST_CURL_EXIT:-0}" -eq 0 ] || exit "$TEST_CURL_EXIT"\n'
+                   'while [ "$1" != -o ]; do shift; done\ncp "$HOME/fixture.dmg" "$2"\n')
+        executable(tools / "hdiutil",
+                   'printf "%s\\n" "$*" >> "$HOME/hdiutil.log"\n'
+                   'case "$1" in\n'
+                   'attach) while [ "$1" != -mountpoint ]; do shift; done\n'
+                   'cp -R "$HOME/fixture-app" "$2/Rex Beta.app" ;;\n'
+                   'detach) exit 0 ;;\n'
+                   'esac\n')
+        executable(tools / "codesign",
+                   'printf "%s\\n" "$*" >> "$HOME/codesign.log"\n'
+                   'exit "${TEST_CODESIGN_EXIT:-0}"\n')
+        executable(tools / "ditto", 'cp -R "$1" "$2"\n')
+        script = render("run_onchange_before_install-rex-client.sh.tmpl", "darwin", DATA["mac_hostnames"][1], str(home))
+        script = script.replace('"/Applications/', '"$HOME/global-apps/')
+        script = script.replace(DATA["mac_app"]["sha256"], hashlib.sha256(image.read_bytes()).hexdigest())
+        env = {**os.environ, "HOME": str(home), "PATH": f"{tools}:/usr/bin:/bin:/usr/sbin:/sbin"}
+        return script, env
+
+    def test_install_and_preserve_existing_version(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            script, env = self.fixture(home)
+            result = run_script(script, env)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            app = home / "Applications/Rex Beta.app"
+            info = app / "Contents/Info.plist"
+            self.assertEqual(plistlib.loads(info.read_bytes())["CFBundleVersion"], DATA["mac_app"]["build"])
+            info.write_bytes(plistlib.dumps({"CFBundleVersion": "9999"}))
+            result = run_script(script, env)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(plistlib.loads(info.read_bytes())["CFBundleVersion"], "9999")
+            self.assertEqual(len((home / "curl.log").read_text().splitlines()), 1)
+            self.assertIn(DATA["mac_app"]["team_id"], (home / "codesign.log").read_text())
+            self.assertTrue((home / "hdiutil.log").read_text().splitlines()[-1].startswith("detach "))
+            self.assertFalse(list((home / "Applications").glob(".rex-install.*")))
+            self.assertFalse((home / "cli.log").exists())
+
+    def test_preserve_existing_application_locations(self):
+        for location in ["Applications/Rex.app", "global-apps/Rex Beta.app", "global-apps/Rex.app"]:
+            with self.subTest(location=location), tempfile.TemporaryDirectory() as directory:
+                home = Path(directory)
+                script, env = self.fixture(home)
+                target = home / location
+                shutil.copytree(home / "fixture-app", target)
+                info = target / "Contents/Info.plist"
+                info.write_bytes(plistlib.dumps({"CFBundleVersion": "1700"}))
+                result = run_script(script, env)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(plistlib.loads(info.read_bytes())["CFBundleVersion"], "1700")
+                self.assertFalse((home / "curl.log").exists())
+                self.assertFalse((home / "Applications/Rex Beta.app").exists())
+
+    def test_refuse_conflicting_application_path(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            script, env = self.fixture(home)
+            target = home / "Applications/Rex Beta.app"
+            target.parent.mkdir()
+            target.write_text("preserve me")
+            result = run_script(script, env)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("conflicting", result.stderr)
+            self.assertEqual(target.read_text(), "preserve me")
+            self.assertFalse((home / "curl.log").exists())
+
+    def test_refuse_failed_installation_checks(self):
+        for failure in ["checksum", "signature", "build", "os", "download"]:
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as directory:
+                home = Path(directory)
+                script, env = self.fixture(home)
+                if failure == "checksum":
+                    script = script.replace(hashlib.sha256((home / "fixture.dmg").read_bytes()).hexdigest(), "0" * 64)
+                elif failure == "signature":
+                    env["TEST_CODESIGN_EXIT"] = "1"
+                elif failure == "build":
+                    (home / "fixture-app/Contents/Info.plist").write_bytes(plistlib.dumps({"CFBundleVersion": "1700"}))
+                elif failure == "os":
+                    env["TEST_MACOS_VERSION"] = "14.7"
+                else:
+                    env["TEST_CURL_EXIT"] = "1"
+                result = run_script(script, env)
+                self.assertNotEqual(result.returncode, 0, failure)
+                self.assertFalse((home / "Applications/Rex Beta.app").exists())
+                if failure in ["signature", "build"]:
+                    self.assertTrue((home / "hdiutil.log").read_text().splitlines()[-1].startswith("detach "))
+                else:
+                    self.assertFalse((home / "hdiutil.log").exists())
+                self.assertFalse((home / "cli.log").exists())
+
+    def test_setup_uses_bundled_cli_without_path_entry(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            script, env = self.fixture(home)
+            result = run_script(script, env)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            config = home / ".config/rex/ssh_config"
+            config.parent.mkdir(parents=True)
+            config.write_text("Host *\n    BatchMode yes\n")
+            agents = home / "Library/LaunchAgents"
+            agents.mkdir(parents=True)
+            for host in DATA["hosts"]:
+                (agents / f'dev.rozart.rex-{host["label"]}.plist').write_text("fixture plist\n")
+            executable(home / "tools/launchctl",
+                       'printf "%s\\n" "$*" >> "$HOME/launchctl.log"\n'
+                       '[ "$1" != print ]\n')
+            setup = render("run_onchange_after_setup-rex.sh.tmpl", "darwin", DATA["mac_hostnames"][1], str(home))
+            setup = setup.replace('"/Applications/', '"$HOME/global-apps/')
+            result = run_script(setup, env)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual((home / "cli.log").read_text(), "config reload\n")
+            self.assertEqual(sum(line.startswith("bootstrap ") for line in (home / "launchctl.log").read_text().splitlines()), 6)
 
 
 if __name__ == "__main__":

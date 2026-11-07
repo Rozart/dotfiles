@@ -1,0 +1,5 @@
+{{- $hosts := list -}}
+{{- range .rex.hosts -}}
+{{- $hosts = append $hosts (dict "label" .label "endpoint" (printf "%s/.local/state/rex/tunnels/%s.sock" $.chezmoi.homeDir .label)) -}}
+{{- end -}}
+{{ dict "build" .rex.mac_app.build "hosts" $hosts | toPrettyJson }}

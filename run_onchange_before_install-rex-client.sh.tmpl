@@ -1,0 +1,62 @@
+{{ if eq (includeTemplate "rex-mac-enabled" .) "true" -}}
+#!/bin/sh
+set -eu
+umask 077
+
+{{ includeTemplate "rex-mac-app.sh" . }}
+macos_major=$(sw_vers -productVersion | cut -d . -f 1)
+case "$macos_major" in
+    ""|*[!0-9]*) printf '%s\n' "Cannot determine the macOS version" >&2; exit 1 ;;
+esac
+if [ "$macos_major" -lt {{ .rex.mac_app.minimum_macos_major }} ]; then
+    printf '%s\n' "Rex requires macOS {{ .rex.mac_app.minimum_macos_major }} or newer" >&2
+    exit 1
+fi
+if app=$(find_rex_app); then
+    printf '%s\n' "Preserving existing Rex application: $app"
+    exit 0
+else
+    status=$?
+    [ "$status" -eq 1 ] || exit "$status"
+fi
+
+work=$(mktemp -d)
+mounted=no
+stage=
+cleanup() {
+    if [ "$mounted" = yes ] && ! hdiutil detach "$work/mount" >/dev/null; then
+        printf '%s\n' "Could not detach Rex image; temporary files remain at $work" >&2
+        return
+    fi
+    [ -z "$stage" ] || rm -rf "$stage"
+    rm -rf "$work"
+}
+trap cleanup EXIT
+trap 'exit 1' HUP INT TERM
+
+curl --fail --location --proto '=https' --tlsv1.2 --retry 3 -o "$work/rex.dmg" {{ .rex.mac_app.url | quote }}
+printf '%s  %s\n' {{ .rex.mac_app.sha256 | quote }} "$work/rex.dmg" | shasum -a 256 -c -
+mkdir "$work/mount"
+hdiutil attach -readonly -nobrowse -mountpoint "$work/mount" "$work/rex.dmg" >/dev/null
+mounted=yes
+app="$work/mount/Rex Beta.app"
+codesign --verify --deep --strict -R='identifier "com.superlogical.rex" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] exists and certificate leaf[field.1.2.840.113635.100.6.1.13] exists and certificate leaf[subject.OU] = "{{ .rex.mac_app.team_id }}"' "$app"
+[ "$(plutil -extract CFBundleVersion raw "$app/Contents/Info.plist")" = {{ .rex.mac_app.build | quote }} ] || {
+    printf '%s\n' "Unexpected Rex application build" >&2
+    exit 1
+}
+
+mkdir -p "$HOME/Applications"
+stage=$(mktemp -d "$HOME/Applications/.rex-install.XXXXXX")
+ditto "$app" "$stage/Rex Beta.app"
+codesign --verify --deep --strict "$stage/Rex Beta.app"
+if existing=$(find_rex_app); then
+    printf '%s\n' "Rex appeared during installation; preserving $existing"
+    exit 0
+else
+    status=$?
+    [ "$status" -eq 1 ] || exit "$status"
+fi
+mv "$stage/Rex Beta.app" "$HOME/Applications/Rex Beta.app"
+printf '%s\n' "Installed Rex build {{ .rex.mac_app.build }} in $HOME/Applications/Rex Beta.app"
+{{ end -}}

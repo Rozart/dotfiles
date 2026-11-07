@@ -1,0 +1,1 @@
+{{- and (eq .chezmoi.os "darwin") (has (lower .chezmoi.hostname) .rex.mac_hostnames) -}}

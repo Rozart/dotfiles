@@ -125,17 +125,34 @@ Sources:
 
 ```sh
 python3 ~/.local/share/chezmoi/.tests/test-rex.py -v
+python3 ~/.local/share/chezmoi/.tests/test-rex-client-hosts.py -v
 ```
 
-Requires Python 3.11+, chezmoi, and Rex. Thirteen tests cover host/platform/account gates,
-launch-agent rendering, dedicated SSH settings, Lua loading, current-directory
-custom actions against an isolated real server, checksum failures, unsupported
-architectures, unmanaged binaries, restart refusal with active sessions, selective
-apply parent creation, Linux/Mac reapplication safety, root-server exclusion,
-and the root-only Proxmox account bootstrap.
+Requires Python 3.11+, chezmoi, and Rex. Nineteen tests cover host/platform/account
+gates, both Mac hostnames and case variants, per-HOME launch-agent paths, dedicated
+SSH settings, a HOME-relative native-registration guide, Lua loading and the
+host-picker binding, current-directory actions
+against an isolated real server, checksum failures, unsupported architectures,
+unmanaged binaries, active-session restart refusal, selective apply parent creation,
+Linux/Mac reapplication safety, root-server exclusion, and the root-only Proxmox
+account bootstrap. Mac installer cases cover fresh installation, existing-version
+preservation in user/system application directories, conflicting paths, checksum
+and signature failures, wrong builds, unsupported macOS, download failures, and
+bundled-CLI fallback when Rex is absent from PATH.
 
 Tests use temporary homes and mocked activation commands, except for a dedicated
 Rex server on its own temporary socket. They do not restart the normal Rex server,
-change running tunnel agents, or touch tmux. The Linux installation fixture makes
-no network requests. Deployment and compatibility notes live in the homelab repo's
+change running tunnel agents, or touch tmux. Both installer fixtures make no network
+requests or actual app/service changes. Deployment and compatibility notes live in the homelab repo's
 `infra/rex/README.md`.
+
+Eleven additional native-host tests verify that the build-1853 seeder adds missing
+socket entries while preserving existing names, IDs, locators, unknown fields,
+and unrelated preferences. They cover idempotency, fresh preferences, malformed
+or unknown formats, unreviewed builds, unreachable sockets, name conflicts,
+concurrent native edits, write-failure backups, and paths containing spaces.
+The tests mock all native preference and server calls; they do not edit app state.
+The native synchronization script runs on each approved Mac apply, adding missing
+entries only. It does not remove saved hosts or restart the app. Existing builds
+other than the reviewed 1853 are preserved, but native synchronization fails
+visibly until their format is reviewed.

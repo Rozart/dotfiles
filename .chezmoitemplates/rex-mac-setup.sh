@@ -1,6 +1,8 @@
 set -eu
 umask 077
 
+{{ includeTemplate "rex-mac-client.sh" . }}
+
 state="$HOME/.local/state/rex"
 mkdir -p "$state/tunnels" "$state/launch-agents"
 chmod 700 "$state" "$state/tunnels"
@@ -18,5 +20,5 @@ if [ "$fingerprint" != "$previous" ] || ! launchctl print "$domain/$name" >/dev/
     printf '%s\n' "$fingerprint" > "$state/launch-agents/$name.sha256"
 fi
 {{ end }}
-rex config reload
+"$rex_command" config reload
 printf '%s\n' "$configuration_revision" > "$state/managed-configuration.sha256"

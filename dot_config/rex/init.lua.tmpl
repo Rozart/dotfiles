@@ -1,5 +1,5 @@
 require("keys")
-{{ if and (eq .chezmoi.os "darwin") (eq .chezmoi.hostname .rex.mac_hostname) -}}
+{{ if eq (includeTemplate "rex-mac-enabled" .) "true" -}}
 {{ range .rex.hosts -}}
 rex.host{
   label = {{ .label | quote }},

@@ -1,0 +1,10 @@
+{{ if eq (includeTemplate "rex-mac-enabled" .) "true" -}}
+#!/bin/sh
+set -eu
+{{ includeTemplate "rex-mac-client.sh" . }}
+command -v python3 >/dev/null 2>&1 || {
+    printf '%s\n' "Python 3 is required to synchronize native Rex hosts" >&2
+    exit 1
+}
+python3 "$HOME/.config/rex/sync-client-hosts.py" --app "$app" --rex "$rex_command"
+{{ end -}}

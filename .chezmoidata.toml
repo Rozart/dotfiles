@@ -1,9 +1,16 @@
 [rex]
-mac_hostname = "roz-mini-laptop"
+mac_hostnames = ["roz-mini-laptop", "roz-laptop"]
 version = "0.0.1793981048-g01d6c4"
 commit = "01d6c4fe68668db3521570d7fbc9b6b112b1e572"
 channel = "snapshot"
 chezmoi_version = "2.74.0"
+
+[rex.mac_app]
+build = "1853"
+url = "https://blob.superlogical.com/public/rex-app/preview/Rex-0.1.0-1853.dmg"
+sha256 = "e2e5c4021dfe9d9b6265dd1a641c6fc733a9b25215914572ea780e0b3013b0a5"
+team_id = "AG92C3PT77"
+minimum_macos_major = 15
 
 [rex.arch.amd64]
 sha256 = "2874bb64dacb120eac8cae71ff9b6660479a654a9f89c6cd29cdc88372b7ee2d"

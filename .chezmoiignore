@@ -60,6 +60,8 @@ Library
 Library/LaunchAgents/dev.rozart.rex-*.plist
 {{ else if eq .chezmoi.os "linux" }}
 .config/rex/ssh_config
+.config/rex/client-hosts.*
+.config/rex/sync-client-hosts.py
 {{ else }}
 .config/systemd/user/rex.service
 {{ end }}

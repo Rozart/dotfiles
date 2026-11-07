@@ -1,4 +1,4 @@
-{{- $enabled := and (eq .chezmoi.os "darwin") (eq .chezmoi.hostname .rex.mac_hostname) -}}
+{{- $enabled := eq (includeTemplate "rex-mac-enabled" .) "true" -}}
 {{- if eq .chezmoi.os "linux" -}}
 {{- range .rex.hosts -}}
 {{- if and (eq $.chezmoi.hostname .hostname) (eq $.chezmoi.username .user) -}}{{- $enabled = true -}}{{- end -}}

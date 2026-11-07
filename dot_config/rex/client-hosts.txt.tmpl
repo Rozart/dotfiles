@@ -1,0 +1,21 @@
+Rex native client hosts
+
+Chezmoi adds missing native GUI hosts through the verified build-{{ .rex.mac_app.build }} format.
+Existing hosts and custom names are preserved. No app restart is automatic.
+If new hosts are not visible in Ctrl-a g, a user-approved app relaunch may be needed.
+
+Press Ctrl-a, release it, then press g to switch hosts.
+Ctrl-a followed by s opens the selected host's sessions.
+Cmd-Shift-P opens the native command palette.
+
+Configured labels and literal addresses:
+{{ range .rex.hosts }}
+{{ .label }}
+{{ $.chezmoi.homeDir }}/.local/state/rex/tunnels/{{ .label }}.sock
+{{ end }}
+Manual fallback: Settings (Cmd-comma), Remote Hosts, Add Remote Host.
+Paste the full address, not the CLI label. Do not use ~ in place of HOME.
+
+Native host backups: ~/.local/state/rex/client-host-backups/
+Only the RexSync.servers preference is changed; unrelated preferences stay untouched.
+Unreviewed app builds and host-directory formats fail without replacing the app or directory.
