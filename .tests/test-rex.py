@@ -26,6 +26,11 @@ def render(relative, platform="linux", hostname="roz-dev-station", home="/home/r
     )
 
 
+def copy_rex_modules(destination):
+    for path in (ROOT / "dot_config/rex").glob("*.lua"):
+        shutil.copy(path, destination / path.name)
+
+
 def executable(path, content):
     path.write_text("#!/bin/sh\n" + content)
     path.chmod(0o755)
@@ -119,7 +124,7 @@ class RexTests(unittest.TestCase):
                 )
                 self.assertEqual(result.returncode, 0, result.stderr)
                 target = home / ".config/rex/init.lua"
-                self.assertEqual(target.read_text().count("rex.host{"), 6)
+                self.assertEqual(target.read_text().count("rex.host{"), 7)
                 self.assertIn(str(home / ".local/state/rex/tunnels/dev-station.sock"), target.read_text())
                 self.assertFalse((home / "Applications").exists())
 
@@ -228,23 +233,51 @@ class RexTests(unittest.TestCase):
     def test_lua_loads(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            shutil.copy(ROOT / "dot_config/rex/keys.lua", root / "keys.lua")
+            copy_rex_modules(root)
             for platform, hostname in [("linux", "proxmox"), *[("darwin", name) for name in DATA["mac_hostnames"]]]:
                 (root / "init.lua").write_text(render("dot_config/rex/init.lua.tmpl", platform, hostname))
-                result = subprocess.run(["rex", "config", "check", str(root / "init.lua"), "--json"], capture_output=True, text=True)
+                result = subprocess.run(
+                    ["rex", "config", "check", str(root / "init.lua"), "--json"],
+                    env={**os.environ, "HOME": str(root)}, capture_output=True, text=True,
+                )
                 self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
-                self.assertEqual(json.loads(result.stdout)["bindings"], 39)
+                self.assertGreaterEqual(json.loads(result.stdout)["bindings"], 59)
                 config = (root / "init.lua").read_text()
-                self.assertEqual(config.count("rex.host{"), 6 if platform == "darwin" else 0)
+                self.assertEqual(config.count("rex.host{"), 7 if platform == "darwin" else 0)
         self.assertIn('rex.bind("ctrl+a>g", "client.host.switch")', (ROOT / "dot_config/rex/keys.lua").read_text())
+
+    def test_pane_actions(self):
+        lua = shutil.which("lua") or shutil.which("luajit")
+        if not lua:
+            self.skipTest("Lua interpreter is unavailable")
+        result = subprocess.run(
+            [lua, str(ROOT / ".tests/rex-panes.lua"), str(ROOT / "dot_config/rex/panes.lua")],
+            capture_output=True, text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_custom_actions_on_isolated_server(self):
         with tempfile.TemporaryDirectory(prefix="rx-") as directory:
             root = Path(directory)
-            shutil.copy(ROOT / "dot_config/rex/keys.lua", root / "keys.lua")
-            (root / "init.lua").write_text('require("keys")\n')
+            copy_rex_modules(root)
+            (root / "init.lua").write_text(
+                'require("keys")\n'
+                'local execute = rex.exec\n'
+                'rex.exec = function(argv, options)\n'
+                '  assert(argv[1] == "/usr/bin/osascript")\n'
+                '  local result, err = execute({"/usr/bin/uname", "-s"}, options)\n'
+                '  assert(result, err)\n'
+                '  assert(result.ok, result.stderr)\n'
+                '  assert(result.stdout == ' + json.dumps(os.uname().sysname + "\n") + ')\n'
+                '  result.stdout = "12\\n"\n'
+                '  return result\n'
+                'end\n'
+            )
             socket = root / "server.sock"
             env = {key: value for key, value in os.environ.items() if not key.startswith("REX_")}
+            env["HOME"] = str(root)
+            env["XDG_CONFIG_HOME"] = str(root / "config")
+            env["REX_RUNTIME_DIR"] = str(root)
             server = subprocess.Popen(
                 ["rex", "server", "run", "--listen", str(socket), "--state-dir", str(root / "state"),
                  "--config", str(root / "init.lua")], env=env,
@@ -252,9 +285,10 @@ class RexTests(unittest.TestCase):
             )
 
             def call(*args):
-                return json.loads(subprocess.check_output(
+                output = subprocess.check_output(
                     ["rex", "--autostart=false", "-S", str(socket), *args], env=env, text=True,
-                ))
+                )
+                return json.loads(output) if output.strip() else None
 
             try:
                 for attempt in range(50):
@@ -272,14 +306,45 @@ class RexTests(unittest.TestCase):
                             for binding in keymap["bindings"]}
                 self.assertEqual(len(bindings), len(keymap["bindings"]))
                 expected = {
+                    "'": ("go_to_tab_number", {}),
                     "x": ("pane.close", {}),
                     "shift+7": ("client.tab.close", {}),
                     "shift+c": ("session.new", {}),
                     "shift+e": ("pane.balance", {}),
                     "s": ("session.switch", {}),
                     "w": ("pane.go_to", {}),
+                    "o": ("pane.focus_next", {}),
+                    "shift+9": ("session.previous", {}),
+                    "shift+0": ("session.next", {}),
+                    "shift+1": ("pane.move_to_new_tab", {}),
+                    "shift+t": ("pane.rename", {}),
+                    "ctrl+a": ("pane.send_key", {"key": "ctrl+a"}),
+                    "ctrl+b": ("pane.send_key", {"key": "ctrl+a"}),
+                    "c": ("new_tab_here", {}),
+                    "shift+'": ("split_here", {"direction": "vertical"}),
+                    "shift+5": ("split_here", {"direction": "horizontal"}),
+                    "n": ("client.tab.next", {}),
+                    "p": ("client.tab.previous", {}),
+                    "z": ("pane.zoom", {}),
+                    "r": ("client.config.reload", {}),
+                    "ctrl+space": ("session.switch", {}),
+                    "[": ("client.scroll.page_up", {}),
+                    "pageup": ("client.scroll.page_up", {}),
+                    "]": ("pane.paste", {}),
+                    "/": ("client.find.open", {}),
+                    "y": ("pane.copy", {}),
+                    "g": ("client.host.switch", {}),
+                    ",": ("client.tab.rename", {}),
+                    "shift+4": ("session.rename", {}),
+                    "shift+[": ("swap_pane", {"direction": "previous"}),
+                    "shift+]": ("swap_pane", {"direction": "next"}),
+                    "ctrl+o": ("rotate_panes", {"direction": "previous"}),
+                    "alt+o": ("rotate_panes", {"direction": "next"}),
                 }
                 for direction in ("left", "down", "up", "right"):
+                    expected[direction] = ("pane.focus", {"direction": direction})
+                    expected[{"left": "h", "down": "j", "up": "k", "right": "l"}[direction]] = (
+                        "pane.focus", {"direction": direction})
                     for modifier, amount in (("ctrl", 1), ("alt", 5)):
                         expected[f"{modifier}+{direction}"] = (
                             "pane.resize", {"direction": direction, "amount": amount})
@@ -299,6 +364,70 @@ class RexTests(unittest.TestCase):
                             break
                         time.sleep(0.1)
                     self.assertEqual(os.path.realpath(foreground["cwd"]), str(root.resolve()))
+                def pane_order():
+                    view = call("session", "inspect", session, "--json")
+                    for window in view["windows"]:
+                        for layer in window["layers"]:
+                            if any(item["block_id"] == block for item in layer["blocks"]):
+                                def collect(node):
+                                    if "block_id" in node:
+                                        return [node["block_id"]]
+                                    split = node["split"]
+                                    return collect(split["before"]) + collect(split["after"])
+                                self.assertEqual(window["focused_block_id"], block)
+                                return collect(layer["layout"])
+                    self.fail("Source pane disappeared")
+
+                call("api", "call", "session.focus_block", json.dumps({"session_id": session, "block_id": block}))
+                original = pane_order()
+                processes = {item: call("block", "call", "-s", session, "-b", item, "process")["child"]["pid"]
+                             for item in original}
+                position = original.index(block)
+                neighbor = (position + 1) % len(original)
+                swapped = original.copy()
+                swapped[position], swapped[neighbor] = swapped[neighbor], swapped[position]
+                call("do", "swap_pane", "-s", session, "-b", block, "direction=next", "--json")
+                self.assertEqual(pane_order(), swapped)
+                call("do", "swap_pane", "-s", session, "-b", block, "direction=previous", "--json")
+                self.assertEqual(pane_order(), original)
+                call("do", "rotate_panes", "-s", session, "-b", block, "direction=previous", "--json")
+                self.assertEqual(pane_order(), original[1:] + original[:1])
+                call("do", "rotate_panes", "-s", session, "-b", block, "direction=next", "--json")
+                self.assertEqual(pane_order(), original)
+                for item, pid in processes.items():
+                    self.assertEqual(call("block", "call", "-s", session, "-b", item, "process")["child"]["pid"], pid)
+                self.assertEqual(keymap.get("modes", []), [])
+                for host in ("dev-station", "docker-host"):
+                    response = call("api", "call", "client.action", json.dumps({
+                        "action": "go_to_tab_number",
+                        "origin": "key",
+                        "server": host,
+                        "servers": [{"name": host, "id": "remote-host"}],
+                        "session_id": session,
+                        "block_id": block,
+                    }))
+                    self.assertEqual(response["client_actions"], [
+                        {"action": "client.tab.goto", "args": {"index": 12}}])
+                picker = root / "Applications/Rex Picker.app/Contents/Info.plist"
+                picker.parent.mkdir(parents=True)
+                picker.write_text("")
+                call("config", "reload", "--json")
+                installed_map = call("keymap", "--json")
+                installed_bindings = {tuple(item["keys"]): item["action"] for item in installed_map["bindings"]}
+                self.assertEqual(len(installed_bindings), len(installed_map["bindings"]))
+                self.assertEqual(installed_bindings[("ctrl+a", "'")], "open_numbered_tabs")
+                self.assertEqual(installed_bindings[("ctrl+a", "f")], "pane.go_to")
+                self.assertEqual(installed_bindings[("ctrl+a", "w")], "pane.go_to")
+                self.assertNotIn("open_fuzzy_picker", {item["name"] for item in installed_map["actions"]})
+                self.assertNotIn("go_to_tab_number", {item["name"] for item in installed_map["actions"]})
+                picker.unlink()
+                call("config", "reload", "--json")
+                fallback_map = call("keymap", "--json")
+                fallback_bindings = {tuple(item["keys"]): item["action"] for item in fallback_map["bindings"]}
+                self.assertEqual(len(fallback_bindings), len(fallback_map["bindings"]))
+                self.assertEqual(fallback_bindings[("ctrl+a", "'")], "go_to_tab_number")
+                self.assertEqual(fallback_bindings[("ctrl+a", "f")], "pane.go_to")
+                self.assertEqual(fallback_bindings[("ctrl+a", "w")], "pane.go_to")
                 subprocess.run(["rex", "--autostart=false", "-S", str(socket), "kill", session],
                                env=env, check=True, capture_output=True)
             finally:

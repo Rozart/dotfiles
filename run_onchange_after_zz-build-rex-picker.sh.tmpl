@@ -1,0 +1,20 @@
+{{ if eq (includeTemplate "rex-mac-enabled" .) "true" -}}
+#!/bin/sh
+set -eu
+
+{{ $root := joinPath .chezmoi.sourceDir "dot_local/share/rex-picker" -}}
+{{ $inputs := list (joinPath $root "Package.swift") (joinPath $root "Info.plist") (joinPath $root "build-app.sh") (joinPath .chezmoi.sourceDir "dot_config/rex/fuzzy-picker.lua") -}}
+{{ range concat $inputs (glob (joinPath $root "Sources/*/*.swift")) -}}
+{{ $relative := trimPrefix (printf "%s/" $.chezmoi.sourceDir) . -}}
+# {{ $relative }}: {{ include $relative | sha256sum }}
+{{ end }}
+sh "$HOME/.local/share/rex-picker/build-app.sh"
+
+{{ includeTemplate "rex-mac-client.sh" . }}
+unset REX_SERVER REX_CLIENT REX_SESSION REX_BLOCK
+if "$rex_command" --timeout 4s --autostart=false server status >/dev/null 2>&1; then
+    "$rex_command" --timeout 4s --autostart=false config reload
+else
+    printf '%s\n' 'Rex is not reachable; picker bindings will load on its next configuration reload.'
+fi
+{{ end -}}

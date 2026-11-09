@@ -1,3 +1,50 @@
+# Rex native agent status
+
+```sh
+python3 .tests/test-rex-agent-status.py
+python3 .tests/rex-agent-status.py --manifest /tmp/rex-agent-status-$(date +%s).json
+```
+
+The unit tests exercise the loopback-only provider fixture and ensure received
+states belong to the expected application and blocking reason. The explicit
+live runner starts the installed Claude/Codex interactive CLIs with temporary
+homes, placeholder authentication, and a local model fixture. It verifies
+working, completion, fatal-error, and permission-blocked reports through Rex's
+terminal API without real model calls or granting permission requests.
+
+Pi uses its installed lifecycle reporter and formatter with injected events,
+including nested blocking dialogs and cancellation. This is not a full Pi TUI
+model run. A manifest records owned session IDs and pending creation labels;
+cleanup attempts all remaining IDs and never reports an uncertain create as
+cleaned. Control commands clear inherited Rex targets and pin a verified local
+Unix-socket endpoint. The runner does not select tabs, alter app preferences, install
+hooks, restart services, or deploy remotely. It is not part of unattended test
+discovery. See `ai-cli-configs/docs/rex-status.md` for native detection details
+and the separate read-only live Pi observation.
+
+# Rex Picker provisioning
+
+```sh
+python3 ~/.local/share/chezmoi/.tests/test-rex-picker.py -v
+cd ~/.local/share/rex-picker && swift test
+```
+
+Chezmoi deploys the native picker source and the `~/Dev/rex-picker` development
+link only on Rex-enabled Macs. The onchange hook hashes the manifest, bundle
+metadata, build script, Lua launcher, and Swift source paths and contents.
+It builds and verifies an ad-hoc signed `~/Applications/Rex Picker.app`, then
+reloads a reachable local Rex server with autostart disabled. Inherited Rex
+target variables are cleared. It does not install developer tools, stop the
+picker, start or restart servers, register a login item, or change permissions.
+A running picker must be quit and reopened to use a new executable.
+
+The Python suite uses temporary homes and stubbed build/signing commands. It
+covers platform/hostname gates, source-change detection, scoped deployment,
+build/signing failures, unmanaged-path refusal, replacement rollback, and
+compiler preflight. It makes no network requests or live app changes.
+Generated `.build` and `.swiftpm` directories stay outside chezmoi management.
+The canonical Lua launcher remains in `dot_config/rex/fuzzy-picker.lua`.
+
 # SketchyBar window geometry
 
 SketchyBar uses the native menu-bar row on ordinary desktops. The macOS setup
@@ -157,6 +204,32 @@ The native synchronization script runs on each approved Mac apply, adding missin
 entries only. It does not remove saved hosts or restart the app. Existing builds
 other than the reviewed 1853 are preserved, but native synchronization fails
 visibly until their format is reviewed.
+
+## Reciprocal Mac Rex access
+
+```sh
+python3 ~/.local/share/chezmoi/.tests/test-rex-mac-peers.py -v
+```
+
+Twenty tests cover both Macs and hostname aliases, self-exclusion, six unchanged
+Linux declarations plus one HTTPS Mac peer, validated tailnet URLs, pinned real
+host IDs, exact native-store preservation/backups, idempotency, offline peers
+without blocking Linux registration, permanent conflicts, owner-only policy,
+tagged-node refusal, local-socket-only policy narrowing, and disabled/login/
+approval/HTTPS-pending states without starting, renaming, or restarting nodes.
+The old eleven native-host tests continue to cover the Unix-socket path.
+
+Each Mac uses Rex's saved built-in Tailscale setting for inbound sharing and
+one-time browser enrollment. The CLI's tailscale-on operation is runtime-only.
+Outgoing HTTPS also needs the standalone Tailscale client connected for macOS
+DNS/routing. A real reverse probe initially failed on .ts.net DNS while that
+client was offline, then reached the existing server after it connected.
+
+Native registration adds only the other Mac, preserving the original six Linux
+records. Offline peers are reported as pending. The node must be untagged and
+restricted to its enrolling Tailscale user; a broader running local policy is
+only narrowed through the supported Unix-socket API. Disabled sharing is never
+automatically re-enabled. These tests stub all native writes and network calls.
 
 ## Rex full appearance profile
 

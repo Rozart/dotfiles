@@ -1,0 +1,1 @@
+Read DESIGN.md before changing the interface. Use native AppKit controls and Rex’s active theme palette, with system colors only as a fallback. Keep UI dimensions in PickerStyle. Do not add hardcoded colors or dimensions outside that token definition. Do not add dependencies or code comments.

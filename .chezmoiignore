@@ -68,5 +68,13 @@ Library/LaunchAgents/dev.rozart.rex-*.plist
 .config/systemd/user/rex.service
 {{ end }}
 
+.local/share/rex-picker/.build
+.local/share/rex-picker/.swiftpm
+
+{{ if ne (includeTemplate "rex-mac-enabled" .) "true" }}
+.local/share/rex-picker
+Dev/rex-picker
+{{ end }}
+
 # Python bytecode from running source-dir scripts such as sync-theme.py
 **/__pycache__
