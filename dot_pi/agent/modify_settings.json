@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+import json
+import sys
+
+original = sys.stdin.read()
+settings = json.loads(original) if original.strip() else {}
+if not isinstance(settings, dict):
+    raise ValueError("Pi settings must be a JSON object")
+defaults = {"defaultProvider": "openai", "defaultModel": "gpt-6.1-sol"}
+if all(settings.get(key) == value for key, value in defaults.items()):
+    sys.stdout.write(original)
+else:
+    settings.update(defaults)
+    sys.stdout.write(json.dumps(settings, indent=2) + "\n")
