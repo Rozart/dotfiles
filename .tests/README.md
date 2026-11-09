@@ -1,3 +1,48 @@
+# Rex SSH agent forwarding
+
+```sh
+python3 .tests/test-rex-ssh-agent.py -v
+python3 .tests/test-rex.py -v
+```
+
+Each Mac's managed Rex tunnels forward its 1Password agent to a distinct socket
+under `/run/user/1000/rex-ssh-agent/` on each Linux host. The tunnel launcher
+checks ownership, directory permissions, and socket type before removing its
+own previous listener. It leaves the other Mac's listener alone. LaunchAgent
+bootstrap retries cover asynchronous completion of `launchctl bootout`.
+
+`rex-ssh-agent.service` exposes a stable `agent.sock` with a 0700 parent and
+0600 socket permissions. The relay probes the allowlisted Mac sockets on each
+new client connection, preferring `roz-mini-laptop`, then `roz-laptop`. It skips
+unreachable agents and agents reporting no keys. Once selected, an upstream
+handles the entire connection. It does not retry rejected signatures against
+another Mac or move an in-flight operation after a disconnect. Unlocking and
+signature approvals remain controlled by 1Password.
+
+The Rex systemd drop-in sets `SSH_AUTH_SOCK` for future server starts, including
+commands run with `--shell=none`. Fish startup also sets it for new shells on
+already-running Rex servers. Existing Fish prompts on the three infrastructure
+hosts refresh through the existing `refresh_ssh_agent` hook. Existing agents
+retain their inherited environment; relaunch them from a refreshed shell.
+An existing Fish shell can refresh explicitly with `refresh_ssh_agent`.
+Existing Bash shells can run:
+
+```sh
+export SSH_AUTH_SOCK=/run/user/$(id -u)/rex-ssh-agent/agent.sock
+```
+
+Deploy the relay service on Linux before updating the Mac tunnels. The
+standalone setup hook restarts only the relay, not Rex. Restarting the relay
+interrupts any in-flight agent connection. The runtime directory survives relay
+restarts so existing forwarded listeners remain reachable. The two Macs must
+both receive their updated tunnel launcher and LaunchAgents. Generated target
+files deployed for a live check do not update another machine's chezmoi source;
+sync the committed source before its next full apply.
+
+Tests cover key-list protocol forwarding, unavailable/empty agents, failover,
+reconnection, untrusted symlinks, safe listener cleanup, and rendered templates.
+They use local fixture sockets and never request a real 1Password signature.
+
 # Rex native agent status
 
 ```sh

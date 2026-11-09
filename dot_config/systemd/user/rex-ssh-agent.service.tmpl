@@ -1,0 +1,16 @@
+[Unit]
+Description=Rex forwarded SSH agent relay
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 {{ .chezmoi.homeDir }}/.config/rex/ssh-agent-relay.py --directory %t/rex-ssh-agent --sources{{ range .rex.macs }} {{ .label }}{{ end }}
+RuntimeDirectory=rex-ssh-agent
+RuntimeDirectoryMode=0700
+RuntimeDirectoryPreserve=yes
+UMask=0177
+NoNewPrivileges=yes
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target

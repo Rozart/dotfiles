@@ -57,15 +57,21 @@ Library
 {{ if ne (includeTemplate "rex-enabled" .) "true" }}
 .config/rex
 .config/systemd/user/rex.service
+.config/systemd/user/rex-ssh-agent.service
+.config/systemd/user/rex.service.d
 Library/LaunchAgents/dev.rozart.rex-*.plist
 {{ else if eq .chezmoi.os "linux" }}
 .config/rex/ssh_config
+.config/rex/ssh-tunnel.py
 .config/rex/client-hosts.*
 .config/rex/sync-client-hosts.py
 .config/rex/appearance.json
 .config/rex/sync-appearance.py
 {{ else }}
 .config/systemd/user/rex.service
+.config/systemd/user/rex-ssh-agent.service
+.config/systemd/user/rex.service.d
+.config/rex/ssh-agent-relay.py
 {{ end }}
 
 .local/share/rex-picker/.build

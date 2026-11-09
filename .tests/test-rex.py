@@ -96,9 +96,10 @@ class RexTests(unittest.TestCase):
                 path = f'Library/LaunchAgents/dev.rozart.rex-{host["label"]}.plist.tmpl'
                 plist = plistlib.loads(render(path, "darwin", hostname, home).encode())
                 args = plist["ProgramArguments"]
-                self.assertEqual(args[:2], ["/usr/bin/ssh", "-F"])
-                self.assertEqual(args[2], home + "/.config/rex/ssh_config")
-                self.assertEqual(args[6], f'{home}/.local/state/rex/tunnels/{host["label"]}.sock:/run/user/{host["uid"]}/rex/server.sock')
+                self.assertEqual(args[:2], ["/usr/bin/env", "python3"])
+                self.assertEqual(args[4], home + "/.config/rex/ssh_config")
+                self.assertEqual(args[8], f'{home}/.local/state/rex/tunnels/{host["label"]}.sock')
+                self.assertEqual(args[10], f'/run/user/{host["uid"]}/rex/server.sock')
                 self.assertTrue(plist["KeepAlive"])
         config = render("dot_config/rex/ssh_config.tmpl", "darwin", DATA["mac_hostnames"][0])
         for setting in ["RemoteCommand none", "ControlPath none", "StrictHostKeyChecking yes", "BatchMode yes"]:
@@ -205,6 +206,8 @@ class RexTests(unittest.TestCase):
             config = home / ".config/rex/ssh_config"
             config.parent.mkdir(parents=True)
             config.write_text("Host *\n    BatchMode yes\n")
+            launcher = config.with_name("ssh-tunnel.py")
+            shutil.copy(ROOT / "dot_config/rex/ssh-tunnel.py", launcher)
             for host in DATA["hosts"]:
                 name = f'dev.rozart.rex-{host["label"]}.plist'
                 (agents / name).write_text(render("Library/LaunchAgents/" + name + ".tmpl",
@@ -229,6 +232,12 @@ class RexTests(unittest.TestCase):
             calls = (home / "launchctl.log").read_text().splitlines()
             self.assertEqual(sum(line.startswith("bootstrap ") for line in calls), 6)
             self.assertFalse(any(line.startswith("bootout ") for line in calls))
+            launcher.write_text(launcher.read_text() + "\n")
+            result = run_script(script, env)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            calls = (home / "launchctl.log").read_text().splitlines()
+            self.assertEqual(sum(line.startswith("bootstrap ") for line in calls), 12)
+            self.assertEqual(sum(line.startswith("bootout ") for line in calls), 6)
 
     def test_lua_loads(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -634,6 +643,7 @@ class RexMacClientTests(unittest.TestCase):
             config = home / ".config/rex/ssh_config"
             config.parent.mkdir(parents=True)
             config.write_text("Host *\n    BatchMode yes\n")
+            shutil.copy(ROOT / "dot_config/rex/ssh-tunnel.py", config.with_name("ssh-tunnel.py"))
             agents = home / "Library/LaunchAgents"
             agents.mkdir(parents=True)
             for host in DATA["hosts"]:

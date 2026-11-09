@@ -6,14 +6,21 @@
     <string>dev.rozart.rex-{{ .host.label }}</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/usr/bin/ssh</string>
-        <string>-F</string>
+        <string>/usr/bin/env</string>
+        <string>python3</string>
+        <string>{{ .root.chezmoi.homeDir }}/.config/rex/ssh-tunnel.py</string>
+        <string>--config</string>
         <string>{{ .root.chezmoi.homeDir }}/.config/rex/ssh_config</string>
-        <string>-N</string>
-        <string>-T</string>
-        <string>-L</string>
-        <string>{{ .root.chezmoi.homeDir }}/.local/state/rex/tunnels/{{ .host.label }}.sock:/run/user/{{ .host.uid }}/rex/server.sock</string>
+        <string>--host</string>
         <string>{{ .host.label }}</string>
+        <string>--local</string>
+        <string>{{ .root.chezmoi.homeDir }}/.local/state/rex/tunnels/{{ .host.label }}.sock</string>
+        <string>--remote</string>
+        <string>/run/user/{{ .host.uid }}/rex/server.sock</string>
+        <string>--agent</string>
+        <string>{{ .root.chezmoi.homeDir }}/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock</string>
+        <string>--forwarded-agent</string>
+        <string>/run/user/{{ .host.uid }}/rex-ssh-agent/{{ range .root.rex.macs }}{{ if has (lower $.root.chezmoi.hostname) .hostnames }}{{ .label }}{{ end }}{{ end }}.sock</string>
     </array>
     <key>RunAtLoad</key>
     <true/>

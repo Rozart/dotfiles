@@ -1,0 +1,11 @@
+{{ if eq (includeTemplate "rex-enabled" .) "true" -}}
+{{ if eq .chezmoi.os "linux" -}}
+#!/bin/sh
+set -eu
+configuration_revision={{ list (include "dot_config/rex/ssh-agent-relay.py") (includeTemplate "dot_config/systemd/user/rex-ssh-agent.service.tmpl" .) | toJson | sha256sum | quote }}
+command -v python3 >/dev/null 2>&1
+systemctl --user daemon-reload
+systemctl --user enable rex-ssh-agent.service
+systemctl --user restart rex-ssh-agent.service
+{{ end -}}
+{{ end -}}
