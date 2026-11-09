@@ -239,6 +239,61 @@ class RexTests(unittest.TestCase):
             self.assertEqual(sum(line.startswith("bootstrap ") for line in calls), 12)
             self.assertEqual(sum(line.startswith("bootout ") for line in calls), 6)
 
+    def test_mac_bootstrap_retries_and_preserves_failed_fingerprint(self):
+        for failures in (2, 10):
+            with self.subTest(failures=failures), tempfile.TemporaryDirectory() as directory:
+                home = Path(directory)
+                tools = home / "tools"
+                tools.mkdir()
+                config = home / ".config/rex/ssh_config"
+                config.parent.mkdir(parents=True)
+                config.write_text("Host *\n    BatchMode yes\n")
+                agents = home / "Library/LaunchAgents"
+                agents.mkdir(parents=True)
+                for host in DATA["hosts"]:
+                    (agents / f'dev.rozart.rex-{host["label"]}.plist').write_text("fixture plist\n")
+                app = home / "Applications/Rex Beta.app/Contents"
+                (app / "MacOS").mkdir(parents=True)
+                (app / "Info.plist").write_bytes(plistlib.dumps({"CFBundleVersion": DATA["mac_app"]["build"]}))
+                executable(app / "MacOS/Rex", "exit 0\n")
+                executable(tools / "rex", 'touch "$HOME/reloaded"\n')
+                executable(tools / "sleep", 'printf "%s\\n" "$*" >> "$HOME/sleeps"\n')
+                state = home / ".local/state/rex/launch-agents"
+                state.mkdir(parents=True)
+                first = f'dev.rozart.rex-{DATA["hosts"][0]["label"]}'
+                fingerprint = state / f"{first}.sha256"
+                fingerprint.write_text("previous\n")
+                executable(tools / "launchctl",
+                           'case "$1" in\n'
+                           'print) test ! -f "$HOME/booted-out" ;;\n'
+                           'bootout) touch "$HOME/booted-out" ;;\n'
+                           'bootstrap)\n'
+                           '  n=$(cat "$HOME/attempts" 2>/dev/null || echo 0)\n'
+                           '  n=$((n + 1))\n'
+                           '  printf "%s\\n" "$n" > "$HOME/attempts"\n'
+                           '  if [ "$n" -le "$TEST_FAILURES" ]; then\n'
+                           '    echo "Bootstrap failed: 5: Input/output error" >&2\n'
+                           '    exit 5\n'
+                           '  fi ;;\n'
+                           'esac\n')
+                script = render("run_onchange_after_setup-rex.sh.tmpl", "darwin", DATA["mac_hostnames"][0], str(home))
+                env = {**os.environ, "HOME": str(home), "PATH": f"{tools}:{os.environ['PATH']}",
+                       "TEST_FAILURES": str(failures)}
+                result = run_script(script, env)
+                self.assertTrue((home / "booted-out").exists())
+                sleeps = (home / "sleeps").read_text().splitlines()
+                self.assertEqual(sleeps, ["0.5"] * min(failures, 9))
+                if failures == 2:
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertNotEqual(fingerprint.read_text(), "previous\n")
+                    self.assertTrue((home / "reloaded").exists())
+                else:
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn(f"Failed to bootstrap {first} after 10 attempts", result.stderr)
+                    self.assertEqual((home / "attempts").read_text(), "10\n")
+                    self.assertEqual(fingerprint.read_text(), "previous\n")
+                    self.assertFalse((home / "reloaded").exists())
+
     def test_lua_loads(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

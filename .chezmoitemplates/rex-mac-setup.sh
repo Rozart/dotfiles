@@ -19,8 +19,11 @@ if [ "$fingerprint" != "$previous" ] || ! launchctl print "$domain/$name" >/dev/
     attempt=0
     until launchctl bootstrap "$domain" "$plist"; do
         attempt=$((attempt + 1))
-        [ "$attempt" -lt 5 ] || exit 1
-        sleep 1
+        if [ "$attempt" -ge 10 ]; then
+            printf 'Failed to bootstrap %s after %s attempts\n' "$name" "$attempt" >&2
+            exit 1
+        fi
+        sleep 0.5
     done
     printf '%s\n' "$fingerprint" > "$state/launch-agents/$name.sha256"
 fi
