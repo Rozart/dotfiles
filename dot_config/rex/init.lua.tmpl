@@ -6,4 +6,10 @@ rex.host{
   endpoint = {{ printf "%s/.local/state/rex/tunnels/%s.sock" $.chezmoi.homeDir .label | quote }},
 }
 {{ end -}}
+{{ range (includeTemplate "rex-mac-peers" . | fromJson) -}}
+rex.host{
+  label = {{ .label | quote }},
+  endpoint = {{ .endpoint | quote }},
+}
+{{ end -}}
 {{ end -}}

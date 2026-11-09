@@ -1,0 +1,9 @@
+{{- $peers := list -}}
+{{- if eq (includeTemplate "rex-mac-enabled" .) "true" -}}
+{{- range .rex.macs -}}
+{{- if not (has (lower $.chezmoi.hostname) .hostnames) -}}
+{{- $peers = append $peers (dict "label" .label "endpoint" .endpoint "host_id" .host_id) -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- $peers | toJson -}}

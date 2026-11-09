@@ -2,4 +2,10 @@
 {{- range .rex.hosts -}}
 {{- $hosts = append $hosts (dict "label" .label "endpoint" (printf "%s/.local/state/rex/tunnels/%s.sock" $.chezmoi.homeDir .label)) -}}
 {{- end -}}
-{{ dict "build" .rex.mac_app.build "hosts" $hosts | toPrettyJson }}
+{{- $local := dict -}}
+{{- range .rex.macs -}}
+{{- if has (lower $.chezmoi.hostname) .hostnames -}}
+{{- $local = dict "endpoint" (printf "%s/Library/Application Support/rex/server.sock" $.chezmoi.homeDir) "https" .endpoint "host_id" .host_id -}}
+{{- end -}}
+{{- end -}}
+{{ dict "build" .rex.mac_app.build "hosts" $hosts "peers" (includeTemplate "rex-mac-peers" . | fromJson) "local" $local | toPrettyJson }}

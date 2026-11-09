@@ -13,6 +13,19 @@ Configured labels and literal addresses:
 {{ .label }}
 {{ $.chezmoi.homeDir }}/.local/state/rex/tunnels/{{ .label }}.sock
 {{ end }}
+{{ range (includeTemplate "rex-mac-peers" . | fromJson) }}
+{{ .label }} (Mac peer, owner-only Rex Tailscale)
+{{ .endpoint }}
+{{ end }}
+Mac peers require Rex built-in Tailscale enabled in Rex Server settings and
+one-time sign-in with the same Tailscale identity on each Mac. Keep access
+restricted to the enrolling user. For outgoing HTTPS connections, connect the
+standalone Tailscale app too: Rex embedded sharing does not provide macOS DNS/routes.
+A .ts.net lookup failure usually means that client network prerequisite is missing.
+Rex CLI tailscale-on is runtime-only; use the saved GUI setting for startup.
+A sleeping, offline, or not-yet-enrolled peer stays pending without blocking Linux hosts.
+The target Mac must be awake. No app/server restart or sleep-setting change is automatic.
+
 Manual fallback: Settings (Cmd-comma), Remote Hosts, Add Remote Host.
 Paste the full address, not the CLI label. Do not use ~ in place of HOME.
 

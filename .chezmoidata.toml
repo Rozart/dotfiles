@@ -5,6 +5,18 @@ commit = "01d6c4fe68668db3521570d7fbc9b6b112b1e572"
 channel = "snapshot"
 chezmoi_version = "2.74.0"
 
+[[rex.macs]]
+label = "roz-mini-laptop"
+hostnames = ["roz-mini-laptop"]
+endpoint = "https://roz-mini-laptop-rex.spaniel-drum.ts.net"
+host_id = "1a3594e0-ad87-4269-8232-ff15fdbbaa0e"
+
+[[rex.macs]]
+label = "roz-laptop"
+hostnames = ["roz-laptop", "laptop"]
+endpoint = "https://roz-laptop-rex.spaniel-drum.ts.net"
+host_id = "23a2501a-7773-424b-ba9d-a56beeaf8f22"
+
 [rex.mac_app]
 build = "1853"
 url = "https://blob.superlogical.com/public/rex-app/preview/Rex-0.1.0-1853.dmg"
