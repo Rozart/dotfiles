@@ -5,43 +5,103 @@ python3 .tests/test-rex-ssh-agent.py -v
 python3 .tests/test-rex.py -v
 ```
 
-Each Mac's managed Rex tunnels forward its 1Password agent to a distinct socket
-under `/run/user/1000/rex-ssh-agent/` on each Linux host. The tunnel launcher
-checks ownership, directory permissions, and socket type before removing its
-own previous listener. It leaves the other Mac's listener alone. LaunchAgent
-bootstrap retries cover asynchronous completion of `launchctl bootout`.
+Each Mac's existing SSH tunnels forward its 1Password agent to a distinct raw
+socket under `/run/user/1000/rex-ssh-agent/` on all six Linux hosts. The
+`docker-host` tunnel also forwards the other Mac's raw agent back to a private
+local socket. This makes Docker the bridge for cross-Mac authentication without
+adding inbound SSH services or copying private keys. Rex's Mac-to-Mac terminal
+connections continue using their existing Tailscale HTTPS endpoints.
 
-`rex-ssh-agent.service` exposes a stable `agent.sock` with a 0700 parent and
-0600 socket permissions. The relay probes the allowlisted Mac sockets on each
-new client connection, preferring `roz-mini-laptop`, then `roz-laptop`. It skips
-unreachable agents and agents reporting no keys. Once selected, an upstream
-handles the entire connection. It does not retry rejected signatures against
-another Mac or move an in-flight operation after a disconnect. Unlocking and
-signature approvals remain controlled by 1Password.
+The tunnel launcher checks ownership, directory permissions, and socket type
+before replacing its own listeners. It leaves the other Mac's reverse listener
+alone. Tunnel authentication stays pinned to the originating Mac's 1Password
+agent, independent of pane routing. LaunchAgent bootstrap retries cover
+asynchronous completion of `launchctl bootout`.
 
-The Rex systemd drop-in sets `SSH_AUTH_SOCK` for future server starts, including
-commands run with `--shell=none`. Fish startup also sets it for new shells on
-already-running Rex servers. Existing Fish prompts on the three infrastructure
-hosts refresh through the existing `refresh_ssh_agent` hook. Existing agents
-retain their inherited environment; relaunch them from a refreshed shell.
-An existing Fish shell can refresh explicitly with `refresh_ssh_agent`.
-Existing Bash shells can run:
+## Pane ownership and failure behavior
 
-```sh
-export SSH_AUTH_SOCK=/run/user/$(id -u)/rex-ssh-agent/agent.sock
+A supervised router runs on each host, using systemd on Linux and a LaunchAgent
+on each Mac. A Lua watcher reads Rex's pane ownership and client identities.
+Remote Tailscale clients map through their node identity; Unix-socket clients
+map through allowlisted app labels under the same user account. CLI clients and
+unknown owners do not authorize signing.
+
+Each pane has a 0600 agent socket at
+`~/.local/state/rex/ssh-agent/b-<block-uuid>.sock`, inside a 0700 directory. Its
+path stays constant when ownership changes. The router chooses only the owning
+Mac and never falls back to the other Mac. Detachment retains the last
+positively observed Mac. An unobserved ownership transition, unknown owner,
+watcher restart, or observation gap discards that history rather than guessing.
+A detached pane without trusted history must be controlled again to authorize
+requests. Periodic snapshots reconcile pane lifecycle; owner events re-read
+current ownership rather than blindly replaying stale owners.
+
+Owner changes revoke existing relay connections. A generation check prevents a
+slow connection attempt from restoring an old route. A five-second watcher
+health lease gates admission and active forwarding, checked at most every
+250 ms. Watcher EOF invalidates routes immediately. Cleanup of removed sockets
+runs outside routing locks. In-flight operations can fail during ownership
+changes or router restart; the router never retries a signature on another Mac.
+1Password still controls unlocking and approval on the selected device.
+
+The former global `/run/user/1000/rex-ssh-agent/agent.sock` is removed. Unscoped
+requests fail. Cross-Mac authentication depends on `docker-host`; authentication
+using a host's own Mac agent and Linux hosts' direct Mac tunnels does not.
+
+## Shells, SSH, and Git signing
+
+Fish startup and managed Bash/Zsh hooks derive `SSH_AUTH_SOCK` from `REX_BLOCK`.
+Missing or invalid pane scope selects a nonexistent deny socket, not a local
+fallback. Existing shells and agents retain their previous environment; perform
+this one-time Fish refresh, then relaunch agents:
+
+```fish
+source ~/.config/fish/functions/refresh_ssh_agent.fish
+refresh_ssh_agent
 ```
 
-Deploy the relay service on Linux before updating the Mac tunnels. The
-standalone setup hook restarts only the relay, not Rex. Restarting the relay
-interrupts any in-flight agent connection. The runtime directory survives relay
-restarts so existing forwarded listeners remain reachable. The two Macs must
-both receive their updated tunnel launcher and LaunchAgents. Generated target
-files deployed for a live check do not update another machine's chezmoi source;
-sync the committed source before its next full apply.
+For Bash or Zsh:
 
-Tests cover key-list protocol forwarding, unavailable/empty agents, failover,
-reconnection, untrusted symlinks, safe listener cleanup, and rendered templates.
-They use local fixture sockets and never request a real 1Password signature.
+```sh
+. "$HOME/.config/rex/ssh-agent.sh"
+```
+
+New terminals configure themselves. For direct Rex `--shell=none` commands, run
+the command through the deployed `~/.local/bin/rex-agent-exec` wrapper, using its
+absolute path on the target host. A newly created unowned pane remains denied
+until a recognized Rex app claims it. The systemd drop-in provides only an
+unrouted deny path; it cannot derive a pane-specific environment for native
+processes. No Rex server restart is required for the shell hooks or wrapper.
+
+The first SSH `Match exec` branch makes Rex use `SSH_AUTH_SOCK` instead of the
+Mac's hardcoded local IdentityAgent. Outside Rex, existing SSH behavior stays
+unchanged. Git uses `rex-ssh-sign`: in Rex it validates and normalizes arguments,
+requires public-key files for signing, and forces `ssh-keygen -U` agent-only
+signing. Outside Rex it preserves the installed 1Password signing helper, or
+native ssh-keygen when that helper is absent. Git verification remains local.
+
+## Deployment and checks
+
+Deploy Linux routers before updating the Mac routers and bridge tunnels. The
+standalone setup hook restarts only the router, not Rex. Linux's raw socket
+runtime directory survives router restarts. Both Macs need their updated tunnel
+launcher, router, shell hooks, SSH config, and Git signing helper. Generated
+live target deployments do not update another machine's chezmoi source; sync the
+committed source before its next full apply.
+
+The live rollout saved target contents and modes on each host under
+`~/.local/state/rex/agent-rollout-20261109T183609Z/backup.json`. It left all eight
+Rex server instances running and removed its temporary verification sessions.
+
+Unit tests use fixture sockets and do not request real signatures. They cover
+strict owner selection, source changes, revocation, detached history, unavailable
+agents, unknown clients, health expiry, nonblocking cleanup, public-key-only
+signing, SSH overrides, shell scope, listener cleanup, and template rendering.
+Live checks separately verified both Mac-to-Mac directions with real agent and
+Git signatures, rejection while the chosen bridge source was unavailable even
+with the other agent available, reconnection, and routed shells on all six Linux
+hosts. App Remote Control was used only for test navigation; it is not required
+for normal routing, and its disabled setting on roz-laptop stayed unchanged.
 
 # Rex native agent status
 

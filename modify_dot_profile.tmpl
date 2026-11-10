@@ -1,0 +1,7 @@
+#!/usr/bin/env python3
+{{ if eq (includeTemplate "rex-enabled" .) "true" -}}
+{{ include ".chezmoitemplates/rex-shell-hook.py" }}
+{{ else -}}
+import sys
+sys.stdout.write(sys.stdin.read())
+{{ end -}}

@@ -3,7 +3,8 @@ Description=Rex forwarded SSH agent relay
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 {{ .chezmoi.homeDir }}/.config/rex/ssh-agent-relay.py --directory %t/rex-ssh-agent --sources{{ range .rex.macs }} {{ .label }}{{ end }}
+ExecStart=/bin/sh {{ .chezmoi.homeDir }}/.config/rex/ssh-agent-start.sh
+Environment=PATH={{ .chezmoi.homeDir }}/.local/bin:/usr/local/bin:/usr/bin:/bin
 RuntimeDirectory=rex-ssh-agent
 RuntimeDirectoryMode=0700
 RuntimeDirectoryPreserve=yes

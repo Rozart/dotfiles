@@ -1,4 +1,4 @@
-{{ if and (eq .chezmoi.os "linux") (eq (includeTemplate "rex-enabled" .) "true") -}}
+{{ if eq (includeTemplate "rex-enabled" .) "true" -}}
 if set -q REX_SESSION
     refresh_ssh_agent
 end

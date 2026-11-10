@@ -1,0 +1,18 @@
+{{- $local := "" -}}
+{{- range .rex.macs -}}
+{{- if has (lower $.chezmoi.hostname) .hostnames -}}
+{{- $local = .label -}}
+{{- end -}}
+{{- end -}}
+{{- $sources := list -}}
+{{- range .rex.macs -}}
+{{- $path := printf "/run/user/1000/rex-ssh-agent/%s.sock" .label -}}
+{{- if eq $.chezmoi.os "darwin" -}}
+{{- $path = printf "%s/.local/state/rex/ssh-agent/upstream-%s.sock" $.chezmoi.homeDir .label -}}
+{{- if eq .label $local -}}
+{{- $path = printf "%s/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" $.chezmoi.homeDir -}}
+{{- end -}}
+{{- end -}}
+{{- $sources = append $sources (dict "label" .label "aliases" (uniq (append .hostnames .label)) "path" $path) -}}
+{{- end -}}
+{{ dict "sources" $sources "legacy_socket" (ternary "" "/run/user/1000/rex-ssh-agent/agent.sock" (eq .chezmoi.os "darwin")) | toPrettyJson }}

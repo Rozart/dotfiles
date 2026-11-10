@@ -55,6 +55,10 @@ Library
 {{- end }}
 
 {{ if ne (includeTemplate "rex-enabled" .) "true" }}
+.profile
+.bashrc
+.local/bin/rex-agent-exec
+.local/bin/rex-ssh-sign
 .config/rex
 .config/systemd/user/rex.service
 .config/systemd/user/rex-ssh-agent.service
@@ -71,7 +75,6 @@ Library/LaunchAgents/dev.rozart.rex-*.plist
 .config/systemd/user/rex.service
 .config/systemd/user/rex-ssh-agent.service
 .config/systemd/user/rex.service.d
-.config/rex/ssh-agent-relay.py
 {{ end }}
 
 .local/share/rex-picker/.build

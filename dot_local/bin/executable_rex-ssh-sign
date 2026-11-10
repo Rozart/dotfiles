@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+import getopt
+import os
+from pathlib import Path
+import re
+import sys
+
+
+args = sys.argv[1:]
+program = "/usr/bin/ssh-keygen"
+if os.environ.get("REX_SESSION"):
+    match = re.fullmatch(r"block:([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})", os.environ.get("REX_BLOCK", ""))
+    if not match:
+        raise SystemExit("Rex signing requires a valid pane")
+    os.environ["SSH_AUTH_SOCK"] = str(Path.home() / ".local/state/rex/ssh-agent" / f"b-{match[1]}.sock")
+    try:
+        options, files = getopt.gnu_getopt(args, "Y:f:n:I:s:r:O:Uvq")
+    except getopt.GetoptError as error:
+        raise SystemExit(str(error))
+    operations = [value for option, value in options if option == "-Y"]
+    keys = [value for option, value in options if option == "-f"]
+    if len(operations) != 1 or operations[0] not in ("sign", "verify", "find-principals", "match-principals", "check-novalidate") or len(keys) > 1:
+        raise SystemExit("Ambiguous or unsupported Rex signing arguments")
+    if operations[0] == "sign":
+        try:
+            key = Path(keys[0]).read_text().strip()
+        except (IndexError, OSError, UnicodeError):
+            raise SystemExit("Rex signing requires an SSH public-key file")
+        if not key.startswith(("ssh-", "ecdsa-", "sk-")) or len(key.splitlines()) != 1:
+            raise SystemExit("Rex signing refuses local private keys")
+    args = ["-U"]
+    for option, value in options:
+        args.append(option)
+        if value:
+            args.append(value)
+    args.extend(files)
+else:
+    for candidate in ("/opt/1Password/op-ssh-sign", "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"):
+        if Path(candidate).is_file():
+            program = candidate
+            break
+os.execv(program, [program, *args])

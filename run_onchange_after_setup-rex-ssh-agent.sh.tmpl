@@ -1,11 +1,31 @@
 {{ if eq (includeTemplate "rex-enabled" .) "true" -}}
-{{ if eq .chezmoi.os "linux" -}}
 #!/bin/sh
 set -eu
-configuration_revision={{ list (include "dot_config/rex/ssh-agent-relay.py") (includeTemplate "dot_config/systemd/user/rex-ssh-agent.service.tmpl" .) | toJson | sha256sum | quote }}
+configuration_revision={{ list (include "dot_config/rex/ssh-agent-relay.py") (include "dot_config/rex/ssh-agent-watch.lua") (includeTemplate "dot_config/rex/ssh-agent-start.sh.tmpl" .) (includeTemplate "dot_config/rex/ssh-agent-sources.json.tmpl" .) (includeTemplate "dot_config/systemd/user/rex-ssh-agent.service.tmpl" .) (includeTemplate "Library/LaunchAgents/dev.rozart.rex-ssh-agent.plist.tmpl" .) | toJson | sha256sum | quote }}
 command -v python3 >/dev/null 2>&1
+state="$HOME/.local/state/rex"
+mkdir -p "$state/ssh-agent" "$state/launch-agents"
+chmod 700 "$state/ssh-agent"
+{{ if eq .chezmoi.os "linux" -}}
 systemctl --user daemon-reload
 systemctl --user enable rex-ssh-agent.service
 systemctl --user restart rex-ssh-agent.service
+{{ else -}}
+domain="gui/$(id -u)"
+name=dev.rozart.rex-ssh-agent
+plist="$HOME/Library/LaunchAgents/$name.plist"
+previous=$(cat "$state/launch-agents/$name.sha256" 2>/dev/null || true)
+if [ "$configuration_revision" != "$previous" ] || ! launchctl print "$domain/$name" >/dev/null 2>&1; then
+    if launchctl print "$domain/$name" >/dev/null 2>&1; then
+        launchctl bootout "$domain/$name"
+    fi
+    attempt=0
+    until launchctl bootstrap "$domain" "$plist"; do
+        attempt=$((attempt + 1))
+        [ "$attempt" -lt 5 ] || exit 1
+        sleep 1
+    done
+    printf '%s\n' "$configuration_revision" > "$state/launch-agents/$name.sha256"
+fi
 {{ end -}}
 {{ end -}}

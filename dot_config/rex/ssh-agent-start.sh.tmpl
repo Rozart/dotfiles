@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+{{ if eq .chezmoi.os "darwin" -}}
+{{ includeTemplate "rex-mac-client.sh" . }}
+{{ else -}}
+rex_command="$HOME/.local/bin/rex"
+{{ end -}}
+exec /usr/bin/env python3 "$HOME/.config/rex/ssh-agent-relay.py" \
+    --directory "$HOME/.local/state/rex/ssh-agent" \
+    --config "$HOME/.config/rex/ssh-agent-sources.json" \
+    --rex "$rex_command"

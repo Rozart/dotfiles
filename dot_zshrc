@@ -8,6 +8,9 @@ LOCAL_BIN=/usr/local/bin
 SBIN=/usr/local/sbin
 HOMEBREW_BIN=/opt/homebrew/bin
 SSH_AUTH_SOCK=/home/rozart/.1password/agent.sock
+if [ -n "${REX_SESSION:-}" ] && [ -r "$HOME/.config/rex/ssh-agent.sh" ]; then
+    . "$HOME/.config/rex/ssh-agent.sh"
+fi
 
 TOOLS=$HOME/Tools
 

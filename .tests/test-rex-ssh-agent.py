@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import time
 import unittest
 
 
@@ -156,15 +157,161 @@ class RelayTests(unittest.TestCase):
         )
         unit = render("dot_config/systemd/user/rex-ssh-agent.service.tmpl")
         self.assertIn("RuntimeDirectoryMode=0700", unit)
-        self.assertIn("--sources roz-mini-laptop roz-laptop", unit)
+        self.assertIn("ssh-agent-start.sh", unit)
+        sources = json.loads(render("dot_config/rex/ssh-agent-sources.json.tmpl"))["sources"]
+        self.assertEqual([source["label"] for source in sources], ["roz-mini-laptop", "roz-laptop"])
+        self.assertIn("--bridge-local", args)
+        self.assertIn("/Users/rozart/.local/state/rex/ssh-agent/upstream-roz-laptop.sock", args)
         self.assertIn("UMask=0177", unit)
         fish = render("dot_config/fish/conf.d/rex-ssh-agent.fish.tmpl")
         self.assertIn("refresh_ssh_agent", fish)
         helper = (ROOT / "dot_config/fish/functions/executable_refresh_ssh_agent.fish").read_text()
-        self.assertIn("rex-ssh-agent/agent.sock", helper)
+        self.assertIn("rex/ssh-agent/b-$block_id.sock", helper)
         self.assertLess(helper.index("REX_SESSION"), helper.index("TMUX"))
         for hostname in ("proxmox", "raspbox1", "raspbox2", "roz-dev-station", "roz-media-host"):
             self.assertIn("refresh_ssh_agent", render("dot_config/fish/conf.d/rex-ssh-agent.fish.tmpl", hostname=hostname))
+
+
+class RouterTests(unittest.TestCase):
+    block = "block:11111111-1111-1111-1111-111111111111"
+
+    def test_strict_owner_routing_detach_revocation_and_health(self):
+        with tempfile.TemporaryDirectory(prefix="rex-route-", dir="/tmp") as directory:
+            root = Path(directory)
+            root.chmod(0o700)
+            agents = [FakeAgent(root / "a.sock", 1), FakeAgent(root / "b.sock", 2)]
+            sources = [{"label": name, "aliases": [name], "path": str(root / f"{name}.sock")} for name in ("a", "b")]
+            clients = [{"client_id": name, "info": {"kind": "app", "label": name}, "principal": {"kind": "peer", "uid": os.getuid()}} for name in ("a", "b")]
+            router = relay.AgentRouter(root, sources)
+
+            def query():
+                with socket.socket(socket.AF_UNIX) as connection:
+                    connection.settimeout(5)
+                    connection.connect(str(relay.pane_socket(root, self.block)))
+                    return relay.agent_identities(connection)
+
+            def owner(value):
+                router.receive({"type": "owner", "block_id": self.block, "owner": value, "clients": clients})
+
+            try:
+                router.receive({"type": "snapshot", "blocks": [{"block_id": self.block, "owner": "a"}], "clients": clients})
+                self.assertEqual(query(), 1)
+                persistent = socket.socket(socket.AF_UNIX)
+                persistent.settimeout(5)
+                persistent.connect(str(relay.pane_socket(root, self.block)))
+                self.assertEqual(relay.agent_identities(persistent), 1)
+                owner("b")
+                self.assertEqual(query(), 2)
+                with self.assertRaises((OSError, ConnectionError)):
+                    relay.agent_identities(persistent)
+                persistent.close()
+                owner(None)
+                self.assertEqual(query(), 2)
+                agents[1].identities = 0
+                with self.assertRaises((OSError, ConnectionError)):
+                    query()
+                agents[1].identities = 2
+                owner("unknown")
+                with self.assertRaises((OSError, ConnectionError)):
+                    query()
+                owner(None)
+                with self.assertRaises((OSError, ConnectionError)):
+                    query()
+                owner("a")
+                self.assertEqual(query(), 1)
+                router.last_seen = 0
+                with self.assertRaises((OSError, ConnectionError)):
+                    query()
+                router.expire()
+                with self.assertRaises((OSError, ConnectionError)):
+                    query()
+                router.receive({"type": "snapshot", "blocks": [{"block_id": self.block}], "clients": clients})
+                with self.assertRaises((OSError, ConnectionError)):
+                    query()
+                owner("b")
+                self.assertEqual(query(), 2)
+                router.receive({"type": "snapshot", "blocks": [], "clients": clients})
+                self.assertFalse(relay.pane_socket(root, self.block).exists())
+            finally:
+                router.close()
+                for agent in agents:
+                    agent.stop()
+
+    def test_cleanup_does_not_block_health_revocation(self):
+        with tempfile.TemporaryDirectory(prefix="rex-clean-", dir="/tmp") as directory:
+            root = Path(directory)
+            root.chmod(0o700)
+            router = relay.AgentRouter(root, [])
+            other = "block:22222222-2222-2222-2222-222222222222"
+            router.receive({"type": "snapshot", "blocks": [{"block_id": self.block}, {"block_id": other}], "clients": []})
+            release = threading.Event()
+            waiting = threading.Event()
+            server = router.servers[self.block]
+            shutdown = server.shutdown
+
+            def delayed_shutdown():
+                waiting.set()
+                release.wait(2)
+                shutdown()
+
+            server.shutdown = delayed_shutdown
+            try:
+                start = time.monotonic()
+                router.receive({"type": "snapshot", "blocks": [{"block_id": other}], "clients": []})
+                self.assertLess(time.monotonic() - start, 0.5)
+                self.assertTrue(waiting.wait(1))
+                router.last_seen = 0
+                router.expire()
+                self.assertFalse(router.ready)
+            finally:
+                release.set()
+                router.close()
+
+    def test_identity_mapping_rejects_cli_and_spoofed_remote_label(self):
+        sources = [{"label": "a", "aliases": ["a"]}]
+        self.assertIsNone(relay.client_source({"info": {"kind": "cli", "label": "a"}, "principal": {"kind": "peer", "uid": os.getuid()}}, sources))
+        self.assertIsNone(relay.client_source({"info": {"kind": "app", "label": "a"}, "principal": {"kind": "tailscale", "node": "unknown"}}, sources))
+        self.assertEqual(relay.client_source({"info": {"kind": "app"}, "principal": {"kind": "tailscale", "node": "a"}}, sources), "a")
+
+    def test_shell_scope_and_ssh_override(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            env = {**os.environ, "HOME": str(root), "REX_SESSION": "test", "REX_BLOCK": self.block, "SSH_AUTH_SOCK": "/wrong.sock"}
+            script = ROOT / "dot_config/rex/ssh-agent.sh"
+            result = subprocess.check_output(["/bin/sh", "-c", f'. "{script}"; printf "%s" "$SSH_AUTH_SOCK"'], env=env, text=True)
+            self.assertEqual(result, str(root / ".local/state/rex/ssh-agent/b-11111111-1111-1111-1111-111111111111.sock"))
+            env["REX_BLOCK"] = "../../bad"
+            result = subprocess.check_output(["/bin/sh", "-c", f'. "{script}"; printf "%s" "$SSH_AUTH_SOCK"'], env=env, text=True)
+            self.assertEqual(result, str(root / ".local/state/rex/ssh-agent/unrouted.sock"))
+            config = root / "ssh_config"
+            config.write_text(render("private_dot_ssh/config.tmpl", "darwin", "roz-mini-laptop", str(root)))
+            result = subprocess.check_output(["ssh", "-G", "-F", str(config), "personalgit"], env=env, text=True, stderr=subprocess.DEVNULL)
+            self.assertIn("identityagent SSH_AUTH_SOCK", result)
+            env.pop("REX_SESSION")
+            result = subprocess.check_output(["ssh", "-G", "-F", str(config), "personalgit"], env=env, text=True, stderr=subprocess.DEVNULL)
+            self.assertNotIn("identityagent SSH_AUTH_SOCK", result)
+
+    def test_profile_modifier_preserves_content_and_is_idempotent(self):
+        content = "export EXISTING=value\n"
+        modifier = render("modify_dot_profile.tmpl")
+        first = subprocess.check_output([sys.executable, "-c", modifier], input=content, text=True)
+        second = subprocess.check_output([sys.executable, "-c", modifier], input=first, text=True)
+        self.assertEqual(first, second)
+        self.assertTrue(first.endswith(content))
+
+    def test_signing_refuses_private_keys(self):
+        with tempfile.TemporaryDirectory() as directory:
+            key = Path(directory) / "private"
+            key.write_text("-----BEGIN OPENSSH PRIVATE KEY-----\n")
+            result = subprocess.run([sys.executable, str(ROOT / "dot_local/bin/executable_rex-ssh-sign"), "-Y", "sign", "-f", str(key)], env={**os.environ, "REX_SESSION": "test", "REX_BLOCK": self.block}, capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("refuses local private keys", result.stderr)
+            result = subprocess.run([sys.executable, str(ROOT / "dot_local/bin/executable_rex-ssh-sign"), "-Ysign", "-f", str(key)], env={**os.environ, "REX_SESSION": "test", "REX_BLOCK": self.block}, capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("refuses local private keys", result.stderr)
+            result = subprocess.run([sys.executable, str(ROOT / "dot_local/bin/executable_rex-ssh-sign"), "-Y", "sign", "-f", str(key), "-f", str(key)], env={**os.environ, "REX_SESSION": "test", "REX_BLOCK": self.block}, capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("Ambiguous", result.stderr)
 
 
 if __name__ == "__main__":

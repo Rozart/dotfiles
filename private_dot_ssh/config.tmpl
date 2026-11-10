@@ -1,3 +1,7 @@
+Match exec "test -n \"$REX_SESSION\""
+    IdentityAgent SSH_AUTH_SOCK
+Match all
+
 Include ~/.ssh/config.d/*.conf
 
 Host personalgit

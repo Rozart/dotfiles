@@ -1,2 +1,2 @@
 [Service]
-Environment=SSH_AUTH_SOCK=%t/rex-ssh-agent/agent.sock
+Environment=SSH_AUTH_SOCK={{ .chezmoi.homeDir }}/.local/state/rex/ssh-agent/unrouted.sock

@@ -21,6 +21,14 @@
         <string>{{ .root.chezmoi.homeDir }}/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock</string>
         <string>--forwarded-agent</string>
         <string>/run/user/{{ .host.uid }}/rex-ssh-agent/{{ range .root.rex.macs }}{{ if has (lower $.root.chezmoi.hostname) .hostnames }}{{ .label }}{{ end }}{{ end }}.sock</string>
+{{ if eq .host.label "docker-host" }}
+{{ range (includeTemplate "rex-mac-peers" .root | fromJson) }}
+        <string>--bridge-local</string>
+        <string>{{ $.root.chezmoi.homeDir }}/.local/state/rex/ssh-agent/upstream-{{ .label }}.sock</string>
+        <string>--bridge-remote</string>
+        <string>/run/user/{{ $.host.uid }}/rex-ssh-agent/{{ .label }}.sock</string>
+{{ end }}
+{{ end }}
     </array>
     <key>RunAtLoad</key>
     <true/>
