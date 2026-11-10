@@ -1,0 +1,11 @@
+{{- $label := "" -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{- range .rex.macs -}}
+{{- if has (lower $.chezmoi.hostname) .hostnames -}}{{- $label = .label -}}{{- end -}}
+{{- end -}}
+{{- else if eq .chezmoi.os "linux" -}}
+{{- range .rex.hosts -}}
+{{- if eq $.chezmoi.hostname .hostname -}}{{- $label = .label -}}{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- get .fleet.roles $label | default (list) | toJson -}}

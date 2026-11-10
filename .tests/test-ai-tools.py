@@ -14,8 +14,8 @@ PLANNOTATOR = '#!/bin/bash\nprintf "plannotator 0.27.25\\n"\n'
 CHECKSUM = hashlib.sha256(PLANNOTATOR.encode()).hexdigest()
 
 
-def render(platform, flags):
-    data = {'chezmoi': {'os': platform}, 'is_dev_station': False, 'is_docker_host': False, 'is_media_host': False, **flags}
+def render(platform, hostname):
+    data = {'chezmoi': {'os': platform, 'hostname': hostname}}
     return subprocess.check_output([CHEZMOI, '--source', str(REPO), '--override-data', json.dumps(data), 'execute-template', '--file', str(REPO / 'run_after_zz-install-ai-tools.sh.tmpl')], text=True)
 
 
@@ -87,14 +87,16 @@ def run_install(root, script, **options):
 
 
 def main():
-    mac = render('darwin', {})
-    linux = render('linux', {'is_dev_station': True})
+    mac = render('darwin', 'roz-laptop')
+    linux = render('linux', 'roz-dev-station')
     assert 'brew install --cask claude-code' in mac
     assert 'bash "$stage/claude-install.sh" stable' in linux
-    for flag in ['is_dev_station', 'is_docker_host', 'is_media_host']:
-        assert render('linux', {flag: True}).strip()
-    assert not render('linux', {}).strip()
-    assert not render('windows', {'is_dev_station': True}).strip()
+    for hostname in ['roz-dev-station', 'roz-docker-host', 'roz-media-host']:
+        assert render('linux', hostname).strip()
+    for hostname in ['proxmox', 'raspbox1', 'unknown-box']:
+        assert not render('linux', hostname).strip()
+    assert render('darwin', 'unknown-mac').strip()
+    assert not render('windows', 'roz-dev-station').strip()
     subprocess.run([BASH, '-n'], input=mac, text=True, check=True)
     subprocess.run([BASH, '-n'], input=linux, text=True, check=True)
     subprocess.run([BASH, '-n', str(REPO / 'dot_local/bin/executable_update-all')], check=True)

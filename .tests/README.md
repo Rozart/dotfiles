@@ -188,7 +188,7 @@ The tests do not change running services or clipboard contents.
 
 # AI CLI installation policy
 
-`run_after_zz-install-ai-tools.sh.tmpl` installs missing tools on every Mac and Linux hosts marked `is_dev_station`, `is_docker_host`, or `is_media_host`. Those flags identify `roz-dev-station`, `roz-docker-host`, and `roz-media-host` in the chezmoi config template. Other Linux hosts and Windows render an empty script.
+`run_after_zz-install-ai-tools.sh.tmpl` installs missing tools on every Mac and on Linux hosts with the `homelab` role: `roz-dev-station`, `roz-docker-host`, and `roz-media-host`. Roles live in `[fleet.roles]` in `.chezmoidata.toml`, keyed by rex host label, and `.chezmoitemplates/host-roles` resolves them from `.chezmoi.hostname` on every apply. Other Linux hosts and Windows render an empty script.
 
 The `zz-` name places the installer after the existing package bootstrap. Scripts that render only whitespace do not run, according to chezmoi's script documentation.
 

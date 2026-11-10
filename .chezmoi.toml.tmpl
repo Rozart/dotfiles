@@ -5,15 +5,6 @@
     name = "rozart"
     osid = {{ $osID | quote }}
     hostname = {{ $hostname | quote }}
-    
-    is_local = {{ eq $osID "darwin" }}
-    is_dev_station = {{ eq $hostname "roz-dev-station" }}
-    is_docker_host = {{ eq $hostname "roz-docker-host" }}
-    is_media_host = {{ eq $hostname "roz-media-host" }}
-    is_proxmox = {{ eq $hostname "proxmox" }}
-    is_raspbox1 = {{ eq $hostname "raspbox1" }}
-    is_raspbox2 = {{ eq $hostname "raspbox2" }}
 
-    enable_ssh_refresh = {{ or (eq $hostname "roz-dev-station") (eq $hostname "roz-docker-host") (eq $hostname "roz-media-host") }}
 
     obsidian_base = "~/obsidian/roz-obsidian"

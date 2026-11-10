@@ -79,3 +79,13 @@ address = "192.168.0.32"
 user = "rozart"
 uid = 1000
 identity = "raspbox2"
+
+[fleet.roles]
+roz-laptop = ["mac"]
+roz-mini-laptop = ["mac"]
+dev-station = ["homelab"]
+docker-host = ["homelab"]
+media-host = ["homelab"]
+proxmox = ["infra"]
+raspbox1 = ["pi"]
+raspbox2 = ["pi"]

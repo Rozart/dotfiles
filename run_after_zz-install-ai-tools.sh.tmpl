@@ -1,4 +1,4 @@
-{{ if or (eq .chezmoi.os "darwin") (and (eq .chezmoi.os "linux") (or .is_dev_station .is_docker_host .is_media_host)) -}}
+{{ if or (eq .chezmoi.os "darwin") (and (eq .chezmoi.os "linux") (has "homelab" (includeTemplate "host-roles" . | fromJson))) -}}
 #!/usr/bin/env bash
 set -euo pipefail
 
