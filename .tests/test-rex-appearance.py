@@ -80,7 +80,8 @@ class AppearanceTests(unittest.TestCase):
 
     def test_profile_capture_has_only_approved_appearance(self):
         SYNC.validate_profile(self.config)
-        self.assertEqual(len(self.config["preferences"]), 36)
+        self.assertEqual(len(self.config["preferences"]), 37)
+        self.assertIs(self.config["preferences"]["Workspace.experiments.usesNewQuickSwitcher"], True)
         self.assertEqual({theme["name"] for theme in self.config["themes"]}, {"Sonokai Hikari", "Sonokai Shusia"})
         self.assertEqual(self.config["preferences"]["Workspace.terminalFontName"], "Pragmasevka Nerd Font")
         self.assertEqual(self.config["preferences"]["Workspace.terminalFontPointSize"], 11.0)
@@ -104,6 +105,21 @@ class AppearanceTests(unittest.TestCase):
         self.assertEqual(saved.stat().st_mode & 0o777, 0o600)
         self.assertEqual(self.state.stat().st_mode & 0o777, 0o700)
         self.assertEqual(self.calls[0][-2:], ["-float", "11.0"])
+
+    def test_quick_switcher_is_enabled_when_missing_or_disabled(self):
+        key = "Workspace.experiments.usesNewQuickSwitcher"
+        self.preferences["Workspace.terminalFontPointSize"] = 11.0
+        for previous in (None, False):
+            with self.subTest(previous=previous):
+                if previous is None:
+                    self.preferences.pop(key, None)
+                else:
+                    self.preferences[key] = previous
+                result = self.synchronize()
+                self.assertEqual(result["keys"], [key])
+                self.assertIs(self.preferences[key], True)
+                self.assertEqual(self.calls[-1], ["defaults", "write", SYNC.DOMAIN, key, "-bool", "true"])
+                self.assertFalse(self.synchronize()["pending"])
 
     def test_reapply_has_no_write_or_additional_backup_with_running_gui(self):
         self.synchronize()
@@ -139,7 +155,7 @@ class AppearanceTests(unittest.TestCase):
         self.preferences = {}
         result = self.synchronize()
         self.assertTrue(result["changed"])
-        self.assertEqual(len(self.calls), 37)
+        self.assertEqual(len(self.calls), 38)
         self.assertEqual(self.calls[0][3], SYNC.THEMES_KEY)
         self.assertEqual({call[4] for call in self.calls}, {"-data", "-bool", "-float", "-int", "-string"})
         saved = plistlib.loads(Path(result["backup"]).read_bytes())

@@ -24,6 +24,7 @@ PREFERENCE_TYPES = {
     "Workspace.cursorShader": str,
     "Workspace.cursorShadersEnabled": bool,
     "Workspace.darkThemeID": str,
+    "Workspace.experiments.usesNewQuickSwitcher": bool,
     "Workspace.inactivePaneFadeMode": str,
     "Workspace.interfaceStyle": str,
     "Workspace.lightThemeID": str,

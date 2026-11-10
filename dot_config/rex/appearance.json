@@ -10,6 +10,7 @@
     "Workspace.cursorShader": "warp",
     "Workspace.cursorShadersEnabled": true,
     "Workspace.darkThemeID": "custom-39A06E8A-8799-4C31-8423-110A6EE4A642",
+    "Workspace.experiments.usesNewQuickSwitcher": true,
     "Workspace.inactivePaneFadeMode": "styling",
     "Workspace.interfaceStyle": "useTheme",
     "Workspace.lightThemeID": "custom-C0D71887-95EC-4CAC-A14F-2D767245A30F",
