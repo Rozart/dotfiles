@@ -89,3 +89,37 @@ media-host = ["homelab"]
 proxmox = ["infra"]
 raspbox1 = ["pi"]
 raspbox2 = ["pi"]
+
+[fleet.transport]
+raspbox1 = "rex"
+raspbox2 = "rex"
+
+[fleet.repos.chezmoi]
+path = ".local/share/chezmoi"
+roles = ["mac", "homelab"]
+
+[fleet.repos.ai-cli-configs]
+path = "Dev/ai-cli-configs"
+roles = ["mac", "homelab"]
+stow = ["common/.agents", "claude/.claude", "pi/.pi"]
+
+[fleet.items]
+claude = { roles = ["mac", "homelab"] }
+pi = { roles = ["mac", "homelab"] }
+nvim = { roles = ["mac", "homelab"] }
+rg = { roles = ["mac", "homelab"] }
+fd = { roles = ["mac", "homelab"] }
+chezmoi = { roles = ["mac", "homelab", "infra", "pi"] }
+mise = { roles = ["mac", "homelab"] }
+docker = { roles = ["mac", "homelab"] }
+git = { roles = ["mac", "homelab"] }
+stow = { roles = ["mac"] }
+starship = { roles = ["mac", "homelab"] }
+lazydocker = { roles = ["mac", "homelab"] }
+fzf = { roles = ["mac", "homelab"] }
+bat = { roles = ["mac", "homelab"] }
+eza = { cmd = "eza --version | sed -n 2p", roles = ["mac", "homelab"] }
+gh = { roles = ["mac", "homelab"] }
+tmux = { cmd = "tmux -V", roles = ["mac", "homelab"] }
+zoxide = { roles = ["mac", "homelab"] }
+jq = { roles = ["mac", "homelab"] }
