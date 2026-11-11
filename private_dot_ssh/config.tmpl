@@ -1,4 +1,4 @@
-Match exec "test -n \"$REX_SESSION\""
+Match exec "printenv REX_SESSION >/dev/null"
     IdentityAgent SSH_AUTH_SOCK
 Match all
 
