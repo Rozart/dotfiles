@@ -1,6 +1,8 @@
 {{- $osID := .chezmoi.os -}}
 {{- $hostname := .chezmoi.hostname -}}
 
+umask = {{ if eq $osID "darwin" }}0o022{{ else }}0o077{{ end }}
+
 [data]
     name = "rozart"
     osid = {{ $osID | quote }}
