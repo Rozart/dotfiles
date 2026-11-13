@@ -94,6 +94,10 @@ raspbox2 = ["pi"]
 raspbox1 = "rex"
 raspbox2 = "rex"
 
+[fleet.channels]
+"/.local/nvim/stable/" = "nvim-stable"
+"/.local/nvim/nightly/" = "nvim-nightly"
+
 [fleet.repos.chezmoi]
 path = ".local/share/chezmoi"
 roles = ["mac", "homelab"]
@@ -104,14 +108,14 @@ roles = ["mac", "homelab"]
 stow = ["common/.agents", "claude/.claude", "pi/.pi"]
 
 [fleet.items]
-claude = { roles = ["mac", "homelab"] }
+claude = { roles = ["mac", "homelab"], upgrade = { brew-cask = "brew upgrade --cask claude-code" } }
 pi = { roles = ["mac", "homelab"] }
-nvim = { roles = ["mac", "homelab"] }
-rg = { roles = ["mac", "homelab"] }
+nvim = { roles = ["mac", "homelab"], channel = "nvim-stable", install = "update-nvim stable", upgrade = { nvim-stable = "update-nvim stable", nvim-nightly = "update-nvim nightly" } }
+rg = { roles = ["mac", "homelab"], upgrade = { os-package = "sudo apt-get update && sudo apt-get install --only-upgrade ripgrep" } }
 fd = { roles = ["mac", "homelab"] }
 chezmoi = { roles = ["mac", "homelab", "infra", "pi"] }
 mise = { roles = ["mac", "homelab"] }
-docker = { roles = ["mac", "homelab"] }
+docker = { roles = ["mac", "homelab"], upgrade = { os-package = "sudo apt-get update && sudo apt-get install --only-upgrade docker-ce docker-ce-cli" } }
 git = { roles = ["mac", "homelab"] }
 stow = { roles = ["mac"] }
 starship = { roles = ["mac", "homelab"] }
