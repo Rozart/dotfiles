@@ -115,8 +115,12 @@ set -as terminal-features ",*:clipboard"
 # OSC 8 hyperlinks pass through to Ghostty (Cmd+click links, e.g. the plan-review pane)
 set -as terminal-features ",xterm-ghostty:hyperlinks"
 
+{{ if eq .chezmoi.os "darwin" -}}
+set -g update-environment "DISPLAY SSH_AUTH_SOCK SSH_ASKPASS SSH_AGENT_PID SSH_CONNECTION WINDOWID XAUTHORITY LC_DESKTOP_HOST"
+{{- else -}}
 set -g update-environment "DISPLAY SSH_ASKPASS SSH_AGENT_PID SSH_CONNECTION WINDOWID XAUTHORITY LC_DESKTOP_HOST"
 set-environment -g SSH_AUTH_SOCK "$HOME/.ssh/ssh_auth_sock"
+{{- end }}
 
 # Run Tmux Plugin Manager
 run '~/.tmux/plugins/tpm/tpm'
