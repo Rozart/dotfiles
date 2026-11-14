@@ -1,0 +1,12 @@
+{{ if has "mac" (includeTemplate "host-roles" . | fromJson) -}}
+#!/bin/sh
+set -eu
+
+if [ -d "$HOME/Dev/fleet/.git" ]; then
+    echo "fleet: development checkout at ~/Dev/fleet keeps its editable install"
+    exit 0
+fi
+
+PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:/opt/homebrew/bin:$PATH"
+uv tool install --force "git+ssh://homelabgit/Rozart/fleet.git@{{ .fleet.install.ref }}"
+{{ end -}}

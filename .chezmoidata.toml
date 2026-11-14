@@ -80,6 +80,9 @@ user = "rozart"
 uid = 1000
 identity = "raspbox2"
 
+[fleet.install]
+ref = "91e0bf7e2d8980253ed6a3689b2b427fbe227638"
+
 [fleet.roles]
 roz-laptop = ["mac"]
 roz-mini-laptop = ["mac"]
