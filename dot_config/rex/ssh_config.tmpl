@@ -18,5 +18,5 @@ Host *
 Host {{ .label }}
     HostName {{ .address }}
     User {{ .user }}
-    IdentityFile {{ $.chezmoi.homeDir }}/.ssh/{{ .identity }}.pub
+    IdentityFile {{ $.chezmoi.homeDir }}/.ssh/{{ $.rex.tunnel_identity }}.pub
 {{ end }}

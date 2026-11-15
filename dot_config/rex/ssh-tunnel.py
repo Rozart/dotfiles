@@ -6,27 +6,6 @@ import stat
 import subprocess
 
 
-CLEANUP = """
-import os
-from pathlib import Path
-import stat
-import sys
-
-path = Path(sys.argv[1])
-parent = path.parent.lstat()
-if not stat.S_ISDIR(parent.st_mode) or parent.st_uid != os.getuid() or stat.S_IMODE(parent.st_mode) != 0o700:
-    raise ValueError('Untrusted remote agent directory')
-try:
-    metadata = path.lstat()
-except FileNotFoundError:
-    pass
-else:
-    if not stat.S_ISSOCK(metadata.st_mode) or metadata.st_uid != os.getuid():
-        raise ValueError('Refusing to unlink an untrusted remote socket')
-    path.unlink()
-"""
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True)
@@ -41,7 +20,8 @@ def main():
     if not Path(args.agent).is_socket():
         raise ValueError("The local 1Password SSH agent socket is unavailable")
     base = ["/usr/bin/ssh", "-F", args.config]
-    command = shlex.join(["python3", "-c", CLEANUP, args.forwarded_agent])
+    client = Path(args.forwarded_agent).stem
+    command = shlex.join(["python3", ".config/rex/ssh-tunnel-command.py", "--client", client])
     subprocess.run([*base, args.host, command], check=True, timeout=30)
     forwards = []
     if bool(args.bridge_local) != bool(args.bridge_remote):

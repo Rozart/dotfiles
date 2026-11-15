@@ -1,0 +1,1 @@
+restrict,port-forwarding,command="/usr/bin/python3 .config/rex/ssh-tunnel-command.py --forced" {{ include "private_dot_ssh/rex-tunnels.pub" | trim }}

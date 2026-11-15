@@ -1,4 +1,5 @@
 [rex]
+tunnel_identity = "rex-tunnels"
 mac_hostnames = ["roz-mini-laptop", "roz-laptop", "laptop"]
 version = "0.0.1793981048-g01d6c4"
 commit = "01d6c4fe68668db3521570d7fbc9b6b112b1e572"

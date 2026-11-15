@@ -5,3 +5,13 @@
 {{- else if eq .chezmoi.hostname "roz-dev-station" -}}
 {{ include "private_dot_ssh/dev-station.pub" -}}
 {{- end }}
+{{ if eq .chezmoi.os "linux" -}}
+{{ range .rex.hosts -}}
+{{ if and (eq $.chezmoi.hostname .hostname) (eq $.chezmoi.username .user) -}}
+{{ if has .label (list "proxmox" "raspbox1" "raspbox2") -}}
+{{ include (printf "private_dot_ssh/%s.pub" .identity) }}
+{{ end -}}
+{{ includeTemplate "rex-tunnel-authorized-key" $ }}
+{{ end -}}
+{{ end -}}
+{{ end -}}
