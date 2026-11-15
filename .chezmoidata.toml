@@ -81,7 +81,7 @@ uid = 1000
 identity = "raspbox2"
 
 [fleet.install]
-ref = "91e0bf7e2d8980253ed6a3689b2b427fbe227638"
+ref = "d0c65e107e385657ef05e17c8214c0c8e70796af"
 
 [fleet.roles]
 roz-laptop = ["mac"]
@@ -94,6 +94,8 @@ raspbox1 = ["pi"]
 raspbox2 = ["pi"]
 
 [fleet.transport]
+roz-laptop = "rex"
+roz-mini-laptop = "rex"
 raspbox1 = "rex"
 raspbox2 = "rex"
 
