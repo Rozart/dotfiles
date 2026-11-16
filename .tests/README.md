@@ -18,6 +18,31 @@ alone. Tunnel authentication stays pinned to the originating Mac's 1Password
 agent, independent of pane routing. LaunchAgent bootstrap retries cover
 asynchronous completion of `launchctl bootout`.
 
+## Shared tunnel authentication key
+
+Both Macs select `~/.ssh/rex-tunnels.pub` for all six Linux tunnels. The matching
+private key stays in the personal Homelab vault's `Rex tunnels` SSH-key item.
+Existing per-environment keys remain available for ordinary SSH and rollback.
+Each Mac needs its own approval with **Approve for all applications** selected;
+1Password remembers approval only for the configured agent-session duration.
+This allows any process under that Mac's user account to request use of the key.
+
+The authorized-key entry uses `restrict,port-forwarding` and a forced Python
+helper. It denies direct SSH shells, PTYs, SSH-agent forwarding, X11 forwarding,
+and SSH user startup hooks. The helper accepts only cleanup of either configured
+Mac's owned raw agent socket. The tunnel forwards the agent socket with explicit
+Unix-socket forwarding, not SSH's agent-forwarding feature.
+
+General SSH forwarding remains enabled. A `permitopen` TCP allowlist also blocks
+the required Unix-socket connections in the tested OpenSSH implementation, so it
+cannot isolate this key to Rex socket paths. Rex control-socket access already
+allows programs to run as the remote user; this key is not a low-privilege
+credential. Revoking the shared key affects both Macs and all six environments.
+
+Deploy the helper and add the authorized-key entry to every Linux host before
+switching either Mac's SSH config and launcher. Preserve unrelated authorized
+keys. Restart only the Mac's six tunnel LaunchAgents, not the Rex servers.
+
 ## Pane ownership and failure behavior
 
 A supervised router runs on each host, using systemd on Linux and a LaunchAgent

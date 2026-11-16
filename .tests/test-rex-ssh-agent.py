@@ -11,7 +11,9 @@ import sys
 import tempfile
 import threading
 import time
+import tomllib
 import unittest
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -105,37 +107,85 @@ class RelayTests(unittest.TestCase):
                 agent.stop()
 
     def test_tunnel_cleanup_rejects_non_socket_and_symlink(self):
-        spec = importlib.util.spec_from_file_location("tunnel", ROOT / "dot_config/rex/ssh-tunnel.py")
-        tunnel = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(tunnel)
+        namespace = {"__name__": "tunnel_command"}
+        exec(render("dot_config/rex/ssh-tunnel-command.py.tmpl"), namespace)
+        cleanup = namespace["cleanup"]
+        client = namespace["CLIENTS"][0]
         with tempfile.TemporaryDirectory(prefix="rex-agent-", dir="/tmp") as directory:
             root = Path(directory)
             root.chmod(0o700)
-            path = root / "mac.sock"
+            path = root / (client + ".sock")
             path.write_text("preserve")
-            result = subprocess.run([sys.executable, "-c", tunnel.CLEANUP, str(path)], capture_output=True)
-            self.assertNotEqual(result.returncode, 0)
+            with self.assertRaises(ValueError):
+                cleanup(root, client)
             self.assertEqual(path.read_text(), "preserve")
             path.unlink()
             agent = FakeAgent(root / "real.sock", 1)
             try:
                 path.symlink_to(root / "real.sock")
-                result = subprocess.run([sys.executable, "-c", tunnel.CLEANUP, str(path)], capture_output=True)
-                self.assertNotEqual(result.returncode, 0)
+                with self.assertRaises(ValueError):
+                    cleanup(root, client)
                 self.assertTrue(path.is_symlink())
                 path.unlink()
                 agent.stop()
-                result = subprocess.run([sys.executable, "-c", tunnel.CLEANUP, str(root / "real.sock")], capture_output=True)
-                self.assertEqual(result.returncode, 0, result.stderr)
-                self.assertFalse((root / "real.sock").exists())
+                (root / "real.sock").rename(path)
+                cleanup(root, client)
+                self.assertFalse(path.exists())
+                cleanup(root, client)
+                with self.assertRaises(ValueError):
+                    cleanup(root, "../unknown")
+                root.chmod(0o755)
+                with self.assertRaises(ValueError):
+                    cleanup(root, client)
             finally:
                 if agent.socket.fileno() != -1:
                     agent.stop()
 
+    def test_tunnel_forced_command_rejects_shell_and_injection(self):
+        script = render("dot_config/rex/ssh-tunnel-command.py.tmpl")
+        for command in ["", "id", "sh", "python3 .config/rex/ssh-tunnel-command.py --client unknown",
+                        "python3 .config/rex/ssh-tunnel-command.py --client roz-laptop; id",
+                        "python3 .config/rex/ssh-tunnel-command.py --client ../roz-laptop"]:
+            result = subprocess.run([sys.executable, "-c", script, "--forced"],
+                                    env={**os.environ, "SSH_ORIGINAL_COMMAND": command}, capture_output=True)
+            self.assertNotEqual(result.returncode, 0)
+
+    def test_tunnel_forced_command_accepts_only_known_client_cleanup(self):
+        namespace = {"__name__": "tunnel_command"}
+        exec(render("dot_config/rex/ssh-tunnel-command.py.tmpl"), namespace)
+        namespace["cleanup"] = mock.Mock()
+        for client in namespace["CLIENTS"]:
+            command = "python3 .config/rex/ssh-tunnel-command.py --client " + client
+            with mock.patch.object(sys, "argv", ["helper", "--forced"]), mock.patch.dict(
+                    os.environ, {"SSH_ORIGINAL_COMMAND": command}):
+                namespace["main"]()
+            namespace["cleanup"].assert_called_with(
+                Path("/run/user") / str(os.getuid()) / "rex-ssh-agent", client)
+
+    def test_shared_tunnel_key_is_restricted_and_preserves_host_keys(self):
+        data = tomllib.loads((ROOT / ".chezmoidata.toml").read_text())["rex"]
+        public = (ROOT / "private_dot_ssh/rex-tunnels.pub").read_text().strip()
+        for host in data["hosts"]:
+            result = subprocess.check_output([
+                "chezmoi", "--source", str(ROOT), "--override-data",
+                json.dumps({"chezmoi": {"os": "linux", "hostname": host["hostname"], "username": host["user"]}}),
+                "execute-template", "--file", str(ROOT / "private_dot_ssh/authorized_keys.tmpl"),
+            ], text=True)
+            self.assertIn((ROOT / ("private_dot_ssh/" + host["identity"] + ".pub")).read_text().strip(), result)
+            line = next(line for line in result.splitlines() if public in line)
+            self.assertTrue(line.startswith('restrict,port-forwarding,command="/usr/bin/python3 .config/rex/ssh-tunnel-command.py --forced" '))
+            self.assertNotIn("permitopen=", line)
+            self.assertNotIn("permitlisten=", line)
+
+    def test_mac_tunnels_share_one_public_identity(self):
+        for hostname in ["roz-laptop", "roz-mini-laptop"]:
+            config = render("dot_config/rex/ssh_config.tmpl", "darwin", hostname, "/Users/rozart")
+            self.assertEqual(config.count("IdentityFile /Users/rozart/.ssh/rex-tunnels.pub"), 6)
+
     def test_bootstrap_retry_is_bounded(self):
         script = render("run_onchange_after_setup-rex.sh.tmpl", "darwin", "roz-mini-laptop", "/Users/rozart")
         start = script.index("    attempt=0")
-        end = script.index("    printf", start)
+        end = script.index("\n    printf", start)
         retry = script[start:end]
         success = 'domain=test; plist=test; n=0; launchctl() { n=$((n + 1)); [ "$n" -ge 3 ]; }; sleep() { :; };\n'
         result = subprocess.run(["/bin/sh"], input=success + retry + '\ntest "$n" -eq 3\n', text=True, capture_output=True)

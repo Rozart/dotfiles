@@ -1,0 +1,43 @@
+import argparse
+import os
+from pathlib import Path
+import shlex
+import stat
+
+
+CLIENTS = {{ range $index, $mac := .rex.macs }}{{ if eq $index 0 }}[{{ else }}, {{ end }}{{ $mac.label | quote }}{{ end }}]
+
+
+def cleanup(directory, client):
+    if client not in CLIENTS:
+        raise ValueError("Unknown Rex client")
+    metadata = directory.lstat()
+    if not stat.S_ISDIR(metadata.st_mode) or metadata.st_uid != os.getuid() or stat.S_IMODE(metadata.st_mode) != 0o700:
+        raise ValueError("Untrusted remote agent directory")
+    path = directory / (client + ".sock")
+    try:
+        metadata = path.lstat()
+    except FileNotFoundError:
+        return
+    if not stat.S_ISSOCK(metadata.st_mode) or metadata.st_uid != os.getuid():
+        raise ValueError("Refusing to unlink an untrusted remote socket")
+    path.unlink()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--client", choices=CLIENTS)
+    parser.add_argument("--forced", action="store_true")
+    args = parser.parse_args()
+    if args.forced:
+        command = shlex.split(os.environ.get("SSH_ORIGINAL_COMMAND", ""))
+        if len(command) != 4 or command[:3] != ["python3", ".config/rex/ssh-tunnel-command.py", "--client"]:
+            raise ValueError("Only Rex agent socket cleanup is allowed")
+        client = command[3]
+    else:
+        client = args.client
+    cleanup(Path("/run/user") / str(os.getuid()) / "rex-ssh-agent", client)
+
+
+if __name__ == "__main__":
+    main()
