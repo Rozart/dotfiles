@@ -15,6 +15,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "dot_local/share/work-access"
+HOSTS = {"roz-mini-laptop": "roz-mini-laptop-work-pilot", "roz-laptop": "roz-laptop-work"}
 sys.path.insert(0, str(SOURCE))
 import work_access_health as HEALTH
 import work_access_install as INSTALL
@@ -28,10 +29,10 @@ def render(path, hostname="roz-mini-laptop", platform="darwin", arch="arm64", da
     return subprocess.check_output(["chezmoi", "--source", str(ROOT), "--override-data", json.dumps(override), "execute-template", "--file", str(ROOT / path)], text=True, stderr=subprocess.PIPE)
 
 
-def stage(directory):
+def stage(directory, hostname="roz-mini-laptop"):
     directory.mkdir()
     for name in ("settings.json", "config.json"):
-        (directory / name).write_text(render("dot_local/share/work-access/" + name + ".tmpl"))
+        (directory / name).write_text(render("dot_local/share/work-access/" + name + ".tmpl", hostname))
     shutil.copyfile(SOURCE / "launchdaemon.plist", directory / "launchdaemon.plist")
 
 
@@ -40,13 +41,15 @@ def native():
 
 
 class RenderingTests(unittest.TestCase):
-    def test_only_selected_mac_is_enabled(self):
-        for name in ("roz-mini-laptop", "ROZ-MINI-LAPTOP"):
-            self.assertEqual(render(".chezmoitemplates/work-access-enabled", name).strip(), "true")
-            settings = json.loads(render("dot_local/share/work-access/settings.json.tmpl", name))
-            self.assertEqual(settings["node_hostname"], "roz-mini-laptop-work-pilot")
-            self.assertNotIn(".local/share/work-access", render(".chezmoiignore", name).splitlines())
-        for platform, name in (("linux", "roz-mini-laptop"), ("darwin", "roz-laptop"), ("darwin", "unknown")):
+    def test_only_selected_macs_are_enabled(self):
+        for hostname, node in HOSTS.items():
+            for name in (hostname, hostname.upper()):
+                with self.subTest(hostname=name):
+                    self.assertEqual(render(".chezmoitemplates/work-access-enabled", name).strip(), "true")
+                    settings = json.loads(render("dot_local/share/work-access/settings.json.tmpl", name))
+                    self.assertEqual(settings["node_hostname"], node)
+                    self.assertNotIn(".local/share/work-access", render(".chezmoiignore", name).splitlines())
+        for platform, name in (("linux", "roz-mini-laptop"), ("linux", "roz-laptop"), ("darwin", "unknown")):
             self.assertEqual(render(".chezmoitemplates/work-access-enabled", name, platform).strip(), "false")
             self.assertIn(".local/share/work-access", render(".chezmoiignore", name, platform).splitlines())
             self.assertFalse(render("dot_local/share/work-access/settings.json.tmpl", name, platform).strip())
@@ -57,23 +60,24 @@ class RenderingTests(unittest.TestCase):
         self.assertIn("not qualified", raised.exception.stderr)
 
     def test_rendered_bundle_matches_narrow_scope_and_real_binary(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            directory = Path(temporary) / "bundle"
-            stage(directory)
-            bundle = INSTALL.Bundle(directory)
-            self.assertEqual(bundle.settings["routes"], ["100.85.168.15/32", "fd7a:115c:a1e0::d739:a810/128"])
-            self.assertEqual(bundle.settings["domains"], ["internal.programium.dev", "tailbc7768.ts.net"])
-            self.assertNotIn("auth_key", json.dumps(bundle.config))
-            self.assertEqual(bundle.config["dns"]["rules"][0], {"inbound": ["ts-work"], "action": "reject"})
-            self.assertEqual(bundle.check()["configuration"], "valid")
-            plist = plistlib.loads((directory / "launchdaemon.plist").read_bytes())
-            self.assertEqual(plist["UserName"], "root")
-            self.assertTrue(plist["KeepAlive"])
-            self.assertNotIn("/Users/", " ".join(plist["ProgramArguments"]))
-            self.assertEqual(subprocess.run(["/usr/bin/plutil", "-lint", str(directory / "launchdaemon.plist")], capture_output=True).returncode, 0)
-            wrapper = Path(temporary) / "work-access"
-            wrapper.write_text(render("dot_local/bin/executable_work-access.tmpl"))
-            self.assertEqual(subprocess.run(["/bin/sh", "-n", str(wrapper)]).returncode, 0)
+        for hostname in HOSTS:
+            with self.subTest(hostname=hostname), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary) / "bundle"
+                stage(directory, hostname)
+                bundle = INSTALL.Bundle(directory)
+                self.assertEqual(bundle.settings["routes"], ["100.85.168.15/32", "fd7a:115c:a1e0::d739:a810/128"])
+                self.assertEqual(bundle.settings["domains"], ["internal.programium.dev", "tailbc7768.ts.net"])
+                self.assertNotIn("auth_key", json.dumps(bundle.config))
+                self.assertEqual(bundle.config["dns"]["rules"][0], {"inbound": ["ts-work"], "action": "reject"})
+                self.assertEqual(bundle.check()["configuration"], "valid")
+                plist = plistlib.loads((directory / "launchdaemon.plist").read_bytes())
+                self.assertEqual(plist["UserName"], "root")
+                self.assertTrue(plist["KeepAlive"])
+                self.assertNotIn("/Users/", " ".join(plist["ProgramArguments"]))
+                self.assertEqual(subprocess.run(["/usr/bin/plutil", "-lint", str(directory / "launchdaemon.plist")], capture_output=True).returncode, 0)
+                wrapper = Path(temporary) / "work-access"
+                wrapper.write_text(render("dot_local/bin/executable_work-access.tmpl", hostname))
+                self.assertEqual(subprocess.run(["/bin/sh", "-n", str(wrapper)]).returncode, 0)
 
 
 class InstallationTests(unittest.TestCase):

@@ -4,7 +4,7 @@
 
 The chezmoi package stages a root-owned sing-box LaunchDaemon. Preparation and unprivileged checks do not activate it. Real privileged installation, cleanup, startup, failure behavior and reboot qualification remain separate acceptance steps.
 
-Only `roz-mini-laptop` is opted in through `[work_access.hosts]`. Linux, the other Mac and unknown hosts ignore these assets. Removing a host from that table does not stop or uninstall an existing root service; deprovisioning is an explicit maintenance operation.
+Both `roz-mini-laptop` and `roz-laptop` are opted in through `[work_access.hosts]`. Linux and unknown hosts ignore these assets. The mini-laptop retains node name `roz-mini-laptop-work-pilot`; the laptop uses `roz-laptop-work`. Each Mac requires its own work enrollment and private local state. Never copy credentials between Macs. Removing a host from that table does not stop or uninstall an existing root service; deprovisioning is an explicit maintenance operation.
 
 The official Tailscale client stays personal. The tool never switches profiles, changes exit-node selection, advertises routes, enables Tailscale SSH, changes the system proxy, or changes global/default DNS settings. It refuses manual installation/start unless the native client reports the configured personal tailnet and its node addresses do not collide with the selected work addresses.
 
@@ -53,6 +53,12 @@ work-access snapshot > "$HOME/.local/state/private-access-migration/managed-befo
 ```
 
 This records native identity, selected exit-node ID and ordinary internet routing. It excludes node credentials and the complete peer map. `verify --baseline` compares this within the same network session; interface numbers can legitimately change after reboot or a native-client restart, so cross-reboot acceptance needs a fresh route review.
+
+## First-time preparation on another Mac
+
+Host opt-in stages files only. On `roz-laptop`, install and verify the pinned sing-box build before expecting `check` or `plan` to pass. Its dedicated local pilot must be enrolled under the configured work login and qualified before adoption; this package does not enroll a new work node. Do not substitute the mini-laptop's pilot state, native Tailscale state or Rex state.
+
+The first installer invocation requires that Mac's existing `~/.local/state/private-access-migration/work-pilot/tailscale` directory. If it does not exist, leave the managed service uninstalled and arrange a separate local enrollment and acceptance step. The cutover below applies only after those prerequisites are met.
 
 ## Controlled first cutover
 

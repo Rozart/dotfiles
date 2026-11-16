@@ -4,8 +4,9 @@
 python3 .tests/test-work-access.py -v
 ```
 
-The suite checks host-scoped rendering, the real pinned binary's configuration
-check, protected filesystem deployment using a temporary layout, state movement
+The suite checks both Macs' host-scoped rendering and distinct node names, the
+real pinned binary's configuration check for both hosts, protected filesystem
+deployment using a temporary layout, state movement
 without copying, refusal to replace foreign files, explicit service controls,
 interrupted-install recovery and rollback. System commands are mocked for the
 filesystem tests; no root service, TUN, resolver or real credentials are changed.

@@ -94,6 +94,9 @@ personal_nas = "nas.spaniel-drum.ts.net"
 [work_access.hosts.roz-mini-laptop]
 node_hostname = "roz-mini-laptop-work-pilot"
 
+[work_access.hosts.roz-laptop]
+node_hostname = "roz-laptop-work"
+
 [work_access.binaries.arm64]
 sha256 = "de97e2575d8c770682293689ed71f42d7a633c700f006030cb551057fc25800c"
 path = "/opt/homebrew/bin/sing-box"
