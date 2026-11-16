@@ -1,3 +1,19 @@
+# Work access
+
+```sh
+python3 .tests/test-work-access.py -v
+```
+
+The suite checks host-scoped rendering, the real pinned binary's configuration
+check, protected filesystem deployment using a temporary layout, state movement
+without copying, refusal to replace foreign files, explicit service controls,
+interrupted-install recovery and rollback. System commands are mocked for the
+filesystem tests; no root service, TUN, resolver or real credentials are changed.
+The real privileged lifecycle remains a separate user-run acceptance milestone.
+
+See `dot_local/share/work-access/README.md` for staging, the privileged checkpoint,
+cutover, verification, built-in peer API limits and recovery.
+
 # Rex SSH agent forwarding
 
 ```sh

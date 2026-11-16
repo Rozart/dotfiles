@@ -81,6 +81,23 @@ user = "rozart"
 uid = 1000
 identity = "raspbox2"
 
+[work_access]
+version = "1.14.4"
+personal_tailnet = "rozart.github"
+work_login = "artur.rozalski@programium.dev"
+domains = ["internal.programium.dev", "tailbc7768.ts.net"]
+routes = ["100.85.168.15/32", "fd7a:115c:a1e0::d739:a810/128"]
+tun_addresses = ["172.31.255.1/30", "fdfe:dcba:2026::1/126"]
+health_url = "https://coolify.internal.programium.dev/"
+personal_nas = "nas.spaniel-drum.ts.net"
+
+[work_access.hosts.roz-mini-laptop]
+node_hostname = "roz-mini-laptop-work-pilot"
+
+[work_access.binaries.arm64]
+sha256 = "de97e2575d8c770682293689ed71f42d7a633c700f006030cb551057fc25800c"
+path = "/opt/homebrew/bin/sing-box"
+
 [fleet.install]
 ref = "d0c65e107e385657ef05e17c8214c0c8e70796af"
 

@@ -78,6 +78,11 @@ Library/LaunchAgents/dev.rozart.rex-*.plist
 .config/systemd/user/rex.service.d
 {{ end }}
 
+{{ if ne (includeTemplate "work-access-enabled" .) "true" }}
+.local/bin/work-access
+.local/share/work-access
+{{ end }}
+
 .local/share/rex-picker/.build
 .local/share/rex-picker/.swiftpm
 

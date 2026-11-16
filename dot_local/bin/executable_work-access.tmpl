@@ -1,0 +1,4 @@
+{{ if eq (includeTemplate "work-access-enabled" .) "true" -}}
+#!/bin/sh
+exec /usr/bin/python3 {{ printf "%s/.local/share/work-access/manage.py" .chezmoi.homeDir | quote }} "$@"
+{{ end -}}
