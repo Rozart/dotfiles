@@ -72,11 +72,15 @@ Each pane has a 0600 agent socket at
 `~/.local/state/rex/ssh-agent/b-<block-uuid>.sock`, inside a 0700 directory. Its
 path stays constant when ownership changes. The router chooses only the owning
 Mac and never falls back to the other Mac. Detachment retains the last
-positively observed Mac. An unobserved ownership transition, unknown owner,
-watcher restart, or observation gap discards that history rather than guessing.
-A detached pane without trusted history must be controlled again to authorize
-requests. Periodic snapshots reconcile pane lifecycle; owner events re-read
-current ownership rather than blindly replaying stale owners.
+positively observed Mac, whether an owner event or a snapshot reports it, so an
+app reconnect does not strand its panes. An unknown owner, watcher restart, or
+observation gap discards that history rather than guessing. A detached pane
+without trusted history must be controlled again to authorize requests.
+Periodic snapshots reconcile pane lifecycle; owner events re-read current
+ownership rather than blindly replaying stale owners.
+
+Each refused request logs one timestamped line with the pane and the reason to
+`~/.local/state/rex/ssh-agent.log` on Macs and the service journal on Linux.
 
 Owner changes revoke existing relay connections. A generation check prevents a
 slow connection attempt from restoring an old route. A five-second watcher

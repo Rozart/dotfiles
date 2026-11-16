@@ -287,6 +287,47 @@ class RouterTests(unittest.TestCase):
                 for agent in agents:
                     agent.stop()
 
+    def test_snapshot_detach_keeps_last_mac_and_logs_refusals(self):
+        with tempfile.TemporaryDirectory(prefix="rex-detach-", dir="/tmp") as directory:
+            root = Path(directory)
+            root.chmod(0o700)
+            agent = FakeAgent(root / "a.sock", 1)
+            sources = [{"label": "a", "aliases": ["a"], "path": str(root / "a.sock")}]
+            clients = [{"client_id": "a", "info": {"kind": "app", "label": "a"}, "principal": {"kind": "peer", "uid": os.getuid()}}]
+            router = relay.AgentRouter(root, sources)
+
+            def query():
+                with socket.socket(socket.AF_UNIX) as connection:
+                    connection.settimeout(5)
+                    connection.connect(str(relay.pane_socket(root, self.block)))
+                    return relay.agent_identities(connection)
+
+            def snapshot(owner):
+                block = {"block_id": self.block, "owner": owner} if owner else {"block_id": self.block}
+                router.receive({"type": "snapshot", "blocks": [block], "clients": clients})
+
+            try:
+                with mock.patch.object(relay, "log") as log:
+                    snapshot(None)
+                    with self.assertRaises((OSError, ConnectionError)):
+                        query()
+                    self.assertIn("no owner", log.call_args.args[0])
+                    snapshot("a")
+                    self.assertEqual(query(), 1)
+                    snapshot(None)
+                    self.assertEqual(query(), 1)
+                    snapshot("unknown")
+                    with self.assertRaises((OSError, ConnectionError)):
+                        query()
+                    self.assertIn("unknown", log.call_args.args[0])
+                    snapshot("a")
+                    agent.stop()
+                    with self.assertRaises((OSError, ConnectionError)):
+                        query()
+                    self.assertIn("unavailable", log.call_args.args[0])
+            finally:
+                router.close()
+
     def test_cleanup_does_not_block_health_revocation(self):
         with tempfile.TemporaryDirectory(prefix="rex-clean-", dir="/tmp") as directory:
             root = Path(directory)

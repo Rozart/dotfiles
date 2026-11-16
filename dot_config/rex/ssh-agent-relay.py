@@ -19,6 +19,10 @@ from typing import Callable
 MAX_MESSAGE = 1024 * 1024
 
 
+def log(message):
+    print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} {message}", file=sys.stderr, flush=True)
+
+
 def receive_exact(connection, size):
     result = bytearray()
     while len(result) < size:
@@ -41,6 +45,7 @@ def agent_identities(connection):
 
 
 def connect_agent(paths):
+    failure = "no upstream"
     for path in paths:
         connection = socket.socket(socket.AF_UNIX)
         try:
@@ -53,9 +58,10 @@ def connect_agent(paths):
                 raise ValueError("Agent has no identities")
             connection.settimeout(None)
             return connection
-        except (OSError, ValueError, ConnectionError):
+        except (OSError, ValueError, ConnectionError) as error:
+            failure = f"{path}: {error}"
             connection.close()
-    raise ConnectionError("No available SSH agent")
+    raise ConnectionError(failure)
 
 
 def relay(client, upstream, allowed):
@@ -87,11 +93,21 @@ class AgentHandler(socketserver.BaseRequestHandler):
         pair = None
         try:
             if not server.allowed():
+                log(f"{server.name}: refused, ownership watcher not healthy")
                 return
             with server.lock:
                 paths = list(server.upstreams)
+                reason = server.reason
                 generation = server.generation
-            with connect_agent(paths) as upstream:
+            if not paths:
+                log(f"{server.name}: refused, {reason}")
+                return
+            try:
+                upstream = connect_agent(paths)
+            except ConnectionError as error:
+                log(f"{server.name}: refused, upstream unavailable ({error})")
+                return
+            with upstream:
                 pair = (self.request, upstream)
                 with server.lock:
                     if generation != server.generation:
@@ -109,15 +125,18 @@ class AgentServer(socketserver.ThreadingUnixStreamServer):
     daemon_threads = True
 
     def __init__(self, path, upstreams):
+        self.name = Path(path).stem
         self.upstreams = upstreams
+        self.reason = "no route yet"
         self.allowed: Callable[[], bool] = lambda: True
         self.generation = 0
         self.connections = set()
         self.lock = threading.RLock()
         super().__init__(str(path), AgentHandler)
 
-    def set_upstreams(self, paths):
+    def set_upstreams(self, paths, reason="router not ready"):
         with self.lock:
+            self.reason = reason
             if paths == self.upstreams:
                 return
             self.upstreams = paths
@@ -198,9 +217,19 @@ class AgentRouter:
 
     def apply_route(self, block_id):
         record = self.blocks[block_id]
-        source = self.clients.get(record["owner"]) if record["owner"] else record["last"]
+        owner = record["owner"]
+        source = self.clients.get(owner) if owner else record["last"]
         paths = [self.paths[source]] if self.ready and source else []
-        self.servers[block_id].set_upstreams(paths)
+        self.servers[block_id].set_upstreams(paths, self.route_reason(owner, source))
+
+    def route_reason(self, owner, source):
+        if not self.ready:
+            return "router not ready"
+        if source:
+            return f"routed to {source}"
+        if owner:
+            return f"owner {owner} is not an allowlisted app (unknown client)"
+        return "no owner and no previously observed Mac"
 
     def add_block(self, block_id):
         if block_id in self.servers:
@@ -241,9 +270,6 @@ class AgentRouter:
                 for block in blocks:
                     block_id = block["block_id"]
                     self.add_block(block_id)
-                    previous = self.blocks.get(block_id, {})
-                    if previous.get("owner") and not block.get("owner"):
-                        self.blocks.pop(block_id, None)
                     self.set_owner(block_id, block.get("owner"))
             elif kind == "owner" and self.ready:
                 self.update_clients(event.get("clients") or [])
@@ -305,7 +331,7 @@ def watch(router, rex, watcher):
                     router.receive(event)
             process.wait()
         except (OSError, ValueError, KeyError) as error:
-            print(f"Rex agent watcher failed: {error}", file=sys.stderr, flush=True)
+            log(f"Rex agent watcher failed: {error}")
         finally:
             router.invalidate()
             if process is not None and process.poll() is None:
