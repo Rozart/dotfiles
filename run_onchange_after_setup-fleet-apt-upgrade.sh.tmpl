@@ -1,0 +1,18 @@
+{{ if and (eq .chezmoi.os "linux") (has "homelab" (includeTemplate "host-roles" . | fromJson)) -}}
+#!/bin/sh
+# fleet-apt-upgrade {{ include ".chezmoitemplates/fleet-apt-upgrade.sh" | sha256sum }}
+set -eu
+
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+
+cat > "$work/fleet-apt-upgrade" <<'WRAPPER'
+{{ include ".chezmoitemplates/fleet-apt-upgrade.sh" -}}
+WRAPPER
+printf '%s ALL=(root) NOPASSWD: /usr/local/sbin/fleet-apt-upgrade\n' {{ .chezmoi.username | quote }} > "$work/sudoers"
+
+sudo visudo -cf "$work/sudoers"
+sudo install -m 0755 -o root -g root "$work/fleet-apt-upgrade" /usr/local/sbin/fleet-apt-upgrade
+sudo install -m 0440 -o root -g root "$work/sudoers" /etc/sudoers.d/fleet-apt-upgrade
+echo "fleet-apt-upgrade installed; fleet can now run apt upgrades without a password"
+{{ end -}}

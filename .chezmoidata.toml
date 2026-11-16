@@ -102,7 +102,7 @@ sha256 = "de97e2575d8c770682293689ed71f42d7a633c700f006030cb551057fc25800c"
 path = "/opt/homebrew/bin/sing-box"
 
 [fleet.install]
-ref = "d0c65e107e385657ef05e17c8214c0c8e70796af"
+ref = "fc9065aaa31d4b48d3d1b8473bfe164386761a7c"
 
 [fleet.roles]
 roz-laptop = ["mac"]
@@ -137,11 +137,11 @@ stow = ["common/.agents", "claude/.claude", "pi/.pi"]
 claude = { roles = ["mac", "homelab"], upgrade = { brew-cask = "brew upgrade --cask claude-code" } }
 pi = { roles = ["mac", "homelab"] }
 nvim = { roles = ["mac", "homelab"], channel = "nvim-stable", install = "update-nvim stable", upgrade = { nvim-stable = "update-nvim stable", nvim-nightly = "update-nvim nightly" } }
-rg = { roles = ["mac", "homelab"], upgrade = { os-package = "sudo apt-get update && sudo apt-get install --only-upgrade ripgrep" } }
+rg = { roles = ["mac", "homelab"], upgrade = { os-package = "sudo -n /usr/local/sbin/fleet-apt-upgrade ripgrep" } }
 fd = { roles = ["mac", "homelab"] }
 chezmoi = { roles = ["mac", "homelab", "infra", "pi"] }
 mise = { roles = ["mac", "homelab"] }
-docker = { roles = ["mac", "homelab"], upgrade = { os-package = "sudo apt-get update && sudo apt-get install --only-upgrade docker-ce docker-ce-cli" } }
+docker = { roles = ["mac", "homelab"], upgrade = { os-package = "sudo -n /usr/local/sbin/fleet-apt-upgrade docker-ce docker-ce-cli" } }
 git = { roles = ["mac", "homelab"] }
 stow = { roles = ["mac"] }
 starship = { roles = ["mac", "homelab"] }
