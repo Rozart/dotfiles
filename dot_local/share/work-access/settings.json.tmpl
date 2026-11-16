@@ -1,0 +1,8 @@
+{{- if eq (includeTemplate "work-access-enabled" .) "true" -}}
+{{- $host := index .work_access.hosts (lower .chezmoi.hostname) -}}
+{{- if not (hasKey .work_access.binaries .chezmoi.arch) -}}
+{{- fail "work-access binary is not qualified for this architecture" -}}
+{{- end -}}
+{{- $binary := index .work_access.binaries .chezmoi.arch -}}
+{{- dict "version" .work_access.version "binary" $binary "node_hostname" $host.node_hostname "pilot_state" (printf "%s/.local/state/private-access-migration/work-pilot/tailscale" .chezmoi.homeDir) "domains" .work_access.domains "routes" .work_access.routes "tun_addresses" .work_access.tun_addresses "health_url" .work_access.health_url "personal_tailnet" .work_access.personal_tailnet "work_login" .work_access.work_login "personal_nas" .work_access.personal_nas | toPrettyJson }}
+{{ end -}}

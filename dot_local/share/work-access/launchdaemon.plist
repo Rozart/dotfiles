@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>dev.rozart.work-access</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Library/Application Support/dev.rozart.work-access/current/sing-box</string>
+    <string>run</string><string>--disable-color</string>
+    <string>-c</string><string>/Library/Application Support/dev.rozart.work-access/current/config.json</string>
+    <string>-D</string><string>/var/db/dev.rozart.work-access</string>
+  </array>
+  <key>UserName</key><string>root</string>
+  <key>GroupName</key><string>wheel</string>
+  <key>KeepAlive</key><true/>
+  <key>ThrottleInterval</key><integer>15</integer>
+  <key>ExitTimeOut</key><integer>20</integer>
+  <key>Umask</key><integer>63</integer>
+  <key>WorkingDirectory</key><string>/var/db/dev.rozart.work-access</string>
+  <key>EnvironmentVariables</key>
+  <dict><key>PATH</key><string>/usr/bin:/bin:/usr/sbin:/sbin</string></dict>
+  <key>StandardOutPath</key><string>/var/log/dev.rozart.work-access/sing-box.log</string>
+  <key>StandardErrorPath</key><string>/var/log/dev.rozart.work-access/sing-box.log</string>
+</dict>
+</plist>

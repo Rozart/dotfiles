@@ -205,6 +205,7 @@ brew "rust"
 brew "sd"
 # 7-Zip is a file archiver with a high compression ratio
 brew "sevenzip"
+brew "sing-box"
 # SOcket CAT: netcat on steroids
 brew "socat"
 # Tool for Java static analysis (FindBugs's successor)

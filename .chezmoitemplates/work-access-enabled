@@ -1,0 +1,1 @@
+{{- and (eq .chezmoi.os "darwin") (hasKey .work_access.hosts (lower .chezmoi.hostname)) -}}

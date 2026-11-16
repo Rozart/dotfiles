@@ -1,0 +1,58 @@
+{{ if eq (includeTemplate "work-access-enabled" .) "true" -}}
+{{- $host := index .work_access.hosts (lower .chezmoi.hostname) -}}
+{
+  "log": {"level": "info", "timestamp": true},
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "work-tun",
+      "address": {{ .work_access.tun_addresses | toJson }},
+      "mtu": 1280,
+      "auto_route": true,
+      "route_address": {{ .work_access.routes | toJson }},
+      "dns_mode": "disabled",
+      "stack": "gvisor"
+    },
+    {"type": "direct", "tag": "work-dns-listener", "listen": "127.0.0.1", "listen_port": 1053}
+  ],
+  "endpoints": [
+    {
+      "type": "tailscale",
+      "tag": "ts-work",
+      "state_directory": "/var/db/dev.rozart.work-access/tailscale",
+      "hostname": {{ $host.node_hostname | toJson }},
+      "ephemeral": false,
+      "accept_routes": false,
+      "advertise_routes": [],
+      "advertise_exit_node": false,
+      "system_interface": false,
+      "ssh_server": false,
+      "taildrop_directory": "/var/db/dev.rozart.work-access/taildrop"
+    }
+  ],
+  "dns": {
+    "servers": [
+      {"type": "local", "tag": "underlay-dns"},
+      {"type": "tailscale", "tag": "work-dns", "endpoint": "ts-work", "accept_default_resolvers": false, "accept_search_domain": false}
+    ],
+    "rules": [
+      {"inbound": ["ts-work"], "action": "reject"},
+      {"domain_suffix": {{ .work_access.domains | toJson }}, "server": "work-dns"},
+      {"action": "reject"}
+    ],
+    "final": "underlay-dns"
+  },
+  "outbounds": [{"type": "direct", "tag": "direct"}],
+  "route": {
+    "rules": [
+      {"inbound": ["work-dns-listener"], "action": "hijack-dns"},
+      {"inbound": ["ts-work"], "action": "reject"},
+      {"inbound": ["work-tun"], "ip_cidr": {{ .work_access.routes | toJson }}, "action": "route", "outbound": "ts-work"},
+      {"action": "reject"}
+    ],
+    "final": "direct",
+    "default_domain_resolver": "underlay-dns",
+    "auto_detect_interface": false
+  }
+}
+{{ end -}}
