@@ -40,6 +40,19 @@ address = "192.168.0.41"
 user = "rozart"
 uid = 1000
 identity = "dev-station"
+local_forwards = [
+    "127.0.0.1:4200:localhost:4200",
+    "127.0.0.1:4201:localhost:4201",
+    "127.0.0.1:4300:localhost:4300",
+    "127.0.0.1:4321:localhost:4321",
+    "127.0.0.1:3100:localhost:3100",
+    "127.0.0.1:3000:localhost:3000",
+    "127.0.0.1:3389:localhost:3389",
+    "127.0.0.1:8385:localhost:8384",
+    "127.0.0.1:5173:localhost:5173",
+    "127.0.0.1:8100:100.85.168.15:8000",
+    "127.0.0.1:3001:100.85.168.15:3000",
+]
 
 [[rex.hosts]]
 label = "docker-host"

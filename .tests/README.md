@@ -15,6 +15,57 @@ The real privileged lifecycle remains a separate user-run acceptance milestone.
 See `dot_local/share/work-access/README.md` for staging, the privileged checkpoint,
 cutover, verification, built-in peer API limits and recovery.
 
+# Rex development port forwarding
+
+```sh
+python3 .tests/test-rex-port-forwards.py -v
+python3 .tests/test-rex.py -v
+```
+
+The `dev-station` host's `local_forwards` list in `.chezmoidata.toml` configures
+persistent browser access on both managed Macs. Listeners bind to `127.0.0.1`.
+Ports 4200, 4201, 4300, 4321, 3100, 3000, 3389, and 5173 connect to the same
+port on dev-station's localhost. Local port 8385 connects to localhost:8384.
+Local ports 8100 and 3001 connect through dev-station to 100.85.168.15 ports
+8000 and 3000 respectively.
+
+The existing Rex SSH tunnel becomes a multiplexing master only for hosts with
+these mappings. The launcher adds each TCP forward with `ssh -O forward` after
+starting the core socket tunnel. A busy local port stays pending and retries
+every five seconds after each pass; it does not terminate the Rex connection.
+Successful forwards are not requested again during that connection. Launchd
+restarts the launcher after the SSH connection exits, restoring all mappings.
+A listener being active does not prove its remote service is available.
+
+The supervisor terminates its SSH child on shutdown. Core Rex and agent socket
+forwarding retain `ExitOnForwardFailure yes`. Hosts without TCP mappings keep
+the previous exec-based launcher. Logs report active and pending mappings at
+`~/.local/state/rex/tunnels/dev-station.log`, without repeating unchanged errors.
+An ordinary SSH connection may already own a configured port. Rex retries after
+that listener closes; neither workflow takes over the other's listener.
+
+The existing interactive SSH mappings remain unchanged. They currently duplicate
+the mappings supplied for this feature; consolidating their managed template
+with this data remains a follow-up, not a completed part of this change.
+The reverse clipboard/URL forwards and tmux startup settings are not imported.
+
+Tests use mocked SSH processes and render both Macs' LaunchAgents. They cover
+port conflicts, retries, missing control sockets, timeouts, loopback validation,
+child cleanup, and preservation of the core socket forwards. Live OpenSSH
+forwarding, reconnects, and browser access require separate deployment checks.
+Deploy only the launcher and dev-station LaunchAgent, then restart that tunnel
+with approval. Do not run a broad apply that could restart unrelated tunnels.
+The remote Rex server and its terminal processes do not need to restart.
+
+The initial rollout on roz-laptop applied only those two targets and restarted
+only `dev.rozart.rex-dev-station`. OpenSSH reported the master running, `lsof`
+confirmed all eleven listeners on 127.0.0.1, and Rex listed the remote sessions.
+Browser verification of http://localhost:8100 reached the Coolify login page.
+Port 3100 returned HTTP 404 and port 8385 served Syncthing HTML with HTTP 200;
+Syncthing's meta.js returned HTTP 403, so its full UI was not verified working.
+The other HTTP mappings did not answer at rollout time. RDP port 3389 was
+verified as a listener only. The other Mac has not received this deployment.
+
 # Rex SSH agent forwarding
 
 ```sh
