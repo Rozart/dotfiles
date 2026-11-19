@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+import json
+import sys
+
+original = sys.stdin.read()
+config = json.loads(original) if original.strip() else {}
+if not isinstance(config, dict):
+    raise ValueError("Pi MCP configuration must be a JSON object")
+servers = config.get("mcpServers", {})
+if not isinstance(servers, dict):
+    raise ValueError("Pi MCP servers must be a JSON object")
+defaults = {
+    "cadenza": {
+        "url": "https://api.cadenza.page/mcp",
+        "exposure": "hidden",
+        "toolExposure": {
+            "account_status": "deferred",
+            "service_status": "deferred",
+            "view_profile": "deferred",
+        },
+        "description": "Read LinkedIn profiles and inspect Cadenza account status; other tools remain hidden",
+    },
+    "exa": {
+        "url": "https://mcp.exa.ai/mcp?tools=web_search_exa,web_fetch_exa,web_search_advanced_exa",
+        "headers": {"x-api-key": "${EXA_API_KEY}"},
+        "exposure": "direct",
+        "description": "Search the public web and retrieve source pages for cited research",
+    },
+}
+missing = {name: server for name, server in defaults.items() if name not in servers}
+if not missing:
+    sys.stdout.write(original)
+else:
+    config["mcpServers"] = {**servers, **missing}
+    sys.stdout.write(json.dumps(config, indent=2) + "\n")

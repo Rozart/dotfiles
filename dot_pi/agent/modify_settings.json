@@ -7,8 +7,16 @@ settings = json.loads(original) if original.strip() else {}
 if not isinstance(settings, dict):
     raise ValueError("Pi settings must be a JSON object")
 defaults = {"defaultProvider": "openai", "defaultModel": "gpt-6.1-sol"}
-if all(settings.get(key) == value for key, value in defaults.items()):
+packages = ["https://github.com/earendil-works/pi-claude-code"]
+configured = settings.get("packages", [])
+if not isinstance(configured, list):
+    raise ValueError("Pi packages must be a JSON array")
+sources = {entry.get("source") if isinstance(entry, dict) else entry for entry in configured}
+missing = [package for package in packages if package not in sources]
+if not missing and all(settings.get(key) == value for key, value in defaults.items()):
     sys.stdout.write(original)
 else:
     settings.update(defaults)
+    if missing:
+        settings["packages"] = configured + missing
     sys.stdout.write(json.dumps(settings, indent=2) + "\n")
